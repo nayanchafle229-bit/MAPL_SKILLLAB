@@ -1,0 +1,100 @@
+import React from 'react'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from './context/AuthContext'
+
+// Auth pages
+import Login    from './pages/Login'
+import Register from './pages/Register'
+import Profile  from './pages/Profile'
+
+// Student pages
+import Dashboard        from './pages/Dashboard'
+import Courses          from './pages/Courses'
+import CourseWatch      from './pages/CourseWatch'
+import History          from './pages/History'
+import QuizList         from './pages/student/QuizList'
+import QuizAttempt      from './pages/student/QuizAttempt'
+import QuizResult       from './pages/student/QuizResult'
+import Leaderboard      from './pages/student/Leaderboard'
+import StudentPortfolio from './pages/student/StudentPortfolio'
+
+// Admin pages
+import AdminDashboard   from './pages/admin/AdminDashboard'
+import AdminCourses     from './pages/admin/AdminCourses'
+import AdminQuestions   from './pages/admin/AdminQuestions'
+import AdminUsers       from './pages/admin/AdminUsers'
+import AdminResults     from './pages/admin/AdminResults'
+import AdminQuizzes     from './pages/admin/AdminQuizzes'
+import AdminQuizCreate  from './pages/admin/AdminQuizCreate'
+import AdminLeaderboard from './pages/admin/AdminLeaderboard'
+
+// ── Route Guards ────────────────────────────────────────
+function ProtectedRoute({ children, adminOnly = false }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Splash />
+  if (!user)   return <Navigate to="/login" replace />
+  if (adminOnly && user.role !== 'admin') return <Navigate to="/dashboard" replace />
+  // Force profile completion for regular users
+  if (user.role !== 'admin' && !user.profileComplete && window.location.pathname !== '/profile')
+    return <Navigate to="/profile" replace />
+  return children
+}
+
+function PublicRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Splash />
+  if (user) return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} replace />
+  return children
+}
+
+function Splash() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-800">
+      <div className="text-center text-white">
+        <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-lg font-semibold opacity-80">Loading Smart Quiz...</p>
+      </div>
+    </div>
+  )
+}
+
+// ── App ─────────────────────────────────────────────────
+export default function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Public */}
+          <Route path="/"         element={<Navigate to="/login" replace />} />
+          <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+
+          {/* Student — protected */}
+          <Route path="/profile"           element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route path="/dashboard"         element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/courses"           element={<ProtectedRoute><Courses /></ProtectedRoute>} />
+          <Route path="/courses/:id"       element={<ProtectedRoute><CourseWatch /></ProtectedRoute>} />
+          <Route path="/quizzes"           element={<ProtectedRoute><QuizList /></ProtectedRoute>} />
+          <Route path="/quiz/:id"          element={<ProtectedRoute><QuizAttempt /></ProtectedRoute>} />
+          <Route path="/result/:id"        element={<ProtectedRoute><QuizResult /></ProtectedRoute>} />
+          <Route path="/leaderboard/:id"   element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
+          <Route path="/portfolio"         element={<ProtectedRoute><StudentPortfolio /></ProtectedRoute>} />
+          <Route path="/history"           element={<ProtectedRoute><History /></ProtectedRoute>} />
+
+          {/* Admin — protected + adminOnly */}
+          <Route path="/admin"                         element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin/courses"                 element={<ProtectedRoute adminOnly><AdminCourses /></ProtectedRoute>} />
+          <Route path="/admin/questions"               element={<ProtectedRoute adminOnly><AdminQuestions /></ProtectedRoute>} />
+          <Route path="/admin/users"                   element={<ProtectedRoute adminOnly><AdminUsers /></ProtectedRoute>} />
+          <Route path="/admin/results"                 element={<ProtectedRoute adminOnly><AdminResults /></ProtectedRoute>} />
+          <Route path="/admin/quizzes"                 element={<ProtectedRoute adminOnly><AdminQuizzes /></ProtectedRoute>} />
+          <Route path="/admin/quizzes/create"          element={<ProtectedRoute adminOnly><AdminQuizCreate /></ProtectedRoute>} />
+          <Route path="/admin/quizzes/:id/leaderboard" element={<ProtectedRoute adminOnly><AdminLeaderboard /></ProtectedRoute>} />
+
+          {/* Catch-all */}
+          <Route path="*" element={<Navigate to="/login" replace />} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
+  )
+}
