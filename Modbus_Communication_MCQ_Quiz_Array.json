@@ -1,0 +1,522 @@
+[
+  {
+    "question": "What does 'Modbus' primarily serve as in industrial automation?",
+    "options": {
+      "A": "A programming language",
+      "B": "A communication protocol",
+      "C": "A hardware brand",
+      "D": "An operating system"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Basics",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "Modbus was originally developed by which company?",
+    "options": {
+      "A": "Siemens",
+      "B": "Allen-Bradley",
+      "C": "Modicon (now Schneider Electric)",
+      "D": "Mitsubishi"
+    },
+    "correctAnswer": "C",
+    "category": "History",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "In a standard Modbus RTU network, how many devices typically initiate requests?",
+    "options": {
+      "A": "One (Master)",
+      "B": "All devices (Multi-master)",
+      "C": "Two (Primary and Secondary)",
+      "D": "None, they use tokens"
+    },
+    "correctAnswer": "A",
+    "category": "Network",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "Which physical layer is most commonly used for Modbus RTU?",
+    "options": {
+      "A": "HDMI",
+      "B": "RS-485",
+      "C": "USB-C",
+      "D": "Fiber Optic"
+    },
+    "correctAnswer": "B",
+    "category": "Physical Layer",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "What is the primary difference between Modbus RTU and Modbus TCP?",
+    "options": {
+      "A": "RTU uses binary; TCP uses ASCII",
+      "B": "RTU is for serial; TCP is for Ethernet",
+      "C": "RTU is faster than TCP",
+      "D": "TCP doesn't support registers"
+    },
+    "correctAnswer": "B",
+    "category": "Protocols",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "What is a 'Coil' in Modbus terminology?",
+    "options": {
+      "A": "A 16-bit read-only value",
+      "B": "A 1-bit read/write value",
+      "C": "A physical spring",
+      "D": "A 32-bit floating point"
+    },
+    "correctAnswer": "B",
+    "category": "Data Types",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "Which function code is used to read 'Holding Registers'?",
+    "options": {
+      "A": "01",
+      "B": "02",
+      "C": "03",
+      "D": "04"
+    },
+    "correctAnswer": "C",
+    "category": "Function Codes",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "How many bits are in a standard Modbus Register?",
+    "options": {
+      "A": "8 bits",
+      "B": "16 bits",
+      "C": "32 bits",
+      "D": "64 bits"
+    },
+    "correctAnswer": "B",
+    "category": "Registers",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "A 'Discrete Input' in Modbus is:",
+    "options": {
+      "A": "Read/Write 1-bit",
+      "B": "Read-only 1-bit",
+      "C": "Read/Write 16-bit",
+      "D": "Read-only 16-bit"
+    },
+    "correctAnswer": "B",
+    "category": "Data Types",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "Which of these is NOT a valid Modbus data type?",
+    "options": {
+      "A": "Coil",
+      "B": "Holding Register",
+      "C": "String Register",
+      "D": "Input Register"
+    },
+    "correctAnswer": "C",
+    "category": "Data Types",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "What is the purpose of the 'Slave ID' in Modbus RTU?",
+    "options": {
+      "A": "To identify the Master",
+      "B": "To identify the target device for a request",
+      "C": "To set the baud rate",
+      "D": "To encrypt the data"
+    },
+    "correctAnswer": "B",
+    "category": "Addressing",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "What does 'RTU' stand for in Modbus RTU?",
+    "options": {
+      "A": "Real Time Unit",
+      "B": "Remote Terminal Unit",
+      "C": "Radio Transmission Universal",
+      "D": "Remote Transfer Utility"
+    },
+    "correctAnswer": "B",
+    "category": "Terminology",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "Which function code is used to write a single coil?",
+    "options": {
+      "A": "05",
+      "B": "06",
+      "C": "15",
+      "D": "16"
+    },
+    "correctAnswer": "A",
+    "category": "Function Codes",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "In Modbus TCP, which port is standardly used?",
+    "options": {
+      "A": "80",
+      "B": "443",
+      "C": "502",
+      "D": "21"
+    },
+    "correctAnswer": "C",
+    "category": "Modbus TCP",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "What is the maximum number of slaves theoretically possible in a Modbus RTU network?",
+    "options": {
+      "A": "32",
+      "B": "127",
+      "C": "247",
+      "D": "255"
+    },
+    "correctAnswer": "C",
+    "category": "Addressing",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "Which error-checking method is used in Modbus RTU?",
+    "options": {
+      "A": "LRC",
+      "B": "CRC",
+      "C": "Checksum",
+      "D": "Parity only"
+    },
+    "correctAnswer": "B",
+    "category": "Error Checking",
+    "difficulty": "Easy",
+    "marks": 1
+  },
+  {
+    "question": "What is the size of the MBAP header in Modbus TCP?",
+    "options": {
+      "A": "4 bytes",
+      "B": "7 bytes",
+      "C": "10 bytes",
+      "D": "12 bytes"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "Which function code is used to write multiple holding registers?",
+    "options": {
+      "A": "06",
+      "B": "15",
+      "C": "16",
+      "D": "22"
+    },
+    "correctAnswer": "C",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What does an exception code of '01' mean in a Modbus response?",
+    "options": {
+      "A": "Illegal Data Address",
+      "B": "Illegal Function",
+      "C": "Illegal Data Value",
+      "D": "Slave Device Failure"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "In Modbus RTU, how is the end of a frame detected?",
+    "options": {
+      "A": "By a special 'End' character",
+      "B": "By a silence of at least 3.5 character times",
+      "C": "By a fixed frame length",
+      "D": "By a Carriage Return character"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "If a Master sends a request with Function Code 03, what will the high bit of the Function Code be in an Exception Response?",
+    "options": {
+      "A": "0",
+      "B": "1 (resulting in 0x83)",
+      "C": "Unchanged",
+      "D": "Set to 0xFF"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What is the typical address range for 'Input Registers' in many PLC implementations?",
+    "options": {
+      "A": "00001 - 09999",
+      "B": "10001 - 19999",
+      "C": "30001 - 39999",
+      "D": "40001 - 49999"
+    },
+    "correctAnswer": "C",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "Which field is present in Modbus RTU but NOT in Modbus TCP?",
+    "options": {
+      "A": "Function Code",
+      "B": "Data",
+      "C": "Checksum (CRC)",
+      "D": "Unit ID"
+    },
+    "correctAnswer": "C",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "How does Modbus handle 32-bit floating point numbers?",
+    "options": {
+      "A": "Using a special 32-bit register type",
+      "B": "By combining two consecutive 16-bit registers",
+      "C": "Modbus does not support floating point",
+      "D": "By using ASCII strings"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What is the 'Transaction Identifier' used for in Modbus TCP?",
+    "options": {
+      "A": "To identify the slave device",
+      "B": "To pair requests with responses in asynchronous comms",
+      "C": "To encrypt the packet",
+      "D": "To define the baud rate"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What is the broadcast address in Modbus RTU?",
+    "options": {
+      "A": "0",
+      "B": "255",
+      "C": "127",
+      "D": "1"
+    },
+    "correctAnswer": "A",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "In Modbus ASCII, what character marks the start of a frame?",
+    "options": {
+      "A": "$",
+      "B": ": (Colon)",
+      "C": "#",
+      "D": "@"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What is 'Big-Endian' in the context of Modbus?",
+    "options": {
+      "A": "The least significant byte is sent first",
+      "B": "The most significant byte is sent first",
+      "C": "The data is compressed",
+      "D": "The frame uses 8-bit CRC"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "Which function code allows reading and writing multiple registers in one transaction?",
+    "options": {
+      "A": "16",
+      "B": "23",
+      "C": "43",
+      "D": "03"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What does exception code '02' signify?",
+    "options": {
+      "A": "Illegal Function",
+      "B": "Illegal Data Address",
+      "C": "Illegal Data Value",
+      "D": "Gateway Path Unavailable"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "What is the maximum number of registers that can be read in a single Modbus RTU request (FC 03)?",
+    "options": {
+      "A": "100",
+      "B": "125",
+      "C": "255",
+      "D": "2000"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "In Modbus RTU, if parity is used, how many stop bits are typically required?",
+    "options": {
+      "A": "0",
+      "B": "1",
+      "C": "2",
+      "D": "1.5"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Medium",
+    "marks": 2
+  },
+  {
+    "question": "In Modbus RTU CRC-16 calculation, what is the 'Polynomial' used?",
+    "options": {
+      "A": "0x1021",
+      "B": "0x8005",
+      "C": "0xA001",
+      "D": "0xEDB8"
+    },
+    "correctAnswer": "C",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "What does Exception Code '06' (Slave Device Busy) typically trigger in a Master?",
+    "options": {
+      "A": "An immediate stop of all communication",
+      "B": "A retry after a short delay",
+      "C": "A hardware reset of the Master",
+      "D": "An ignore of the device forever"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "Function Code 43 (0x2B) is used for 'Encapsulated Interface Transport'. What is its most common sub-code (MEI Type)?",
+    "options": {
+      "A": "0x01 (Read Device Identification)",
+      "B": "0x0E (Read Device ID)",
+      "C": "0x0D (CANopen over Modbus)",
+      "D": "0x0F (Diagnostics)"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "In Modbus RTU, if the baud rate is above 19,200, what are the fixed timing intervals for inter-character and inter-frame silences?",
+    "options": {
+      "A": "1.0ms and 2.5ms",
+      "B": "0.75ms and 1.75ms",
+      "C": "1.5ms and 3.5ms",
+      "D": "0.5ms and 1.5ms"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "What is the purpose of the 'Unit Identifier' in a Modbus TCP frame when communicating with a TCP/RTU Gateway?",
+    "options": {
+      "A": "It is ignored by the gateway",
+      "B": "It specifies the IP address of the gateway",
+      "C": "It identifies the specific slave on the serial line behind the gateway",
+      "D": "It identifies the Master device"
+    },
+    "correctAnswer": "C",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "Which function code is used to 'Mask Write Register' (bitwise modification)?",
+    "options": {
+      "A": "16",
+      "B": "22",
+      "C": "23",
+      "D": "24"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "Exception Code '0A' (Gateway Path Unavailable) usually indicates:",
+    "options": {
+      "A": "The slave device is offline",
+      "B": "The gateway is misconfigured or cannot communicate with the target network",
+      "C": "The CRC was incorrect",
+      "D": "The IP address is wrong"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  },
+  {
+    "question": "In a Modbus RTU response for Function Code 03, what is the maximum possible value for the 'Byte Count' field?",
+    "options": {
+      "A": "125",
+      "B": "250",
+      "C": "255",
+      "D": "512"
+    },
+    "correctAnswer": "B",
+    "category": "Modbus Communication",
+    "difficulty": "Hard",
+    "marks": 3
+  }
+]
