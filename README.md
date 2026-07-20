@@ -151,7 +151,7 @@ App opens at → **http://localhost:3000**
 | `users` | Auth + profile data |
 | `courses` | Course title, description, video URL |
 | `questions` | Question bank with correct answers |
-| `quizresults` | Submitted quiz results with per-answer data |
+| `quizresults` | Submitted quiz results with per-answer data      |
 
 ---
 
