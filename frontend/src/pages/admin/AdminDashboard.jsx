@@ -1,149 +1,310 @@
-import React, { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import api from '../../api/axios'
-import Layout from '../../components/Layout'
-import { StatCard, PageLoader } from '../../components/UI'
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import api from "../../api/axios";
+import Layout from "../../components/Layout";
+import { PageLoader } from "../../components/UI";
+
+import "../../styles/AdminDashboard.css";
 
 export default function AdminDashboard() {
-  const [stats,   setStats]   = useState(null)
-  const [results, setResults] = useState([])
-  const [quizzes, setQuizzes] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(true);
+
+  const [stats, setStats] = useState({});
+  const [users, setUsers] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
+  const [results, setResults] = useState([]);
 
   useEffect(() => {
     Promise.all([
-      api.get('/admin/stats'),
-      api.get('/admin/results'),
-      api.get('/admin/quiz'),
-    ]).then(([sRes, rRes, qRes]) => {
-      setStats(sRes.data.stats)
-      setResults((rRes.data.results || []).slice(0, 6))
-      setQuizzes((qRes.data.quizzes || []).slice(0, 4))
-    }).finally(() => setLoading(false))
-  }, [])
+      api.get("/admin/stats").catch(() => ({ data: {} })),
+      api.get("/admin/users").catch(() => ({ data: { users: [] } })),
+      api.get("/admin/courses").catch(() => ({ data: { courses: [] } })),
+      api.get("/admin/quiz").catch(() => ({ data: { quizzes: [] } })),
+      api.get("/admin/results").catch(() => ({ data: { results: [] } })),
+    ])
+      .then(([sRes, uRes, cRes, qRes, rRes]) => {
+        setStats(sRes.data.stats || {});
+        setUsers(uRes.data.users || []);
+        setCourses(cRes.data.courses || []);
+        setQuizzes(qRes.data.quizzes || []);
+        setResults(rRes.data.results || []);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
-  if (loading) return <Layout title="Admin Dashboard"><PageLoader /></Layout>
-
-  const quickLinks = [
-    { to:'/admin/quizzes/create', icon:'🧠', label:'Create Quiz',      desc:'New difficulty-based quiz', color:'bg-blue-600' },
-    { to:'/admin/questions',      icon:'❓', label:'Add Questions',     desc:'Manage question bank',      color:'bg-purple-600' },
-    { to:'/admin/courses',        icon:'📚', label:'Add Course',        desc:'Upload course + video',     color:'bg-emerald-600' },
-    { to:'/admin/users',          icon:'👥', label:'View Users',        desc:'All registered students',   color:'bg-orange-500' },
-  ]
+  if (loading) {
+    return (
+      <Layout title="Admin Dashboard">
+        <PageLoader />
+      </Layout>
+    );
+  }
 
   return (
     <Layout title="Admin Dashboard">
-      {/* Hero */}
-      <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-indigo-950 rounded-3xl p-6 mb-6 text-white">
-        <div className="flex items-center gap-4 mb-4">
-          <div className="w-14 h-14 bg-red-500/20 border border-red-400/30 rounded-2xl flex items-center justify-center text-2xl">🔴</div>
-          <div>
-            <h2 className="text-xl font-black">Administrator Panel</h2>
-            <p className="text-slate-400 text-sm">Smart Quiz & Evaluation System — Full Control</p>
+
+      <div className="admin-dashboard">
+
+{/* ================= ADMIN HERO ================= */}
+
+<section className="admin-hero">
+
+  <div className="admin-hero-left">
+
+    <span className="admin-badge">
+      MAPL SkillLab Admin Panel
+    </span>
+
+    <h1>
+      Welcome Back,
+      <br />
+      Administrator 👋
+    </h1>
+
+    <p>
+      Manage users, courses, quizzes and platform performance
+      from one centralized dashboard.
+    </p>
+
+    <div className="admin-actions">
+
+      <Link
+        to="/admin/courses"
+        className="hero-btn primary"
+      >
+        + Add Course
+      </Link>
+
+      <Link
+        to="/admin/quizzes"
+        className="hero-btn secondary"
+      >
+        + Create Quiz
+      </Link>
+
+    </div>
+
+  </div>
+
+  <div className="admin-hero-right">
+
+    <div className="hero-summary-card">
+
+      <h3>Platform Summary</h3>
+
+      <div className="summary-row">
+        <span>Total Users</span>
+        <strong>{stats.users}</strong>
+      </div>
+
+      <div className="summary-row">
+        <span>Total Courses</span>
+        <strong>{stats.courses}</strong>
+      </div>
+
+      <div className="summary-row">
+        <span>Total Quizzes</span>
+        <strong>{stats.quizzes}</strong>
+      </div>
+
+      <div className="summary-row">
+        <span>Total Results</span>
+        <strong>{stats.results}</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+        {/* ================= ADMIN STATS ================= */}
+
+        <section className="admin-stats">
+
+          <div className="admin-stat-card blue">
+            <div className="stat-icon">👥</div>
+            <div>
+              <h2>{users.length}</h2>
+              <p>Total Users</p>
+            </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[['👥', stats?.totalUsers||0,'Students'],['❓',stats?.totalQuestions||0,'Questions'],['🧠',stats?.totalQuizzes||stats?.totalCourses||0,'Quizzes'],['🎯',stats?.totalAttempts||0,'Attempts']].map(([ic,v,l])=>(
-            <div key={l} className="bg-white/10 border border-white/20 rounded-2xl p-4 text-center backdrop-blur-sm">
-              <span className="text-2xl">{ic}</span>
-              <p className="text-2xl font-black mt-1">{v}</p>
-              <p className="text-slate-400 text-xs font-medium">{l}</p>
+
+          <div className="admin-stat-card purple">
+            <div className="stat-icon">📚</div>
+            <div>
+              <h2>{courses.length}</h2>
+              <p>Total Courses</p>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
-        <StatCard icon="👥" label="Total Students"   value={stats?.totalUsers     || 0} color="blue"   />
-        <StatCard icon="❓" label="Questions"         value={stats?.totalQuestions || 0} color="purple" />
-        <StatCard icon="📚" label="Courses"           value={stats?.totalCourses   || 0} color="green"  />
-        <StatCard icon="🎯" label="Quiz Attempts"     value={stats?.totalAttempts  || 0} color="orange" />
-        <StatCard icon="📈" label="Avg Score"         value={`${stats?.avgScore || 0}%`} color="indigo" />
-      </div>
-
-      {/* Quick links */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        {quickLinks.map(l => (
-          <Link key={l.to} to={l.to}
-            className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 group cursor-pointer">
-            <div className={`w-11 h-11 ${l.color} rounded-xl flex items-center justify-center text-xl mb-3 shadow-sm group-hover:scale-110 transition-transform`}>
-              {l.icon}
-            </div>
-            <h3 className="font-black text-gray-900 text-sm group-hover:text-blue-600 transition-colors">{l.label}</h3>
-            <p className="text-xs text-gray-500 mt-0.5">{l.desc}</p>
-          </Link>
-        ))}
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent quizzes */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <h3 className="font-black text-gray-900 text-sm">🧠 Recent Quizzes</h3>
-            <Link to="/admin/quizzes" className="text-xs text-blue-600 hover:underline font-bold">View all →</Link>
           </div>
-          {quizzes.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="text-gray-400 text-sm">No quizzes yet.</p>
-              <Link to="/admin/quizzes/create" className="mt-3 inline-block text-xs bg-blue-600 text-white px-4 py-2 rounded-xl font-bold">+ Create Quiz</Link>
+
+          <div className="admin-stat-card green">
+            <div className="stat-icon">📝</div>
+            <div>
+              <h2>{quizzes.length}</h2>
+              <p>Total Quizzes</p>
             </div>
-          ) : (
-            <div className="divide-y divide-gray-50">
-              {quizzes.map(q => (
-                <div key={q._id} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/60 transition-colors">
-                  <div className="min-w-0">
-                    <p className="font-bold text-gray-900 text-sm truncate">{q.title}</p>
-                    <p className="text-xs text-gray-400">{q.totalQuestions}Q · {q.totalMarks}M · {q.attemptCount||0} attempts</p>
+          </div>
+
+          <div className="admin-stat-card orange">
+            <div className="stat-icon">📊</div>
+            <div>
+              <h2>{results.length}</h2>
+              <p>Total Results</p>
+            </div>
+          </div>
+
+        </section>
+
+        {/* ================= QUICK ACTIONS ================= */}
+
+        <section className="admin-actions">
+
+          <div className="section-title">
+            <div>
+              <h2>Quick Actions</h2>
+              <p>Frequently used administrator tools.</p>
+            </div>
+          </div>
+
+          <div className="action-grid">
+
+            <Link to="/admin/course/new" className="action-card">
+              <div className="action-icon blue">📚</div>
+              <h3>Add Course</h3>
+              <p>Create a new learning module.</p>
+              <span>Open →</span>
+            </Link>
+
+            <Link to="/admin/quiz/new" className="action-card">
+              <div className="action-icon purple">📝</div>
+              <h3>Create Quiz</h3>
+              <p>Create assessments for learners.</p>
+              <span>Open →</span>
+            </Link>
+
+            <Link to="/admin/users" className="action-card">
+              <div className="action-icon green">👥</div>
+              <h3>Manage Users</h3>
+              <p>View and manage registered users.</p>
+              <span>Open →</span>
+            </Link>
+
+            <Link to="/admin/courses" className="action-card">
+              <div className="action-icon orange">🎓</div>
+              <h3>Manage Courses</h3>
+              <p>Edit existing learning modules.</p>
+              <span>Open →</span>
+            </Link>
+
+            <Link to="/admin/quizzes" className="action-card">
+              <div className="action-icon red">📋</div>
+              <h3>Manage Quizzes</h3>
+              <p>Edit or delete quizzes.</p>
+              <span>Open →</span>
+            </Link>
+
+            <Link to="/admin/results" className="action-card">
+              <div className="action-icon cyan">📈</div>
+              <h3>Reports</h3>
+              <p>View quiz reports and analytics.</p>
+              <span>Open →</span>
+            </Link>
+
+          </div>
+
+        </section>
+
+        {/* ================= PLATFORM OVERVIEW ================= */}
+
+        <section className="platform-overview">
+
+          <div className="overview-card">
+
+            <div className="overview-header">
+              <h2>Recent Users</h2>
+              <Link to="/admin/users">View All →</Link>
+            </div>
+
+            <div className="overview-list">
+
+              {users.slice(0,5).map(user => (
+
+                <div
+                  key={user._id}
+                  className="overview-item"
+                >
+
+                  <div className="overview-avatar">
+                    {user.name?.charAt(0).toUpperCase()}
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                    <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${q.isActive?'bg-emerald-100 text-emerald-700':'bg-gray-100 text-gray-500'}`}>
-                      {q.isActive?'Active':'Off'}
-                    </span>
-                    <Link to={`/admin/quizzes/${q._id}/leaderboard`} className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-lg font-semibold hover:bg-blue-100">LB</Link>
+
+                  <div className="overview-content">
+                    <h4>{user.name}</h4>
+                    <p>{user.email}</p>
                   </div>
+
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
 
-        {/* Recent results */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <h3 className="font-black text-gray-900 text-sm">🏆 Recent Results</h3>
-            <Link to="/admin/results" className="text-xs text-blue-600 hover:underline font-bold">View all →</Link>
-          </div>
-          {results.length === 0 ? (
-            <div className="text-center py-10"><p className="text-gray-400 text-sm">No results yet.</p></div>
-          ) : (
-            <div className="divide-y divide-gray-50">
-              {results.map(r => {
-                const pct = r.percentage
-                return (
-                  <div key={r._id} className="flex items-center justify-between px-5 py-3.5 hover:bg-gray-50/60 transition-colors">
-                    <div className="flex items-center gap-3 min-w-0">
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
-                        {(r.userId?.profile?.name||r.userId?.email||'U')[0].toUpperCase()}
-                      </div>
-                      <div className="min-w-0">
-                        <p className="font-bold text-gray-900 text-sm truncate">{r.userId?.profile?.name||'Student'}</p>
-                        <p className="text-xs text-gray-400 truncate">{r.userId?.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-2 flex-shrink-0 ml-3">
-                      <span className="font-black text-sm text-gray-900">{r.score}/{r.totalMarks}</span>
-                      <span className={`text-xs font-black px-2.5 py-1 rounded-full ${r.passStatus==='PASS'?'bg-emerald-100 text-emerald-700':'bg-red-100 text-red-600'}`}>
-                        {pct.toFixed(0)}%
-                      </span>
-                    </div>
-                  </div>
-                )
-              })}
+              ))}
+
             </div>
-          )}
-        </div>
+
+          </div>
+
+          <div className="overview-card">
+
+            <div className="overview-header">
+              <h2>Latest Courses</h2>
+              <Link to="/admin/courses">View All →</Link>
+            </div>
+
+            <div className="overview-list">
+
+              {courses.slice(0,5).map(course => (
+
+                <div
+                  key={course._id}
+                  className="overview-item"
+                >
+
+                  <div className="course-icon">
+                    📚
+                  </div>
+
+                  <div className="overview-content">
+                    <h4>{course.title}</h4>
+                    <p>{course.category}</p>
+                  </div>
+
+                </div>
+
+              ))}
+
+            </div>
+
+          </div>
+
+        </section>
+          
+        
+        
+        {/* ================= FOOTER ================= */}
+
+        <footer className="admin-footer">
+
+          <div>
+            © 2026 MAPL SkillLab
+          </div>
+
+          <div>
+            Version 2.0 • Enterprise LMS
+          </div>
+
+        </footer>
+
       </div>
+
     </Layout>
-  )
+  );
 }
