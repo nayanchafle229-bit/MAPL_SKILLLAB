@@ -50,7 +50,7 @@ Welcome back,
 <span>{p.name?.split(" ")[0] || "Engineer"} 👋</span>
 </h1>
 
-<p>
+<p style={{ color: '#ffffff' }}>
 Continue your Industrial Automation learning journey.
 Master DCS, PLC, SCADA, Instrumentation and Industrial Networking
 through structured learning paths.
