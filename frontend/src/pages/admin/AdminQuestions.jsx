@@ -25,12 +25,14 @@ const EMPTY_FORM = {
   category:      'General',
   difficulty:    'medium',
   marks:         1,
+  quizId:        '', // '' = unassigned / shared bank; set to a Quiz _id to scope it
 }
 
 const CATS  = ['General','JavaScript','React','Node.js','MongoDB','Python','MySQL','Web','Database','Other']
 const DIFFS = ['easy','medium','hard']
 const OPTS  = ['A','B','C','D']
 const PER_PAGE = 15
+const UNASSIGNED = '__unassigned__' // sentinel for "no quiz" in the filter dropdown
 
 const BULK_PLACEHOLDER = `[
   {
@@ -68,7 +70,7 @@ const OptionBadge = memo(function OptionBadge({ letter, isCorrect, onClick }) {
 
 // ─── Question Form (inside modal — stable, no inline definitions) ─────────────
 const QuestionForm = memo(function QuestionForm({
-  form, onField, onOption, onCorrect, onSubmit, saving, error, isEditing,
+  form, onField, onOption, onCorrect, onSubmit, saving, error, isEditing, quizzes,
 }) {
   const taRef = useRef(null)
 
@@ -132,6 +134,20 @@ const QuestionForm = memo(function QuestionForm({
         </p>
       </div>
 
+      {/* Quiz assignment — this is what scopes the question to one quiz */}
+      <div>
+        <label className={LABEL_CLS}>Assign to Quiz</label>
+        <select name="quizId" value={form.quizId} onChange={onField} className={INPUT_CLS}>
+          <option value="">— Unassigned (shared question bank) —</option>
+          {quizzes.map(qz => (
+            <option key={qz._id} value={qz._id}>{qz.title}</option>
+          ))}
+        </select>
+        <p className="text-xs text-gray-400 mt-1.5">
+          Only questions assigned to a quiz are pulled into that quiz. Leave unassigned to keep it in the shared bank.
+        </p>
+      </div>
+
       {/* Meta row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
@@ -184,6 +200,7 @@ const QuestionForm = memo(function QuestionForm({
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminQuestions() {
   const [questions, setQuestions] = useState([])
+  const [quizzes,   setQuizzes]   = useState([])       // for the "Assign to Quiz" dropdowns
   const [loading,   setLoading]   = useState(true)
   const [modal,     setModal]     = useState(false)   // add/edit
   const [bulkModal, setBulkModal] = useState(false)
@@ -197,6 +214,8 @@ export default function AdminQuestions() {
   const [search,    setSearch]    = useState('')
   const [filterCat, setFilterCat] = useState('')
   const [filterDiff,setFilterDiff]= useState('')
+  const [filterQuiz,setFilterQuiz]= useState('')
+  const [bulkQuizId,setBulkQuizId]= useState('')
   const [page,      setPage]      = useState(1)
 
   // ── Load ───────────────────────────────────────────────────────────────────
@@ -209,6 +228,34 @@ export default function AdminQuestions() {
   }, [])
 
   useEffect(() => { load() }, [load])
+
+  // ── Load quizzes (for "Assign to Quiz" dropdowns + filter + column) ────────
+  const loadQuizzes = useCallback(() => {
+    api.get('/admin/quiz')
+      .then(({ data }) => setQuizzes(data.quizzes || []))
+      .catch(() => setQuizzes([]))
+  }, [])
+
+  useEffect(() => { loadQuizzes() }, [loadQuizzes])
+
+  // quizId on a question may come back as a raw id string or a populated
+  // { _id, title } object depending on the backend — handle both.
+  const quizIdStrOf = useCallback((q) => {
+    if (!q?.quizId) return ''
+    return typeof q.quizId === 'object' ? (q.quizId._id || '') : q.quizId
+  }, [])
+
+  const quizMap = useMemo(() => {
+    const m = new Map()
+    quizzes.forEach(qz => m.set(qz._id, qz.title))
+    return m
+  }, [quizzes])
+
+  const quizNameOf = useCallback((q) => {
+    if (!q?.quizId) return null
+    if (typeof q.quizId === 'object') return q.quizId.title || quizMap.get(q.quizId._id) || 'Unknown quiz'
+    return quizMap.get(q.quizId) || 'Unknown quiz'
+  }, [quizMap])
 
   const showToast = useCallback((msg) => {
     setToast(msg)
@@ -232,10 +279,11 @@ export default function AdminQuestions() {
       category:      q.category || 'General',
       difficulty:    q.difficulty || 'medium',
       marks:         q.marks || 1,
+      quizId:        quizIdStrOf(q),
     })
     setFormError('')
     setModal(true)
-  }, [])
+  }, [quizIdStrOf])
 
   const closeModal = useCallback(() => {
     setModal(false)
@@ -272,12 +320,13 @@ export default function AdminQuestions() {
     }
     setSaving(true)
     setFormError('')
+    const payload = { ...form, quizId: form.quizId || null }
     try {
       if (editing) {
-        await api.put(`/question/${editing._id}`, form)
+        await api.put(`/question/${editing._id}`, payload)
         showToast('✅ Question updated')
       } else {
-        await api.post('/question', form)
+        await api.post('/question', payload)
         showToast('✅ Question added')
       }
       setModal(false)
@@ -298,9 +347,13 @@ export default function AdminQuestions() {
       if (!Array.isArray(parsed) || parsed.length === 0) {
         throw new Error('Must be a non-empty JSON array')
       }
-      const { data } = await api.post('/question', parsed)
+      // Every imported question gets scoped to the selected quiz (or stays
+      // unassigned if none is picked / the item already sets its own quizId).
+      const scoped = parsed.map(q => ({ ...q, quizId: bulkQuizId || q.quizId || null }))
+      const { data } = await api.post('/question', scoped)
       setBulkModal(false)
       setBulkText('')
+      setBulkQuizId('')
       showToast(data.message || `✅ ${parsed.length} questions imported`)
       load()
     } catch (err) {
@@ -333,13 +386,15 @@ export default function AdminQuestions() {
       const matchSearch = !search   || q.question.toLowerCase().includes(search.toLowerCase())
       const matchCat    = !filterCat  || q.category  === filterCat
       const matchDiff   = !filterDiff || q.difficulty === filterDiff
-      return matchSearch && matchCat && matchDiff
+      const matchQuiz   = !filterQuiz
+        || (filterQuiz === UNASSIGNED ? !quizIdStrOf(q) : quizIdStrOf(q) === filterQuiz)
+      return matchSearch && matchCat && matchDiff && matchQuiz
     })
     const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
     const safePage   = Math.min(page, totalPages)
     const paged      = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
     return { filtered, totalPages, paged, cats }
-  }, [questions, search, filterCat, filterDiff, page])
+  }, [questions, search, filterCat, filterDiff, filterQuiz, page, quizIdStrOf])
 
   const diffCount = useMemo(() => ({
     easy:   questions.filter(q => q.difficulty === 'easy').length,
@@ -350,6 +405,7 @@ export default function AdminQuestions() {
   const handleSearch    = useCallback((e) => { setSearch(e.target.value);   setPage(1) }, [])
   const handleCatFilter = useCallback((e) => { setFilterCat(e.target.value); setPage(1) }, [])
   const handleDiffFilter= useCallback((e) => { setFilterDiff(e.target.value);setPage(1) }, [])
+  const handleQuizFilter= useCallback((e) => { setFilterQuiz(e.target.value);setPage(1) }, [])
 
   // ── Render ──────────────────────────────────────────────────────────────────
   if (loading) return <Layout title="Question Bank"><PageLoader /></Layout>
@@ -383,6 +439,7 @@ export default function AdminQuestions() {
           saving={saving}
           error={formError}
           isEditing={!!editing}
+          quizzes={quizzes}
         />
       </Modal>
 
@@ -392,6 +449,15 @@ export default function AdminQuestions() {
           <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 leading-relaxed">
             <p className="font-bold mb-1">Expected JSON format:</p>
             <p>Array of objects, each with: <code className="bg-blue-100 px-1 rounded">question</code>, <code className="bg-blue-100 px-1 rounded">options</code> (A–D), <code className="bg-blue-100 px-1 rounded">correctAnswer</code>, optionally <code className="bg-blue-100 px-1 rounded">category</code>, <code className="bg-blue-100 px-1 rounded">difficulty</code>, <code className="bg-blue-100 px-1 rounded">marks</code>.</p>
+          </div>
+          <div>
+            <label className={LABEL_CLS}>Assign all imported questions to Quiz</label>
+            <select value={bulkQuizId} onChange={e => setBulkQuizId(e.target.value)} className={INPUT_CLS}>
+              <option value="">— Unassigned (shared question bank) —</option>
+              {quizzes.map(qz => (
+                <option key={qz._id} value={qz._id}>{qz.title}</option>
+              ))}
+            </select>
           </div>
           <textarea
             value={bulkText}
@@ -474,6 +540,11 @@ export default function AdminQuestions() {
           <option value="">All Difficulties</option>
           {DIFFS.map(d => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
         </select>
+        <select value={filterQuiz} onChange={handleQuizFilter} className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+          <option value="">All Quizzes</option>
+          <option value={UNASSIGNED}>Unassigned only</option>
+          {quizzes.map(qz => <option key={qz._id} value={qz._id}>{qz.title}</option>)}
+        </select>
         <span className="self-center text-sm text-gray-400 ml-auto">{filtered.length} questions</span>
       </div>
 
@@ -497,7 +568,7 @@ export default function AdminQuestions() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    {['#','Question','Options','Answer','Category','Diff','Marks','Actions'].map(h => (
+                    {['#','Question','Options','Answer','Quiz','Category','Diff','Marks','Actions'].map(h => (
                       <th key={h} className="text-left text-xs font-black text-gray-500 uppercase tracking-wider px-4 py-3 whitespace-nowrap">
                         {h}
                       </th>
@@ -530,6 +601,11 @@ export default function AdminQuestions() {
                         <span className="inline-flex items-center justify-center w-7 h-7 bg-emerald-500 text-white rounded-lg font-black text-xs">
                           {q.correctAnswer}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {quizNameOf(q)
+                          ? <span className="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">{quizNameOf(q)}</span>
+                          : <span className="text-xs bg-gray-100 text-gray-400 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">Unassigned</span>}
                       </td>
                       <td className="px-4 py-3">
                         {q.category
