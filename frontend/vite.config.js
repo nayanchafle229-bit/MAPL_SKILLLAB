@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig({
-  base: '/',             // absolute base — required for Vercel + React Router deep links
+  base: './',            // 👈 REQUIRED for Electron / file://
 
   plugins: [react()],
 

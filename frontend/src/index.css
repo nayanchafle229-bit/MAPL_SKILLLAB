@@ -4,47 +4,76 @@
 
 @layer base {
   * { box-sizing: border-box; }
-  body { font-family: 'Inter', system-ui, sans-serif; @apply bg-gray-50 text-gray-900; }
+  body { font-family: 'Inter', system-ui, sans-serif; @apply bg-surface-50 text-gray-900; }
+  ::selection { @apply bg-primary-200; }
 }
 
 @layer components {
+  /* ── Buttons ─────────────────────────────────────────────────
+     Class names kept identical to the original file so every
+     existing page keeps working — only the visual treatment
+     underneath changed (gradient, shadow, focus ring, motion). */
   .btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
+    @apply bg-gradient-to-b from-primary-500 to-primary-600 hover:from-primary-600 hover:to-primary-700
+      text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
+      disabled:opacity-50 disabled:cursor-not-allowed shadow-glow
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-2
+      active:scale-[0.98];
   }
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-gray-700 font-semibold px-5 py-2.5 rounded-xl border border-gray-200 transition-all duration-150 shadow-sm;
+    @apply bg-white hover:bg-surface-50 text-gray-700 font-semibold px-5 py-2.5 rounded-xl
+      border border-gray-200 transition-all duration-150 shadow-card hover:shadow-card-hover
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-300 focus-visible:ring-offset-2
+      active:scale-[0.98];
   }
   .btn-danger {
-    @apply bg-red-500 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded-xl transition-all duration-150;
+    @apply bg-gradient-to-b from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700
+      text-white font-semibold px-4 py-2 rounded-xl transition-all duration-150
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-rose-400 focus-visible:ring-offset-2
+      active:scale-[0.98];
   }
   .btn-success {
-    @apply bg-emerald-500 hover:bg-emerald-600 text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150;
+    @apply bg-gradient-to-b from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700
+      text-white font-semibold px-5 py-2.5 rounded-xl transition-all duration-150
+      focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400 focus-visible:ring-offset-2
+      active:scale-[0.98];
   }
   .input-field {
-    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white transition-all;
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3 text-sm bg-white
+      focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-300
+      transition-all placeholder:text-gray-400;
   }
   .card {
-    @apply bg-white rounded-2xl shadow-sm border border-gray-100 p-6;
+    @apply bg-white rounded-2xl shadow-card border border-gray-100 p-6
+      transition-shadow duration-200 hover:shadow-card-hover;
   }
-  .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700; }
-  .badge-blue   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700; }
-  .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-700; }
-  .badge-yellow { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-700; }
-  .badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600; }
+  .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 ring-1 ring-emerald-500/15; }
+  .badge-blue   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-primary-50 text-primary-700 ring-1 ring-primary-500/15; }
+  .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 ring-1 ring-rose-500/15; }
+  .badge-yellow { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 ring-1 ring-amber-500/15; }
+  .badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600 ring-1 ring-gray-500/10; }
 }
 
-/* Smooth transitions */
-.page-enter { animation: fadeSlideIn 0.2s ease; }
+/* Smooth page transitions */
+.page-enter { animation: fadeSlideIn 0.25s ease-out; }
 @keyframes fadeSlideIn {
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
 /* Quiz option hover */
+.quiz-option { transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease; }
 .quiz-option:hover { transform: translateX(3px); }
-.quiz-option { transition: all 0.15s; }
 
 /* Scrollbar */
-::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+@media (prefers-reduced-motion: reduce) {
+  .page-enter, .quiz-option, .btn-primary, .btn-secondary, .btn-danger, .btn-success, .card {
+    animation: none !important;
+    transition: none !important;
+  }
+}

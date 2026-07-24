@@ -23,15 +23,18 @@ import React, {
 import { useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
+import {
+  IconBrain, IconAlertTriangle,
+} from '../../components/Icons'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // CONSTANTS  (module scope — never recreated)
 // ─────────────────────────────────────────────────────────────────────────────
-const CATS  = ['General','JavaScript','React','Node.js','MongoDB','Python','MySQL','Web','Database','Other']
+const CATS  = ['General','PLC','DCS','SCADA','Instrumentation','Industrial Networking','HMI','Process Automation','Other']
 const DIFFS = [
   { key:'easy',   label:'Easy %',   bar:'bg-emerald-500', border:'border-emerald-300', light:'bg-emerald-50' },
   { key:'medium', label:'Medium %', bar:'bg-amber-500',   border:'border-amber-300',   light:'bg-amber-50'   },
-  { key:'hard',   label:'Hard %',   bar:'bg-red-500',     border:'border-red-300',     light:'bg-red-50'     },
+  { key:'hard',   label:'Hard %',   bar:'bg-rose-500',    border:'border-rose-300',    light:'bg-rose-50'    },
 ]
 
 const INPUT_CLS = [
@@ -40,7 +43,7 @@ const INPUT_CLS = [
   'px-4 py-2.5',
   'text-sm text-gray-900',
   'bg-white',
-  'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
+  'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
   'placeholder:text-gray-400',
   'transition-shadow duration-150',
   'leading-normal',
@@ -64,7 +67,7 @@ const InputField = memo(function InputField({
     <div className="flex flex-col min-w-0">
       <label htmlFor={name} className={LABEL_CLS}>
         {label}
-        {required && <span className="text-red-500 ml-0.5" aria-hidden>*</span>}
+        {required && <span className="text-rose-500 ml-0.5" aria-hidden>*</span>}
       </label>
       <input
         id={name}
@@ -104,7 +107,7 @@ const TextAreaField = memo(function TextAreaField({
     <div className="flex flex-col min-w-0">
       <label htmlFor={name} className={LABEL_CLS}>
         {label}
-        {required && <span className="text-red-500 ml-0.5" aria-hidden>*</span>}
+        {required && <span className="text-rose-500 ml-0.5" aria-hidden>*</span>}
       </label>
       <textarea
         id={name}
@@ -140,7 +143,7 @@ const CheckToggle = memo(function CheckToggle({ name, label, desc, checked, onCh
         name={name}
         checked={checked}
         onChange={onChange}
-        className="mt-0.5 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+        className="mt-0.5 w-4 h-4 text-primary-600 rounded border-gray-300 focus:ring-primary-500 flex-shrink-0 cursor-pointer"
       />
       <div className="min-w-0">
         <p className="text-sm font-bold text-gray-800 leading-tight">{label}</p>
@@ -176,9 +179,9 @@ const DiffRatioCard = memo(function DiffRatioCard({
           style={{ width: `${Math.min(100, value)}%` }}
         />
       </div>
-      <p className={`text-xs font-semibold leading-snug ${short ? 'text-red-600' : 'text-gray-500'}`}>
+      <p className={`text-xs font-semibold leading-snug ${short ? 'text-rose-600' : 'text-gray-500'}`}>
         Needs <strong>{count}</strong> questions
-        <span className={`ml-1 font-black ${short ? 'text-red-600' : 'text-emerald-600'}`}>
+        <span className={`ml-1 font-black ${short ? 'text-rose-600' : 'text-emerald-600'}`}>
           ({avail} in DB)
         </span>
       </p>
@@ -353,7 +356,7 @@ export default function AdminQuizCreate() {
         {/* Page header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 leading-tight">🧠 Create New Quiz</h2>
+            <h2 className="flex items-center gap-2 text-2xl font-black text-gray-900 leading-tight"><IconBrain className="w-6 h-6 text-primary-600" /> Create New Quiz</h2>
             <p className="text-gray-500 text-sm mt-1">
               Configure difficulty ratios — the system auto-selects questions from the bank.
             </p>
@@ -370,7 +373,7 @@ export default function AdminQuizCreate() {
         <form onSubmit={submit} className="space-y-5" noValidate>
 
           {/* ── 1. Basic Info ─────────────────────────────────────────────── */}
-          <SectionCard title="📝 Basic Information">
+          <SectionCard title="Basic Information">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
               <div className="sm:col-span-2">
@@ -379,7 +382,7 @@ export default function AdminQuizCreate() {
                   name="title"
                   value={form.title}
                   onChange={handleField}
-                  placeholder="e.g. MySQL Fundamentals Assessment"
+                  placeholder="e.g. PLC Fundamentals Assessment"
                   required
                   autoFocus
                 />
@@ -423,7 +426,7 @@ export default function AdminQuizCreate() {
           </SectionCard>
 
           {/* ── 2. Questions & Marks ──────────────────────────────────────── */}
-          <SectionCard title="📊 Questions & Marks">
+          <SectionCard title="Questions & Marks">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
 
               <InputField
@@ -476,34 +479,34 @@ export default function AdminQuizCreate() {
             </div>
 
             {/* Summary strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-blue-50 border border-blue-100 rounded-xl p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-primary-50 border border-primary-100 rounded-xl p-4">
               {[
                 ['Questions',  form.totalQuestions],
                 ['Total Marks',form.totalMarks],
                 ['Pass Marks', form.passMarks],
                 ['Duration',   `${form.duration}m`],
               ].map(([lbl, val]) => (
-                <div key={lbl} className="bg-white rounded-lg p-3 border border-blue-100 text-center">
-                  <p className="text-base font-black text-blue-800 leading-tight">{val}</p>
-                  <p className="text-xs text-blue-500 mt-0.5">{lbl}</p>
+                <div key={lbl} className="bg-white rounded-lg p-3 border border-primary-100 text-center">
+                  <p className="text-base font-black text-primary-800 leading-tight">{val}</p>
+                  <p className="text-xs text-primary-500 mt-0.5">{lbl}</p>
                 </div>
               ))}
             </div>
           </SectionCard>
 
           {/* ── 3. Difficulty Ratio ───────────────────────────────────────── */}
-          <SectionCard title="🎯 Difficulty Ratio">
+          <SectionCard title="Difficulty Ratio">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <p className="text-xs text-gray-500">
                 Set what percentage of questions come from each difficulty level.
                 <strong className="text-gray-700"> Must total 100%.</strong>
               </p>
-              <span className={`text-sm font-black px-3 py-1 rounded-full ${
+              <span className={`flex items-center gap-1 text-sm font-black px-3 py-1 rounded-full ${
                 ratioSum === 100
                   ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-red-100 text-red-700'
+                  : 'bg-rose-100 text-rose-700'
               }`}>
-                {ratioSum}% {ratioSum === 100 ? '✓' : '≠ 100'}
+                {ratioSum}% {ratioSum !== 100 && '≠ 100'}
               </span>
             </div>
 
@@ -543,7 +546,7 @@ export default function AdminQuizCreate() {
           </SectionCard>
 
           {/* ── 4. Settings ───────────────────────────────────────────────── */}
-          <SectionCard title="⚙️ Settings">
+          <SectionCard title="Settings">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
               <CheckToggle
                 name="shuffleQuestions"
@@ -589,15 +592,17 @@ export default function AdminQuizCreate() {
           {validationErrors.length > 0 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-1.5">
               {validationErrors.map((e, i) => (
-                <p key={i} className="text-xs font-semibold text-amber-700">⚠️ {e}</p>
+                <p key={i} className="flex items-center gap-1.5 text-xs font-semibold text-amber-700">
+                  <IconAlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {e}
+                </p>
               ))}
             </div>
           )}
 
           {/* API error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold">
-              ❌ {error}
+            <div className="flex items-center gap-2 bg-rose-50 border border-rose-200 text-rose-700 rounded-xl px-4 py-3 text-sm font-semibold">
+              <IconAlertTriangle className="w-4 h-4 flex-shrink-0" /> {error}
             </div>
           )}
 
@@ -610,10 +615,10 @@ export default function AdminQuizCreate() {
                 'flex-1 font-black py-4 rounded-2xl text-base transition-all shadow-sm',
                 loading || !canCreate
                   ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md',
+                  : 'bg-primary-600 hover:bg-primary-700 text-white hover:shadow-md',
               ].join(' ')}
             >
-              {loading ? '⏳ Creating Quiz…' : '🚀 Create Quiz (Draft)'}
+              {loading ? 'Creating Quiz…' : 'Create Quiz (Draft)'}
             </button>
             <button
               type="button"

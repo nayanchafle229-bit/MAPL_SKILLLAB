@@ -1,1311 +1,210 @@
-/* ===========================================
-   GOOGLE FONTS
-=========================================== */
+/* ══════════════════════════════════════════════════════════════
+   Auth pages (Login + Register) — shared glassmorphism theme.
+   Both pages import this file. Colors match the app's indigo
+   primary (see tailwind.config.js `primary` scale).
+   ══════════════════════════════════════════════════════════════ */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');
 
-
-/* ===========================================
-   RESET
-=========================================== */
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-}
-
-html{
-    scroll-behavior:smooth;
-}
-
-body{
-    font-family:'Inter',sans-serif;
-    background:#F8FAFC;
-    color:#0F172A;
-    overflow-x:hidden;
-}
-
-
-/* ===========================================
-   ROOT VARIABLES
-=========================================== */
-
-:root{
-
-    --primary:#2563EB;
-    --secondary:#7C3AED;
-    --accent:#06B6D4;
-
-    --background:#F8FAFC;
-
-    --text:#0F172A;
-    --text-light:#64748B;
-
-    --white:#ffffff;
-
-    --border:#E2E8F0;
-
-    --glass:rgba(255,255,255,.55);
-
-    --shadow:
-        0 15px 45px rgba(15,23,42,.08);
-
-}
-
-
-/* ===========================================
-   PAGE
-=========================================== */
-
-.login-page{
-
-    position:relative;
-
-    min-height:100vh;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    overflow:hidden;
-
-    background:
-        linear-gradient(
-            135deg,
-            #EFF6FF 0%,
-            #F8FAFC 40%,
-            #EEF2FF 100%
-        );
-
-}
-
-
-/* ===========================================
-   BACKGROUND GRID
-=========================================== */
-
-.login-page::before{
-
-    content:"";
-
-    position:absolute;
-
-    inset:0;
-
-    background-image:
-
-        linear-gradient(
-            rgba(37,99,235,.05) 1px,
-            transparent 1px
-        ),
-
-        linear-gradient(
-            90deg,
-            rgba(37,99,235,.05) 1px,
-            transparent 1px
-        );
-
-    background-size:55px 55px;
-
-    pointer-events:none;
-
-}
-
-
-/* ===========================================
-   GRADIENT BLOBS
-=========================================== */
-
-.bg-circle{
-
-    position:absolute;
-
-    border-radius:50%;
-
-    filter:blur(120px);
-
-    opacity:.55;
-
-    animation:floatBlob 14s ease-in-out infinite;
-
-}
-
-
-.circle1{
-
-    width:420px;
-    height:420px;
-
-    background:#2563EB;
-
-    top:-120px;
-    left:-100px;
-
-}
-
-
-.circle2{
-
-    width:360px;
-    height:360px;
-
-    background:#7C3AED;
-
-    right:-80px;
-    top:20%;
-
-    animation-delay:2s;
-
-}
-
-
-.circle3{
-
-    width:350px;
-    height:350px;
-
-    background:#06B6D4;
-
-    bottom:-120px;
-    left:40%;
-
-    animation-delay:5s;
-
-}
-
-
-/* ===========================================
-   MAIN CONTAINER
-=========================================== */
-
-.login-container{
-
-    position:relative;
-
-    z-index:5;
-
-    width:95%;
-
-    max-width:1450px;
-
-    display:grid;
-
-    grid-template-columns:1.15fr .85fr;
-
-    gap:60px;
-
-    align-items:center;
-
-    padding:50px;
-
-}
-
-
-/* ===========================================
-   HERO
-=========================================== */
-
-.hero-section{
-
-    position:relative;
-
-    padding:40px;
-
-}
-
-
-.hero-content{
-
-    max-width:640px;
-
-}
-
-
-.hero-logo{
-
-    width:110px;
-
-    margin-bottom:25px;
-
-}
-
-
-.platform-badge{
-
-    display:inline-flex;
-
-    align-items:center;
-
-    gap:10px;
-
-    padding:10px 22px;
-
-    border-radius:999px;
-
-    background:rgba(37,99,235,.08);
-
-    color:var(--primary);
-
-    font-size:13px;
-
-    font-weight:700;
-
-    letter-spacing:.08em;
-
-    text-transform:uppercase;
-
-    margin-bottom:30px;
-
-}
-
-
-.hero-content h1{
-
-    font-family:'Poppins',sans-serif;
-
-    font-size:64px;
-
-    line-height:1.08;
-
-    font-weight:800;
-
-    color:var(--text);
-
-    margin-bottom:25px;
-
-}
-
-
-.hero-content h1 span{
-
-    display:block;
-
-    margin-top:12px;
-
-    background:linear-gradient(
-        90deg,
-        var(--primary),
-        var(--secondary)
-    );
-
-    -webkit-background-clip:text;
-
-    -webkit-text-fill-color:transparent;
-
-}
-
-
-.hero-content p{
-
-    font-size:19px;
-
-    line-height:34px;
-
-    color:var(--text-light);
-
-    max-width:620px;
-
-}
-
-
-/* ===========================================
-   FEATURES
-=========================================== */
-
-.feature-list{
-
-    display:flex;
-
-    flex-wrap:wrap;
-
-    gap:15px;
-
-    margin-top:35px;
-
-}
-
-
-.feature{
-
-    background:rgba(255,255,255,.75);
-
-    backdrop-filter:blur(12px);
-
-    border:1px solid rgba(255,255,255,.6);
-
-    border-radius:50px;
-
-    padding:14px 22px;
-
-    font-size:14px;
-
-    font-weight:600;
-
-    color:var(--text);
-
-    box-shadow:var(--shadow);
-
-    transition:.35s;
-
-}
-
-
-.feature:hover{
-
-    transform:translateY(-6px);
-
-    background:white;
-
-}
-
-
-/* ===========================================
-   STATS
-=========================================== */
-
-.stats{
-
-    display:grid;
-
-    grid-template-columns:repeat(4,1fr);
-
-    gap:20px;
-
-    margin-top:55px;
-
-}
-
-
-.stat-card{
-
-    background:rgba(255,255,255,.65);
-
-    backdrop-filter:blur(18px);
-
-    border-radius:24px;
-
-    padding:28px;
-
-    text-align:center;
-
-    border:1px solid rgba(255,255,255,.7);
-
-    box-shadow:var(--shadow);
-
-    transition:.35s;
-
-}
-
-
-.stat-card:hover{
-
-    transform:translateY(-10px);
-
-}
-
-
-.stat-card h2{
-
-    font-size:34px;
-
-    color:var(--primary);
-
-    font-family:'Poppins',sans-serif;
-
-    margin-bottom:10px;
-
-}
-
-
-.stat-card span{
-
-    color:var(--text-light);
-
-    font-size:15px;
-
-}
-/* ===========================================
-   FLOATING COURSE CARDS
-=========================================== */
-
-.floating{
-    position:absolute;
-    width:260px;
-    padding:22px;
-    background:rgba(255,255,255,.82);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(255,255,255,.8);
-    border-radius:22px;
-    box-shadow:0 20px 45px rgba(15,23,42,.10);
-    animation:floatCard 6s ease-in-out infinite;
-    transition:.35s;
-    z-index:10;
-}
-
-.floating:hover{
-    transform:translateY(-10px) scale(1.03);
-}
-
-.card1{
-    top:80px;
-    right:20px;
-}
-
-.card2{
-    top:300px;
-    right:140px;
-    animation-delay:2s;
-}
-
-.card3{
-    bottom:60px;
-    right:30px;
-    animation-delay:4s;
-}
-
-.floating h4{
-    font-family:'Poppins',sans-serif;
-    font-size:18px;
-    color:#0F172A;
-    margin-bottom:18px;
-}
-
-.floating small{
-    color:#64748B;
-    font-size:14px;
-}
-
-/* ===========================================
-   PROGRESS BAR
-=========================================== */
-
-.progress{
-    width:100%;
-    height:10px;
-    border-radius:20px;
-    background:#E2E8F0;
-    overflow:hidden;
-    margin-bottom:12px;
-}
-
-.progress div{
-    height:100%;
-    border-radius:20px;
-    background:linear-gradient(
-        90deg,
-        #2563EB,
-        #06B6D4
-    );
-}
-
-/* ===========================================
-   LOGIN PANEL
-=========================================== */
-
-.login-panel{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
-
-.glass-card{
-
-    width:100%;
-    max-width:470px;
-
-    padding:45px;
-
-    border-radius:28px;
-
-    background:rgba(255,255,255,.72);
-
-    backdrop-filter:blur(30px);
-
-    border:1px solid rgba(255,255,255,.8);
-
-    box-shadow:
-        0 25px 60px rgba(15,23,42,.12);
-
-    animation:fadeUp .8s ease;
-
-}
-
-/* ===========================================
-   LOGIN HEADER
-=========================================== */
-
-.login-logo{
-
-    width:90px;
-
-    display:block;
-
-    margin:auto;
-
-    margin-bottom:25px;
-
-}
-
-.glass-card h2{
-
-    text-align:center;
-
-    font-family:'Poppins',sans-serif;
-
-    font-size:36px;
-
-    margin-bottom:10px;
-
-    color:#0F172A;
-
-}
-
-.glass-card p{
-
-    text-align:center;
-
-    color:#64748B;
-
-    margin-bottom:35px;
-
-    line-height:28px;
-
-}
-
-/* ===========================================
-   ERROR
-=========================================== */
-
-.error-box{
-
-    background:#FEE2E2;
-
-    color:#DC2626;
-
-    border-radius:14px;
-
-    padding:15px;
-
-    margin-bottom:22px;
-
-    font-size:14px;
-
-    border:1px solid #FCA5A5;
-
-}
-
-/* ===========================================
-   FORM
-=========================================== */
-
-.input-group{
-
-    margin-bottom:24px;
-
-}
-
-.input-group label{
-
-    display:block;
-
-    margin-bottom:10px;
-
-    font-weight:600;
-
-    color:#334155;
-
-    font-size:14px;
-
-}
-
-.input-group input{
-
-    width:100%;
-
-    height:56px;
-
-    border-radius:16px;
-
-    border:1px solid #CBD5E1;
-
-    padding:0 18px;
-
-    font-size:15px;
-
-    outline:none;
-
-    transition:.3s;
-
-    background:white;
-
-}
-
-.input-group input:focus{
-
-    border-color:#2563EB;
-
-    box-shadow:
-        0 0 0 5px rgba(37,99,235,.12);
-
-}
-
-/* ===========================================
-   PASSWORD BOX
-=========================================== */
-
-.password-box{
-
-    position:relative;
-
-}
-
-.password-box input{
-
-    padding-right:90px;
-
-}
-
-.show-btn{
-
-    position:absolute;
-
-    right:15px;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    border:none;
-
-    background:none;
-
-    color:#2563EB;
-
-    cursor:pointer;
-
-    font-weight:700;
-
-    font-size:14px;
-
-}
-
-/* ===========================================
-   LOGIN OPTIONS
-=========================================== */
-
-.login-options{
-
-    display:flex;
-
-    justify-content:space-between;
-
-    align-items:center;
-
-    margin-bottom:28px;
-
-    font-size:14px;
-
-}
-
-.login-options label{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    color:#64748B;
-
-}
-
-.login-options input{
-
-    accent-color:#2563EB;
-
-}
-
-.login-options a{
-
-    color:#2563EB;
-
-    text-decoration:none;
-
-    font-weight:600;
-
-}
-
-.login-options a:hover{
-
-    text-decoration:underline;
-
-}
-
-/* ===========================================
-   LOGIN BUTTON
-=========================================== */
-
-.login-btn{
-
-    width:100%;
-
-    height:58px;
-
-    border:none;
-
-    border-radius:18px;
-
-    background:linear-gradient(
-        90deg,
-        #2563EB,
-        #7C3AED
-    );
-
-    color:white;
-
-    font-size:17px;
-
-    font-weight:700;
-
-    cursor:pointer;
-
-    transition:.35s;
-
-    box-shadow:
-        0 12px 35px rgba(37,99,235,.25);
-
-}
-
-.login-btn:hover{
-
-    transform:translateY(-4px);
-
-    box-shadow:
-        0 18px 40px rgba(37,99,235,.35);
-
-}
-
-.login-btn:disabled{
-
-    opacity:.7;
-
-    cursor:not-allowed;
-
-}
-
-/* ===========================================
-   DIVIDER
-=========================================== */
-
-.divider{
-
-    display:flex;
-
-    align-items:center;
-
-    margin:32px 0;
-
-}
-
-.divider::before,
-.divider::after{
-
-    content:"";
-
-    flex:1;
-
-    height:1px;
-
-    background:#CBD5E1;
-
-}
-
-.divider span{
-
-    margin:0 15px;
-
-    color:#94A3B8;
-
-    font-weight:600;
-
-    font-size:13px;
-
-}
-
-/* ===========================================
-   GOOGLE BUTTON
-=========================================== */
-
-.google-btn{
-
-    width:100%;
-
-    height:56px;
-
-    border-radius:18px;
-
-    background:white;
-
-    border:1px solid #CBD5E1;
-
-    cursor:pointer;
-
-    font-size:15px;
-
-    font-weight:600;
-
-    transition:.3s;
-
-}
-
-.google-btn:hover{
-
-    background:#F8FAFC;
-
-    transform:translateY(-3px);
-
-}
-
-/* ===========================================
-   REGISTER
-=========================================== */
-
-.register{
-
-    margin-top:28px;
-
-    text-align:center;
-
-    color:#64748B;
-
-    font-size:15px;
-
-}
-
-.register a{
-
-    color:#2563EB;
-
-    text-decoration:none;
-
-    margin-left:6px;
-
-    font-weight:700;
-
-}
-
-.register a:hover{
-
-    text-decoration:underline;
-
-}
-/* ===========================================
-   ANIMATIONS
-=========================================== */
-
-@keyframes fadeUp{
-
-    from{
-        opacity:0;
-        transform:translateY(40px);
-    }
-
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-
-}
-
-@keyframes floatCard{
-
-    0%{
-        transform:translateY(0px);
-    }
-
-    50%{
-        transform:translateY(-18px);
-    }
-
-    100%{
-        transform:translateY(0px);
-    }
-
-}
-
-@keyframes floatBlob{
-
-    0%{
-        transform:translate(0,0) scale(1);
-    }
-
-    25%{
-        transform:translate(40px,-25px) scale(1.05);
-    }
-
-    50%{
-        transform:translate(-30px,20px) scale(.95);
-    }
-
-    75%{
-        transform:translate(20px,40px) scale(1.03);
-    }
-
-    100%{
-        transform:translate(0,0) scale(1);
-    }
-
-}
-
-@keyframes pulseGlow{
-
-    0%{
-        box-shadow:0 0 0 rgba(37,99,235,0);
-    }
-
-    50%{
-        box-shadow:0 0 30px rgba(37,99,235,.25);
-    }
-
-    100%{
-        box-shadow:0 0 0 rgba(37,99,235,0);
-    }
-
-}
-
-
-/* ===========================================
-   HOVER EFFECTS
-=========================================== */
-
-.hero-logo{
-    transition:.4s;
-}
-
-.hero-logo:hover{
-
-    transform:rotate(-3deg) scale(1.08);
-
-}
-
-.platform-badge:hover{
-
-    background:#2563EB;
-    color:white;
-
-}
-
-.hero-content h1{
-
-    animation:fadeUp .8s ease;
-
-}
-
-.hero-content p{
-
-    animation:fadeUp 1s ease;
-
-}
-
-.feature{
-
-    animation:fadeUp 1.1s ease;
-
-}
-
-.stat-card{
-
-    animation:fadeUp 1.2s ease;
-
-}
-
-.login-btn{
-
-    animation:pulseGlow 3s infinite;
-
-}
-
-.input-group input:hover{
-
-    border-color:#2563EB;
-
-}
-
-.google-btn:hover{
-
-    border-color:#2563EB;
-
-}
-
-.glass-card{
-
-    transition:.4s;
-
-}
-
-.glass-card:hover{
-
-    transform:translateY(-8px);
-
-}
-
-
-/* ===========================================
-   SCROLLBAR
-=========================================== */
-
-::-webkit-scrollbar{
-
-    width:10px;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-    background:#CBD5E1;
-
-    border-radius:50px;
-
-}
-
-::-webkit-scrollbar-thumb:hover{
-
-    background:#2563EB;
-
-}
-
-
-/* ===========================================
-   TABLET
-=========================================== */
-
-@media(max-width:1200px){
-
-.login-container{
-
-    grid-template-columns:1fr;
-
-    gap:50px;
-
-}
-
-.hero-section{
-
-    text-align:center;
-
-}
-
-.hero-content{
-
-    max-width:100%;
-
-    margin:auto;
-
-}
-
-.stats{
-
-    grid-template-columns:repeat(2,1fr);
-
-}
-
-.floating{
-
-    display:none;
-
-}
-
-.hero-content h1{
-
-    font-size:52px;
-
-}
-
-}
-
-
-/* ===========================================
-   MOBILE
-=========================================== */
-
-@media(max-width:768px){
-
-.login-container{
-
-    padding:20px;
-
-}
-
-.hero-section{
-
-    display:none;
-
-}
-
-.login-panel{
-
-    width:100%;
-
-}
-
-.glass-card{
-
-    padding:30px 25px;
-
-    border-radius:24px;
-
-}
-
-.glass-card h2{
-
-    font-size:30px;
-
-}
-
-.login-logo{
-
-    width:75px;
-
-}
-
-.login-btn{
-
-    height:54px;
-
-    font-size:15px;
-
-}
-
-.input-group input{
-
-    height:52px;
-
-}
-
-.login-options{
-
-    flex-direction:column;
-
-    gap:15px;
-
-    align-items:flex-start;
-
+:root {
+  --primary: #4f46e5;
+  --primary-light: #6366f1;
+  --secondary: #7c3aed;
+  --accent: #06b6d4;
+  --text: #0f172a;
+  --text-light: #64748b;
+  --border: #e2e8f0;
+  --shadow: 0 15px 45px rgba(15, 23, 42, 0.08);
+}
+
+/* ── Page shell ──────────────────────────────────────────────── */
+.login-page {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: linear-gradient(135deg, #eef2ff 0%, #f8fafc 40%, #eef2ff 100%);
+  font-family: 'Inter', sans-serif;
+  color: var(--text);
+}
+
+.login-page::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(79, 70, 229, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(79, 70, 229, 0.05) 1px, transparent 1px);
+  background-size: 55px 55px;
+  pointer-events: none;
+}
+
+.bg-circle { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.5; animation: floatBlob 14s ease-in-out infinite; }
+.circle1 { width: 420px; height: 420px; background: var(--primary); top: -120px; left: -100px; }
+.circle2 { width: 360px; height: 360px; background: var(--secondary); right: -80px; top: 20%; animation-delay: 2s; }
+.circle3 { width: 350px; height: 350px; background: var(--accent); bottom: -120px; left: 40%; animation-delay: 5s; }
+
+.login-container {
+  position: relative;
+  z-index: 5;
+  width: 95%;
+  max-width: 1450px;
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  gap: 60px;
+  align-items: center;
+  padding: 50px;
+}
+
+/* ── Hero (marketing) panel ──────────────────────────────────── */
+.hero-section { position: relative; padding: 40px; }
+.hero-content { max-width: 640px; }
+.hero-logo { width: 110px; margin-bottom: 25px; transition: 0.4s; animation: fadeUp 0.8s ease; }
+.hero-logo:hover { transform: rotate(-3deg) scale(1.08); }
+
+.platform-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 10px 22px; border-radius: 999px;
+  background: rgba(79, 70, 229, 0.08); color: var(--primary);
+  font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+  margin-bottom: 30px; transition: 0.35s;
+}
+.platform-badge:hover { background: var(--primary); color: white; }
+
+.hero-content h1 {
+  font-family: 'Poppins', sans-serif;
+  font-size: 60px; line-height: 1.1; font-weight: 800; color: var(--text);
+  margin-bottom: 25px; animation: fadeUp 0.8s ease;
+}
+.hero-content h1 span {
+  display: block; margin-top: 10px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-content p { font-size: 18px; line-height: 32px; color: var(--text-light); max-width: 600px; animation: fadeUp 1s ease; }
+
+.feature-list { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+.feature {
+  background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6); border-radius: 50px;
+  padding: 13px 20px; font-size: 14px; font-weight: 600; color: var(--text);
+  box-shadow: var(--shadow); transition: 0.35s; animation: fadeUp 1.1s ease;
+}
+.feature:hover { transform: translateY(-6px); background: white; }
+
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 48px; }
+.stat-card {
+  background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(18px);
+  border-radius: 22px; padding: 24px; text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.7); box-shadow: var(--shadow);
+  transition: 0.35s; animation: fadeUp 1.2s ease;
+}
+.stat-card:hover { transform: translateY(-8px); }
+.stat-card h2 { font-size: 28px; color: var(--primary); font-family: 'Poppins', sans-serif; margin-bottom: 8px; }
+.stat-card span { color: var(--text-light); font-size: 14px; }
+
+/* ── Auth (login / register) panel ───────────────────────────── */
+.login-panel { display: flex; justify-content: center; align-items: center; }
+
+.glass-card {
+  width: 100%; max-width: 460px; padding: 44px;
+  border-radius: 28px; background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(30px); border: 1px solid rgba(255, 255, 255, 0.8);
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
+  animation: fadeUp 0.8s ease; transition: 0.4s;
+}
+.glass-card:hover { transform: translateY(-6px); }
+
+.login-logo { width: 84px; display: block; margin: 0 auto 22px; }
+.glass-card h2 { text-align: center; font-family: 'Poppins', sans-serif; font-size: 32px; margin-bottom: 8px; color: var(--text); }
+.glass-card p.subtitle { text-align: center; color: var(--text-light); margin-bottom: 30px; line-height: 26px; }
+
+.error-box {
+  background: #fee2e2; color: #dc2626; border-radius: 14px; padding: 14px;
+  margin-bottom: 20px; font-size: 14px; border: 1px solid #fca5a5;
+}
+
+.input-group { margin-bottom: 20px; }
+.input-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #334155; font-size: 14px; }
+.input-group input {
+  width: 100%; height: 54px; border-radius: 16px; border: 1px solid var(--border);
+  padding: 0 18px; font-size: 15px; outline: none; transition: 0.3s; background: white;
+}
+.input-group input:hover { border-color: var(--primary-light); }
+.input-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 5px rgba(79, 70, 229, 0.12); }
+
+.password-box { position: relative; }
+.password-box input { padding-right: 88px; }
+.show-btn {
+  position: absolute; right: 15px; top: 50%; transform: translateY(-50%);
+  border: none; background: none; color: var(--primary); cursor: pointer;
+  font-weight: 700; font-size: 13px;
+}
+
+.login-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; font-size: 14px; }
+.login-options label { display: flex; align-items: center; gap: 8px; color: var(--text-light); }
+.login-options input { accent-color: var(--primary); }
+.login-options .hint { color: #94a3b8; font-size: 13px; }
+
+.login-btn {
+  width: 100%; height: 56px; border: none; border-radius: 18px;
+  background: linear-gradient(90deg, var(--primary), var(--secondary));
+  color: white; font-size: 16px; font-weight: 700; cursor: pointer;
+  transition: 0.35s; box-shadow: 0 12px 32px rgba(79, 70, 229, 0.28);
+}
+.login-btn:hover { transform: translateY(-3px); box-shadow: 0 16px 38px rgba(79, 70, 229, 0.38); }
+.login-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+.register, .login-link { margin-top: 26px; text-align: center; color: var(--text-light); font-size: 15px; }
+.register a, .login-link a { color: var(--primary); text-decoration: none; margin-left: 6px; font-weight: 700; }
+.register a:hover, .login-link a:hover { text-decoration: underline; }
+
+/* ── Animations ───────────────────────────────────────────────── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes floatBlob {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  25% { transform: translate(40px, -25px) scale(1.05); }
+  50% { transform: translate(-30px, 20px) scale(0.95); }
+  75% { transform: translate(20px, 40px) scale(1.03); }
+}
+
+/* ── Scrollbar / selection ───────────────────────────────────── */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 50px; }
+::-webkit-scrollbar-thumb:hover { background: var(--primary); }
+::selection { background: var(--primary); color: white; }
+input:-webkit-autofill, input:-webkit-autofill:hover, input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+
+/* ── Responsive ───────────────────────────────────────────────── */
+@media (max-width: 1200px) {
+  .login-container { grid-template-columns: 1fr; gap: 40px; }
+  .hero-section { text-align: center; }
+  .hero-content { max-width: 100%; margin: auto; }
+  .stats { grid-template-columns: repeat(2, 1fr); }
+  .hero-content h1 { font-size: 46px; }
+}
+@media (max-width: 768px) {
+  .login-container { padding: 20px; }
+  .hero-section { display: none; }
+  .login-panel { width: 100%; }
+  .glass-card { padding: 30px 24px; border-radius: 24px; }
+  .glass-card h2 { font-size: 28px; }
+  .login-logo { width: 72px; }
+  .login-btn { height: 52px; font-size: 15px; }
+  .input-group input { height: 50px; }
+  .login-options { flex-direction: column; gap: 12px; align-items: flex-start; }
+}
+@media (max-width: 480px) {
+  .glass-card { padding: 24px 18px; }
+  .glass-card h2 { font-size: 24px; }
+  .glass-card p.subtitle { font-size: 14px; }
+}
+@media (min-width: 1700px) {
+  .login-container { max-width: 1600px; }
+  .hero-content h1 { font-size: 68px; }
+  .hero-content p { font-size: 20px; }
 }
-
-}
-
-
-/* ===========================================
-   SMALL MOBILE
-=========================================== */
-
-@media(max-width:480px){
-
-.glass-card{
-
-    padding:25px 18px;
-
-}
-
-.glass-card h2{
-
-    font-size:26px;
-
-}
-
-.glass-card p{
-
-    font-size:14px;
-
-}
-
-.login-btn{
-
-    font-size:14px;
-
-}
-
-.google-btn{
-
-    font-size:14px;
-
-}
-
-}
-
-
-/* ===========================================
-   LARGE DESKTOP
-=========================================== */
-
-@media(min-width:1700px){
-
-.login-container{
-
-    max-width:1650px;
-
-}
-
-.hero-content h1{
-
-    font-size:78px;
-
-}
-
-.hero-content p{
-
-    font-size:22px;
-
-}
-
-}
-
-
-/* ===========================================
-   SMOOTH TRANSITIONS
-=========================================== */
-
-button,
-input,
-a,
-.feature,
-.stat-card,
-.floating{
-
-    transition:all .35s ease;
-
-}
-
-
-/* ===========================================
-   SELECTION
-=========================================== */
-
-::selection{
-
-    background:#2563EB;
-
-    color:white;
-
-}
-
-
-/* ===========================================
-   REMOVE INPUT AUTOFILL COLOR
-=========================================== */
-
-input:-webkit-autofill,
-input:-webkit-autofill:hover,
-input:-webkit-autofill:focus{
-
-    -webkit-box-shadow:0 0 0px 1000px white inset;
-
-}
-
-
-/* ===========================================
-   END OF FILE
-=========================================== */

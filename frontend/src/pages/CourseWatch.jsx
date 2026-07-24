@@ -3,9 +3,10 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader } from '../components/UI'
+import { IconBrain, IconLayers, IconFilm } from '../components/Icons'
 
 function getYouTubeId(url) {
-  const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+  const m = url?.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   return m ? m[1] : null
 }
 
@@ -17,11 +18,12 @@ function getEmbedUrl(url) {
 
 export default function CourseWatch() {
   const { id } = useParams()
-  const [course, setCourse]   = useState(null)
+  const [course, setCourse] = useState(null)
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    setLoading(true)
     Promise.all([api.get(`/course/${id}`), api.get('/course')])
       .then(([cRes, allRes]) => {
         setCourse(cRes.data.course)
@@ -52,7 +54,9 @@ export default function CourseWatch() {
                 <h1 className="text-xl font-black text-gray-900 mb-2">{course.title}</h1>
                 {course.category && <span className="badge-blue">{course.category}</span>}
               </div>
-              <Link to="/quiz" className="btn-primary text-sm flex-shrink-0">🧠 Take Quiz</Link>
+              <Link to="/quizzes" className="btn-primary text-sm flex-shrink-0 flex items-center gap-2">
+                <IconBrain className="w-4 h-4" /> Take Quiz
+              </Link>
             </div>
             <p className="text-gray-600 mt-4 leading-relaxed">{course.description}</p>
             <div className="mt-4 pt-4 border-t border-gray-100">
@@ -64,7 +68,9 @@ export default function CourseWatch() {
         {/* Sidebar */}
         <div className="space-y-4">
           <div className="card">
-            <h3 className="font-bold text-gray-900 mb-3">📋 Other Courses</h3>
+            <h3 className="flex items-center gap-2 font-bold text-gray-900 mb-3">
+              <IconLayers className="w-4 h-4 text-primary-500" /> Other Courses
+            </h3>
             {courses.length === 0 ? (
               <p className="text-sm text-gray-400">No other courses available.</p>
             ) : (
@@ -75,12 +81,13 @@ export default function CourseWatch() {
                   return (
                     <Link to={`/courses/${c._id}`} key={c._id}
                       className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all group">
-                      <div className="w-20 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
-                        {thumb ? <img src={thumb} alt={c.title} className="w-full h-full object-cover" />
-                          : <div className="w-full h-full flex items-center justify-center text-2xl">🎬</div>}
+                      <div className="w-20 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0 flex items-center justify-center">
+                        {thumb
+                          ? <img src={thumb} alt={c.title} className="w-full h-full object-cover" />
+                          : <IconFilm className="w-5 h-5 text-slate-400" />}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">{c.title}</p>
+                        <p className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-primary-600 transition-colors">{c.title}</p>
                         {c.category && <p className="text-xs text-gray-400 mt-0.5">{c.category}</p>}
                       </div>
                     </Link>
@@ -90,12 +97,14 @@ export default function CourseWatch() {
             )}
           </div>
 
-          <div className="card bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
+          <div className="card bg-gradient-to-br from-primary-50 to-purple-50 border-primary-100">
             <div className="text-center">
-              <div className="text-3xl mb-2">🧠</div>
+              <div className="w-12 h-12 rounded-2xl bg-white shadow-sm flex items-center justify-center mx-auto mb-3 text-primary-600">
+                <IconBrain className="w-6 h-6" />
+              </div>
               <h3 className="font-bold text-gray-900 mb-1">Ready to test yourself?</h3>
-              <p className="text-sm text-gray-500 mb-4">Take a quiz with {40} random questions</p>
-              <Link to="/quiz" className="btn-primary w-full text-center block">Start Quiz</Link>
+              <p className="text-sm text-gray-500 mb-4">Put what you just watched into practice with a quiz.</p>
+              <Link to="/quizzes" className="btn-primary w-full text-center block">Browse Quizzes</Link>
             </div>
           </div>
         </div>

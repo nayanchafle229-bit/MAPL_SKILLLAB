@@ -62,11 +62,15 @@ router.post('/', protect, adminOnly, async (req, res) => {
     }
 
     // Single question
-    const { question, options, correctAnswer, category, difficulty } = body;
+    const { question, options, correctAnswer, category, difficulty, marks, negativeMarks, quizId } = body;
     if (!question || !options?.A || !options?.B || !options?.C || !options?.D || !correctAnswer) {
       return res.status(400).json({ message: 'question, options (A-D) and correctAnswer required' });
     }
-    const q = await Question.create({ question, options, correctAnswer, category, difficulty });
+    // NOTE: marks and quizId were previously dropped here (this route only
+    // saved 5 of the schema's fields) — quizId especially matters, since
+    // it's what keeps a question scoped to one quiz instead of being
+    // randomly eligible for every quiz's auto-generated question set.
+    const q = await Question.create({ question, options, correctAnswer, category, difficulty, marks, negativeMarks, quizId: quizId || null });
     res.status(201).json({ question: q, message: 'Question added' });
   } catch (err) {
     res.status(500).json({ message: err.message });

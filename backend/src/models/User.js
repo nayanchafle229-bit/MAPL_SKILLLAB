@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const profileSchema = new mongoose.Schema({
   name:      { type: String, default: '' },
+  role:      { type: String, default: '' }, // engineering job title, e.g. "Senior Engineer" — distinct from userSchema.role (auth role)
   branch:    { type: String, default: '' },
   year:      { type: String, default: '' },
   interests: { type: String, default: '' },

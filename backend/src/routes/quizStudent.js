@@ -242,25 +242,29 @@ router.post('/:id/submit', protect, async (req, res) => {
     // Increment quiz attempt counter
     await Quiz.findByIdAndUpdate(quiz._id, { $inc: { attemptCount: 1 } });
 
-    // ISSUE 5 FIX: compute rank (100 marks = Rank 1, 99 = Rank 2, ties share rank)
+    // Recompute rank for EVERY result on this quiz (not just the new one).
+    // Previously only the just-submitted result's rank was written, so every
+    // other student's stored `rank` field went stale the moment a new,
+    // higher-scoring submission came in — their displayed rank on Dashboard/
+    // History/Portfolio would silently drift wrong and disagree with the
+    // Leaderboard (which recomputes fresh from all results on every load,
+    // so it was never affected — only the stored field was).
     const allResults = await QuizResult.find({ quizId: quiz._id })
       .sort({ score: -1, timeTaken: 1 })
       .select('_id score timeTaken');
 
+    const bulkOps = [];
     let assignedRank = 1;
     for (let i = 0; i < allResults.length; i++) {
-      if (allResults[i]._id.toString() === result._id.toString()) {
-        // Rank = number of results with strictly higher score + 1
-        const higherCount = allResults.filter(r =>
-          r.score > result.score ||
-          (r.score === result.score && r.timeTaken < result.timeTaken && r._id.toString() !== result._id.toString())
-        ).length;
-        assignedRank = higherCount + 1;
-        break;
-      }
+      const r = allResults[i];
+      const higherCount = allResults.filter(x =>
+        x.score > r.score || (x.score === r.score && x.timeTaken < r.timeTaken)
+      ).length;
+      const rank = higherCount + 1;
+      bulkOps.push({ updateOne: { filter: { _id: r._id }, update: { rank } } });
+      if (r._id.toString() === result._id.toString()) assignedRank = rank;
     }
-
-    await QuizResult.findByIdAndUpdate(result._id, { rank: assignedRank });
+    if (bulkOps.length) await QuizResult.bulkWrite(bulkOps);
 
     res.status(201).json({
       success: true,

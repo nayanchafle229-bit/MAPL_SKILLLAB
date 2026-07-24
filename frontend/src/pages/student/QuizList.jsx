@@ -1,13 +1,16 @@
 /**
  * QuizList.jsx — Student quiz browser
  * Shows ONLY published quizzes (backend already filters status=published)
- * Fixes: empty-state messaging, error handling, attempt badges, refresh.
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, PassBadge } from '../../components/UI'
+import {
+  IconBrain, IconHelp, IconStar, IconClock, IconRefresh, IconMedal,
+  IconTrophy, IconSearch, IconRocket, IconAlertTriangle,
+} from '../../components/Icons'
 
 function fmtDuration(mins) {
   if (!mins) return '—'
@@ -21,28 +24,27 @@ function DiffBar({ ratio }) {
       <div className="flex rounded-md overflow-hidden h-2 bg-gray-100">
         {ratio.easy   > 0 && <div className="bg-emerald-400 transition-all" style={{ width: `${ratio.easy}%` }} title={`Easy ${ratio.easy}%`} />}
         {ratio.medium > 0 && <div className="bg-amber-400 transition-all"   style={{ width: `${ratio.medium}%` }} title={`Medium ${ratio.medium}%`} />}
-        {ratio.hard   > 0 && <div className="bg-red-400 transition-all"     style={{ width: `${ratio.hard}%` }} title={`Hard ${ratio.hard}%`} />}
+        {ratio.hard   > 0 && <div className="bg-rose-400 transition-all"    style={{ width: `${ratio.hard}%` }} title={`Hard ${ratio.hard}%`} />}
       </div>
       <div className="flex gap-3 text-xs text-gray-400 justify-center">
         <span className="flex items-center gap-1"><span className="w-2 h-2 bg-emerald-400 rounded-full" />Easy {ratio.easy}%</span>
         <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-full" />Med {ratio.medium}%</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-full" />Hard {ratio.hard}%</span>
+        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-rose-400 rounded-full" />Hard {ratio.hard}%</span>
       </div>
     </div>
   )
 }
 
 function QuizCard({ q }) {
-  const navigate = useNavigate()
   const pct = q.myPct !== null && q.myPct !== undefined
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+    <div className="quiz-card-hover bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col">
       {/* Coloured top strip */}
-      <div className="bg-gradient-to-br from-slate-800 to-slate-900 p-5">
+      <div className="bg-gradient-to-br from-slate-900 to-indigo-950 p-5">
         <div className="flex items-start justify-between gap-2 mb-3">
-          <div className="w-10 h-10 bg-blue-500/20 border border-blue-400/30 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
-            🧠
+          <div className="w-10 h-10 bg-primary-500/20 border border-primary-400/30 rounded-xl flex items-center justify-center flex-shrink-0">
+            <IconBrain className="w-5 h-5 text-primary-300" />
           </div>
           {q.attempted
             ? <PassBadge status={q.myStatus} />
@@ -62,12 +64,12 @@ function QuizCard({ q }) {
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-2">
           {[
-            ['❓', q.totalQuestions, 'Questions'],
-            ['🏆', q.totalMarks,     'Marks'],
-            ['⏱️', fmtDuration(q.duration), 'Time'],
-          ].map(([ic, v, l]) => (
+            [IconHelp, q.totalQuestions, 'Questions'],
+            [IconStar, q.totalMarks, 'Marks'],
+            [IconClock, fmtDuration(q.duration), 'Time'],
+          ].map(([Ic, v, l]) => (
             <div key={l} className="bg-gray-50 rounded-xl p-2 text-center">
-              <span className="text-base leading-none">{ic}</span>
+              <Ic className="w-4 h-4 text-gray-400 mx-auto" />
               <p className="text-sm font-black text-gray-900 mt-0.5 leading-tight">{v}</p>
               <p className="text-xs text-gray-400 leading-tight">{l}</p>
             </div>
@@ -83,7 +85,7 @@ function QuizCard({ q }) {
             )}
           </span>
           {q.category && (
-            <span className="bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-semibold border border-blue-100">
+            <span className="bg-primary-50 text-primary-600 px-2 py-0.5 rounded-full font-semibold border border-primary-100">
               {q.category}
             </span>
           )}
@@ -94,8 +96,8 @@ function QuizCard({ q }) {
 
         {/* Attempts badge */}
         {q.attemptsAllowed > 1 && (
-          <p className="text-xs text-center text-gray-400 font-medium">
-            🔄 {q.attemptsAllowed} attempt{q.attemptsAllowed > 1 ? 's' : ''} allowed
+          <p className="flex items-center justify-center gap-1.5 text-xs text-center text-gray-400 font-medium">
+            <IconRefresh className="w-3.5 h-3.5" /> {q.attemptsAllowed} attempts allowed
           </p>
         )}
 
@@ -111,22 +113,24 @@ function QuizCard({ q }) {
                 </span>
               </div>
               {q.myRank && (
-                <p className="text-xs text-center text-indigo-600 font-bold">🏅 Your Rank: #{q.myRank}</p>
+                <p className="flex items-center justify-center gap-1.5 text-xs text-center text-primary-600 font-bold">
+                  <IconMedal className="w-3.5 h-3.5" /> Your Rank: #{q.myRank}
+                </p>
               )}
               <div className="grid grid-cols-2 gap-2">
                 <Link
                   to={`/leaderboard/${q._id}`}
-                  className="text-center text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition-colors"
+                  className="flex items-center justify-center gap-1.5 text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition-colors"
                 >
-                  🏆 Leaderboard
+                  <IconTrophy className="w-3.5 h-3.5" /> Leaderboard
                 </Link>
                 {/* Allow reattempt if attemptsAllowed > 1 */}
                 {(q.attemptsAllowed || 1) > 1 && (
                   <Link
                     to={`/quiz/${q._id}`}
-                    className="text-center text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold py-2.5 rounded-xl transition-colors border border-blue-200"
+                    className="flex items-center justify-center gap-1.5 text-xs bg-primary-50 hover:bg-primary-100 text-primary-700 font-bold py-2.5 rounded-xl transition-colors border border-primary-200"
                   >
-                    🔄 Retry
+                    <IconRefresh className="w-3.5 h-3.5" /> Retry
                   </Link>
                 )}
               </div>
@@ -134,9 +138,9 @@ function QuizCard({ q }) {
           ) : (
             <Link
               to={`/quiz/${q._id}`}
-              className="block text-center bg-blue-600 hover:bg-blue-700 text-white font-black py-3 rounded-xl transition-all shadow-sm hover:shadow-md text-sm"
+              className="flex items-center justify-center gap-2 text-center bg-primary-600 hover:bg-primary-700 text-white font-black py-3 rounded-xl transition-all shadow-sm hover:shadow-md text-sm"
             >
-              🚀 Start Quiz
+              <IconRocket className="w-4 h-4" /> Start Quiz
             </Link>
           )}
         </div>
@@ -172,10 +176,17 @@ export default function QuizList() {
     const filtered = quizzes.filter(q => {
       const matchSearch = !search || q.title.toLowerCase().includes(search.toLowerCase()) || q.category?.toLowerCase().includes(search.toLowerCase())
       const matchCat    = !catFilter  || q.category === catFilter
-      return matchSearch && matchCat
+      // Dominant-difficulty filter: a quiz "is" whichever band makes up the largest share of its ratio.
+      const matchDiff    = !diffFilter || (() => {
+        const r = q.difficultyRatio
+        if (!r) return false
+        const dominant = Object.entries(r).sort((a, b) => b[1] - a[1])[0]?.[0]
+        return dominant === diffFilter
+      })()
+      return matchSearch && matchCat && matchDiff
     })
     return { filtered, cats }
-  }, [quizzes, search, catFilter])
+  }, [quizzes, search, catFilter, diffFilter])
 
   if (loading) return <Layout title="Quizzes"><PageLoader text="Loading quizzes…" /></Layout>
 
@@ -185,62 +196,79 @@ export default function QuizList() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-gray-900">🧠 Quizzes</h2>
+          <h2 className="flex items-center gap-2 text-2xl font-black text-gray-900">
+            <IconBrain className="w-6 h-6 text-primary-600" /> Quizzes
+          </h2>
           <p className="text-gray-500 text-sm mt-1">
             {quizzes.length} published quiz{quizzes.length !== 1 ? 'zes' : ''} available
           </p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <input
-            type="text"
-            placeholder="🔍 Search…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-44"
-          />
+          <div className="relative">
+            <IconSearch className="w-4 h-4 text-gray-300 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              placeholder="Search…"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              className="border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white w-44"
+            />
+          </div>
           {cats.length > 1 && (
             <select
               value={catFilter}
               onChange={e => setCatFilter(e.target.value)}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="">All Topics</option>
               {cats.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           )}
+          <select
+            value={diffFilter}
+            onChange={e => setDiffFilter(e.target.value)}
+            className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Difficulties</option>
+            <option value="easy">Mostly Easy</option>
+            <option value="medium">Mostly Medium</option>
+            <option value="hard">Mostly Hard</option>
+          </select>
           <button
             onClick={load}
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white hover:bg-gray-50 text-gray-600 font-semibold transition-colors"
+            className="flex items-center justify-center border border-gray-200 rounded-xl px-3.5 py-2.5 text-sm bg-white hover:bg-gray-50 text-gray-600 font-semibold transition-colors"
             title="Refresh"
           >
-            ↻
+            <IconRefresh className="w-4 h-4" />
           </button>
         </div>
       </div>
 
       {/* Error state */}
       {error && (
-        <div className="mb-6 bg-red-50 border border-red-200 text-red-700 rounded-2xl px-5 py-4 text-sm font-semibold">
-          ❌ {error}
+        <div className="mb-6 flex items-center gap-2 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl px-5 py-4 text-sm font-semibold">
+          <IconAlertTriangle className="w-4 h-4 flex-shrink-0" /> {error}
         </div>
       )}
 
       {/* Empty state */}
       {!error && filtered.length === 0 && (
         <div className="text-center py-20">
-          <div className="text-6xl mb-4">🧠</div>
+          <div className="w-16 h-16 rounded-2xl bg-primary-50 text-primary-500 flex items-center justify-center mx-auto mb-4">
+            <IconBrain className="w-7 h-7" />
+          </div>
           <h3 className="text-xl font-bold text-gray-700 mb-2">
             {quizzes.length === 0 ? 'No published quizzes yet' : 'No quizzes match your search'}
           </h3>
           <p className="text-gray-500 text-sm max-w-sm mx-auto">
             {quizzes.length === 0
-              ? 'The admin hasn\'t published any quizzes yet. Check back soon!'
-              : 'Try clearing the search or category filter.'}
+              ? "The admin hasn't published any quizzes yet. Check back soon!"
+              : 'Try clearing the search or filters.'}
           </p>
-          {search || catFilter ? (
+          {search || catFilter || diffFilter ? (
             <button
-              onClick={() => { setSearch(''); setCatFilter('') }}
-              className="mt-5 text-sm text-blue-600 hover:underline font-semibold"
+              onClick={() => { setSearch(''); setCatFilter(''); setDiffFilter('') }}
+              className="mt-5 text-sm text-primary-600 hover:underline font-semibold"
             >
               Clear filters
             </button>
