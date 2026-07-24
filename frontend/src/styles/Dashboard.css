@@ -43,7 +43,7 @@
 }
 .hero-left h1 { font-size: 46px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
 .hero-left h1 span { display: inline-flex; align-items: center; gap: 10px; color: #fde68a; }
-.hero-left p { font-size: 16px; line-height: 1.75; opacity: 0.92; max-width: 640px; }
+.hero-left p { font-size: 16px; line-height: 1.75; opacity: 0.92; max-width: 640px; color: #ffffff; }
 .hero-buttons { display: flex; gap: 16px; margin-top: 30px; flex-wrap: wrap; }
 
 .hero-btn-primary {
@@ -172,4 +172,8 @@
   .result-right { align-items: flex-start; }
   .hero-buttons, .cta-buttons { flex-direction: column; }
   .hero-btn-primary, .hero-btn-secondary { justify-content: center; }
+}
+.dashboard-hero .hero-left p {
+    color: #fff !important;
+    opacity: 1 !important;
 }
