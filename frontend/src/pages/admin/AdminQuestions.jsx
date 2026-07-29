@@ -16,7 +16,6 @@ import React, {
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { Modal, ConfirmDialog, PageLoader, EmptyState } from '../../components/UI'
-import { IconAlertTriangle, IconHelp } from '../../components/Icons'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 const EMPTY_FORM = {
@@ -26,14 +25,12 @@ const EMPTY_FORM = {
   category:      'General',
   difficulty:    'medium',
   marks:         1,
-  quizId:        '', // '' = unassigned / shared bank; set to a Quiz _id to scope it
 }
 
-const CATS  = ['General','PLC','DCS','SCADA','Instrumentation','Industrial Networking','HMI','Process Automation','Other']
+const CATS  = ['General','JavaScript','React','Node.js','MongoDB','Python','MySQL','Web','Database','Other']
 const DIFFS = ['easy','medium','hard']
 const OPTS  = ['A','B','C','D']
 const PER_PAGE = 15
-const UNASSIGNED = '__unassigned__' // sentinel for "no quiz" in the filter dropdown
 
 const BULK_PLACEHOLDER = `[
   {
@@ -47,7 +44,7 @@ const BULK_PLACEHOLDER = `[
 ]`
 
 // ─── Input style ──────────────────────────────────────────────────────────────
-const INPUT_CLS = 'w-full min-w-0 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder:text-gray-400 transition-shadow'
+const INPUT_CLS = 'w-full min-w-0 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-shadow'
 const LABEL_CLS = 'block text-sm font-semibold text-gray-700 mb-1.5 leading-tight'
 
 // ─── Option Letter Badge ──────────────────────────────────────────────────────
@@ -71,7 +68,7 @@ const OptionBadge = memo(function OptionBadge({ letter, isCorrect, onClick }) {
 
 // ─── Question Form (inside modal — stable, no inline definitions) ─────────────
 const QuestionForm = memo(function QuestionForm({
-  form, onField, onOption, onCorrect, onSubmit, saving, error, isEditing, quizzes,
+  form, onField, onOption, onCorrect, onSubmit, saving, error, isEditing,
 }) {
   const taRef = useRef(null)
 
@@ -135,20 +132,6 @@ const QuestionForm = memo(function QuestionForm({
         </p>
       </div>
 
-      {/* Quiz assignment — this is what scopes the question to one quiz */}
-      <div>
-        <label className={LABEL_CLS}>Assign to Quiz</label>
-        <select name="quizId" value={form.quizId} onChange={onField} className={INPUT_CLS}>
-          <option value="">— Unassigned (shared question bank) —</option>
-          {quizzes.map(qz => (
-            <option key={qz._id} value={qz._id}>{qz.title}</option>
-          ))}
-        </select>
-        <p className="text-xs text-gray-400 mt-1.5">
-          Only questions assigned to a quiz are pulled into that quiz. Leave unassigned to keep it in the shared bank.
-        </p>
-      </div>
-
       {/* Meta row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
         <div>
@@ -180,8 +163,8 @@ const QuestionForm = memo(function QuestionForm({
       </div>
 
       {error && (
-        <p className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5">
-          <IconAlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {error}
+        <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
+          ❌ {error}
         </p>
       )}
 
@@ -189,9 +172,9 @@ const QuestionForm = memo(function QuestionForm({
         <button
           type="submit"
           disabled={saving}
-          className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
+          className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
         >
-          {saving ? 'Saving…' : isEditing ? 'Update Question' : '+ Add Question'}
+          {saving ? '⏳ Saving…' : isEditing ? '✓ Update Question' : '+ Add Question'}
         </button>
       </div>
     </form>
@@ -201,7 +184,6 @@ const QuestionForm = memo(function QuestionForm({
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function AdminQuestions() {
   const [questions, setQuestions] = useState([])
-  const [quizzes,   setQuizzes]   = useState([])       // for the "Assign to Quiz" dropdowns
   const [loading,   setLoading]   = useState(true)
   const [modal,     setModal]     = useState(false)   // add/edit
   const [bulkModal, setBulkModal] = useState(false)
@@ -215,8 +197,6 @@ export default function AdminQuestions() {
   const [search,    setSearch]    = useState('')
   const [filterCat, setFilterCat] = useState('')
   const [filterDiff,setFilterDiff]= useState('')
-  const [filterQuiz,setFilterQuiz]= useState('')
-  const [bulkQuizId,setBulkQuizId]= useState('')
   const [page,      setPage]      = useState(1)
 
   // ── Load ───────────────────────────────────────────────────────────────────
@@ -229,34 +209,6 @@ export default function AdminQuestions() {
   }, [])
 
   useEffect(() => { load() }, [load])
-
-  // ── Load quizzes (for "Assign to Quiz" dropdowns + filter + column) ────────
-  const loadQuizzes = useCallback(() => {
-    api.get('/admin/quiz')
-      .then(({ data }) => setQuizzes(data.quizzes || []))
-      .catch(() => setQuizzes([]))
-  }, [])
-
-  useEffect(() => { loadQuizzes() }, [loadQuizzes])
-
-  // quizId on a question may come back as a raw id string or a populated
-  // { _id, title } object depending on the backend — handle both.
-  const quizIdStrOf = useCallback((q) => {
-    if (!q?.quizId) return ''
-    return typeof q.quizId === 'object' ? (q.quizId._id || '') : q.quizId
-  }, [])
-
-  const quizMap = useMemo(() => {
-    const m = new Map()
-    quizzes.forEach(qz => m.set(qz._id, qz.title))
-    return m
-  }, [quizzes])
-
-  const quizNameOf = useCallback((q) => {
-    if (!q?.quizId) return null
-    if (typeof q.quizId === 'object') return q.quizId.title || quizMap.get(q.quizId._id) || 'Unknown quiz'
-    return quizMap.get(q.quizId) || 'Unknown quiz'
-  }, [quizMap])
 
   const showToast = useCallback((msg) => {
     setToast(msg)
@@ -280,11 +232,10 @@ export default function AdminQuestions() {
       category:      q.category || 'General',
       difficulty:    q.difficulty || 'medium',
       marks:         q.marks || 1,
-      quizId:        quizIdStrOf(q),
     })
     setFormError('')
     setModal(true)
-  }, [quizIdStrOf])
+  }, [])
 
   const closeModal = useCallback(() => {
     setModal(false)
@@ -321,13 +272,12 @@ export default function AdminQuestions() {
     }
     setSaving(true)
     setFormError('')
-    const payload = { ...form, quizId: form.quizId || null }
     try {
       if (editing) {
-        await api.put(`/question/${editing._id}`, payload)
+        await api.put(`/question/${editing._id}`, form)
         showToast('✅ Question updated')
       } else {
-        await api.post('/question', payload)
+        await api.post('/question', form)
         showToast('✅ Question added')
       }
       setModal(false)
@@ -348,13 +298,9 @@ export default function AdminQuestions() {
       if (!Array.isArray(parsed) || parsed.length === 0) {
         throw new Error('Must be a non-empty JSON array')
       }
-      // Every imported question gets scoped to the selected quiz (or stays
-      // unassigned if none is picked / the item already sets its own quizId).
-      const scoped = parsed.map(q => ({ ...q, quizId: bulkQuizId || q.quizId || null }))
-      const { data } = await api.post('/question', scoped)
+      const { data } = await api.post('/question', parsed)
       setBulkModal(false)
       setBulkText('')
-      setBulkQuizId('')
       showToast(data.message || `✅ ${parsed.length} questions imported`)
       load()
     } catch (err) {
@@ -376,7 +322,7 @@ export default function AdminQuestions() {
       showToast('✅ Question deleted')
       load()
     } catch (err) {
-      showToast('Delete failed: ' + (err.response?.data?.message || err.message))
+      showToast('❌ Delete failed: ' + (err.response?.data?.message || err.message))
     }
   }, [delId, load, showToast])
 
@@ -387,15 +333,13 @@ export default function AdminQuestions() {
       const matchSearch = !search   || q.question.toLowerCase().includes(search.toLowerCase())
       const matchCat    = !filterCat  || q.category  === filterCat
       const matchDiff   = !filterDiff || q.difficulty === filterDiff
-      const matchQuiz   = !filterQuiz
-        || (filterQuiz === UNASSIGNED ? !quizIdStrOf(q) : quizIdStrOf(q) === filterQuiz)
-      return matchSearch && matchCat && matchDiff && matchQuiz
+      return matchSearch && matchCat && matchDiff
     })
     const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE))
     const safePage   = Math.min(page, totalPages)
     const paged      = filtered.slice((safePage - 1) * PER_PAGE, safePage * PER_PAGE)
     return { filtered, totalPages, paged, cats }
-  }, [questions, search, filterCat, filterDiff, filterQuiz, page, quizIdStrOf])
+  }, [questions, search, filterCat, filterDiff, page])
 
   const diffCount = useMemo(() => ({
     easy:   questions.filter(q => q.difficulty === 'easy').length,
@@ -406,7 +350,6 @@ export default function AdminQuestions() {
   const handleSearch    = useCallback((e) => { setSearch(e.target.value);   setPage(1) }, [])
   const handleCatFilter = useCallback((e) => { setFilterCat(e.target.value); setPage(1) }, [])
   const handleDiffFilter= useCallback((e) => { setFilterDiff(e.target.value);setPage(1) }, [])
-  const handleQuizFilter= useCallback((e) => { setFilterQuiz(e.target.value);setPage(1) }, [])
 
   // ── Render ──────────────────────────────────────────────────────────────────
   if (loading) return <Layout title="Question Bank"><PageLoader /></Layout>
@@ -440,25 +383,15 @@ export default function AdminQuestions() {
           saving={saving}
           error={formError}
           isEditing={!!editing}
-          quizzes={quizzes}
         />
       </Modal>
 
       {/* Bulk import modal */}
       <Modal open={bulkModal} onClose={() => { setBulkModal(false); setFormError('') }} title="Bulk Import Questions">
         <div className="space-y-4">
-          <div className="p-3 bg-primary-50 border border-primary-200 rounded-xl text-xs text-primary-700 leading-relaxed">
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 leading-relaxed">
             <p className="font-bold mb-1">Expected JSON format:</p>
-            <p>Array of objects, each with: <code className="bg-primary-100 px-1 rounded">question</code>, <code className="bg-primary-100 px-1 rounded">options</code> (A–D), <code className="bg-primary-100 px-1 rounded">correctAnswer</code>, optionally <code className="bg-primary-100 px-1 rounded">category</code>, <code className="bg-primary-100 px-1 rounded">difficulty</code>, <code className="bg-primary-100 px-1 rounded">marks</code>.</p>
-          </div>
-          <div>
-            <label className={LABEL_CLS}>Assign all imported questions to Quiz</label>
-            <select value={bulkQuizId} onChange={e => setBulkQuizId(e.target.value)} className={INPUT_CLS}>
-              <option value="">— Unassigned (shared question bank) —</option>
-              {quizzes.map(qz => (
-                <option key={qz._id} value={qz._id}>{qz.title}</option>
-              ))}
-            </select>
+            <p>Array of objects, each with: <code className="bg-blue-100 px-1 rounded">question</code>, <code className="bg-blue-100 px-1 rounded">options</code> (A–D), <code className="bg-blue-100 px-1 rounded">correctAnswer</code>, optionally <code className="bg-blue-100 px-1 rounded">category</code>, <code className="bg-blue-100 px-1 rounded">difficulty</code>, <code className="bg-blue-100 px-1 rounded">marks</code>.</p>
           </div>
           <textarea
             value={bulkText}
@@ -470,17 +403,15 @@ export default function AdminQuestions() {
             style={{ minHeight: '14rem' }}
           />
           {formError && (
-            <p className="flex items-center gap-1.5 text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-4 py-2.5">
-              <IconAlertTriangle className="w-3.5 h-3.5 flex-shrink-0" /> {formError}
-            </p>
+            <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">❌ {formError}</p>
           )}
           <div className="flex gap-3">
             <button
               onClick={saveBulk}
               disabled={saving || !bulkText.trim()}
-              className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
+              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
             >
-              {saving ? 'Importing…' : 'Import Questions'}
+              {saving ? '⏳ Importing…' : '📥 Import Questions'}
             </button>
             <button
               onClick={() => { setBulkModal(false); setFormError('') }}
@@ -502,11 +433,11 @@ export default function AdminQuestions() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="flex items-center gap-2 text-2xl font-black text-gray-900"><IconHelp className="w-6 h-6 text-primary-600" /> Question Bank</h2>
+          <h2 className="text-2xl font-black text-gray-900">❓ Question Bank</h2>
           <div className="flex gap-3 mt-1.5 flex-wrap text-xs font-semibold">
             <span className="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Easy: {diffCount.easy}</span>
             <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">Medium: {diffCount.medium}</span>
-            <span className="bg-rose-100 text-rose-700 px-2.5 py-1 rounded-full">Hard: {diffCount.hard}</span>
+            <span className="bg-red-100 text-red-700 px-2.5 py-1 rounded-full">Hard: {diffCount.hard}</span>
             <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">Total: {questions.length}</span>
           </div>
         </div>
@@ -515,11 +446,11 @@ export default function AdminQuestions() {
             onClick={() => { setFormError(''); setBulkModal(true) }}
             className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
           >
-            Bulk Import
+            📥 Bulk Import
           </button>
           <button
             onClick={openAdd}
-            className="bg-primary-600 hover:bg-primary-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
           >
             + Add Question
           </button>
@@ -533,33 +464,28 @@ export default function AdminQuestions() {
           placeholder="🔍 Search questions…"
           value={search}
           onChange={handleSearch}
-          className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white flex-1 min-w-[180px] max-w-xs"
+          className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white flex-1 min-w-[180px] max-w-xs"
         />
-        <select value={filterCat}  onChange={handleCatFilter}  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select value={filterCat}  onChange={handleCatFilter}  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">All Categories</option>
           {cats.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={filterDiff} onChange={handleDiffFilter} className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select value={filterDiff} onChange={handleDiffFilter} className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
           <option value="">All Difficulties</option>
           {DIFFS.map(d => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
-        </select>
-        <select value={filterQuiz} onChange={handleQuizFilter} className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-          <option value="">All Quizzes</option>
-          <option value={UNASSIGNED}>Unassigned only</option>
-          {quizzes.map(qz => <option key={qz._id} value={qz._id}>{qz.title}</option>)}
         </select>
         <span className="self-center text-sm text-gray-400 ml-auto">{filtered.length} questions</span>
       </div>
 
       {questions.length === 0 ? (
         <EmptyState
-          icon={<IconHelp className="w-7 h-7" />}
+          icon="❓"
           title="No questions yet"
-          description="Add individual questions or use Bulk Import for large question sets."
+          description="Add individual questions or use Bulk Import for large sets (e.g. the 200-question MySQL JSON)."
           action={
             <div className="flex gap-3 justify-center">
-              <button onClick={openAdd} className="bg-primary-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Add Question</button>
-              <button onClick={() => setBulkModal(true)} className="bg-white border border-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl text-sm">Bulk Import</button>
+              <button onClick={openAdd} className="bg-blue-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Add Question</button>
+              <button onClick={() => setBulkModal(true)} className="bg-white border border-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl text-sm">📥 Bulk Import</button>
             </div>
           }
         />
@@ -571,7 +497,7 @@ export default function AdminQuestions() {
               <table className="w-full text-sm">
                 <thead className="bg-gray-50 border-b border-gray-200">
                   <tr>
-                    {['#','Question','Options','Answer','Quiz','Category','Diff','Marks','Actions'].map(h => (
+                    {['#','Question','Options','Answer','Category','Diff','Marks','Actions'].map(h => (
                       <th key={h} className="text-left text-xs font-black text-gray-500 uppercase tracking-wider px-4 py-3 whitespace-nowrap">
                         {h}
                       </th>
@@ -606,19 +532,14 @@ export default function AdminQuestions() {
                         </span>
                       </td>
                       <td className="px-4 py-3">
-                        {quizNameOf(q)
-                          ? <span className="text-xs bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">{quizNameOf(q)}</span>
-                          : <span className="text-xs bg-gray-100 text-gray-400 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">Unassigned</span>}
-                      </td>
-                      <td className="px-4 py-3">
                         {q.category
-                          ? <span className="text-xs bg-primary-50 text-primary-600 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">{q.category}</span>
+                          ? <span className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">{q.category}</span>
                           : <span className="text-gray-300 text-xs">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap ${
                           q.difficulty === 'easy'   ? 'bg-emerald-100 text-emerald-700' :
-                          q.difficulty === 'hard'   ? 'bg-rose-100 text-rose-700' :
+                          q.difficulty === 'hard'   ? 'bg-red-100 text-red-700' :
                                                       'bg-amber-100 text-amber-700'
                         }`}>
                           {q.difficulty}
@@ -631,13 +552,13 @@ export default function AdminQuestions() {
                         <div className="flex gap-1.5">
                           <button
                             onClick={() => openEdit(q)}
-                            className="text-xs bg-primary-50 hover:bg-primary-100 text-primary-600 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                            className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => setDelId(q._id)}
-                            className="text-xs bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                            className="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
                           >
                             Del
                           </button>
@@ -672,7 +593,7 @@ export default function AdminQuestions() {
                     onClick={() => setPage(p)}
                     className={`w-9 h-9 rounded-xl text-sm font-bold transition-colors ${
                       page === p
-                        ? 'bg-primary-600 text-white'
+                        ? 'bg-blue-600 text-white'
                         : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
                     }`}
                   >

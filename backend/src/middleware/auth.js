@@ -34,4 +34,13 @@ const adminOnly = (req, res, next) => {
   next();
 };
 
-module.exports = { protect, adminOnly };
+// Progress-tracking guard — admin always allowed; a regular user is
+// allowed only if the admin has explicitly granted them canViewProgress.
+const progressAccess = (req, res, next) => {
+  if (req.user?.role === 'admin' || req.user?.canViewProgress === true) {
+    return next();
+  }
+  return res.status(403).json({ message: 'You do not have permission to view student progress' });
+};
+
+module.exports = { protect, adminOnly, progressAccess };

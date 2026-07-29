@@ -17,6 +17,8 @@ import QuizAttempt      from './pages/student/QuizAttempt'
 import QuizResult       from './pages/student/QuizResult'
 import Leaderboard      from './pages/student/Leaderboard'
 import StudentPortfolio from './pages/student/StudentPortfolio'
+import ProgressTracking      from './pages/ProgressTracking'
+import StudentProgressDetail from './pages/StudentProgressDetail'
 
 // Admin pages
 import AdminDashboard   from './pages/admin/AdminDashboard'
@@ -37,6 +39,17 @@ function ProtectedRoute({ children, adminOnly = false }) {
   // Force profile completion for regular users
   if (user.role !== 'admin' && !user.profileComplete && window.location.pathname !== '/profile')
     return <Navigate to="/profile" replace />
+  return children
+}
+
+// Allows admins, and any regular user the admin has explicitly granted
+// canViewProgress to. Everyone else is bounced back to their home page.
+function ProgressRoute({ children }) {
+  const { user, loading } = useAuth()
+  if (loading) return <Splash />
+  if (!user)   return <Navigate to="/login" replace />
+  const allowed = user.role === 'admin' || user.canViewProgress === true
+  if (!allowed) return <Navigate to={user.role === 'admin' ? '/admin' : '/dashboard'} replace />
   return children
 }
 
@@ -80,6 +93,10 @@ export default function App() {
           <Route path="/leaderboard/:id"   element={<ProtectedRoute><Leaderboard /></ProtectedRoute>} />
           <Route path="/portfolio"         element={<ProtectedRoute><StudentPortfolio /></ProtectedRoute>} />
           <Route path="/history"           element={<ProtectedRoute><History /></ProtectedRoute>} />
+
+          {/* Progress tracking — admin, or any user granted access by admin */}
+          <Route path="/progress"          element={<ProgressRoute><ProgressTracking /></ProgressRoute>} />
+          <Route path="/progress/:id"      element={<ProgressRoute><StudentProgressDetail /></ProgressRoute>} />
 
           {/* Admin — protected + adminOnly */}
           <Route path="/admin"                         element={<ProtectedRoute adminOnly><AdminDashboard /></ProtectedRoute>} />

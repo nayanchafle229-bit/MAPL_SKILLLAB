@@ -51,29 +51,23 @@ router.post('/', protect, adminOnly, async (req, res) => {
     const hardCount   = totalQuestions - easyCount - mediumCount;
 
     // Validate enough questions exist
-    // NOTE: quizId: null restricts the pool to UNASSIGNED questions only.
-    // Without this, a question explicitly tagged to Quiz A (via the
-    // "Assign to Quiz" field in the admin question bank) could still be
-    // randomly auto-selected into Quiz B here — silently defeating the
-    // whole point of that scoping field. Tagged questions are reserved
-    // for their quiz; only the shared/unassigned pool feeds auto-generation.
     const [easyAvail, mediumAvail, hardAvail] = await Promise.all([
-      Question.countDocuments({ difficulty: 'easy',   isActive: true, quizId: null }),
-      Question.countDocuments({ difficulty: 'medium', isActive: true, quizId: null }),
-      Question.countDocuments({ difficulty: 'hard',   isActive: true, quizId: null }),
+      Question.countDocuments({ difficulty: 'easy',   isActive: true }),
+      Question.countDocuments({ difficulty: 'medium', isActive: true }),
+      Question.countDocuments({ difficulty: 'hard',   isActive: true }),
     ]);
 
     const errors = [];
-    if (easyCount   > 0 && easyCount   > easyAvail)   errors.push(`Need ${easyCount} easy questions, only ${easyAvail} unassigned in DB`);
-    if (mediumCount > 0 && mediumCount > mediumAvail)  errors.push(`Need ${mediumCount} medium questions, only ${mediumAvail} unassigned in DB`);
-    if (hardCount   > 0 && hardCount   > hardAvail)    errors.push(`Need ${hardCount} hard questions, only ${hardAvail} unassigned in DB`);
+    if (easyCount   > 0 && easyCount   > easyAvail)   errors.push(`Need ${easyCount} easy questions, only ${easyAvail} in DB`);
+    if (mediumCount > 0 && mediumCount > mediumAvail)  errors.push(`Need ${mediumCount} medium questions, only ${mediumAvail} in DB`);
+    if (hardCount   > 0 && hardCount   > hardAvail)    errors.push(`Need ${hardCount} hard questions, only ${hardAvail} in DB`);
     if (errors.length) return res.status(400).json({ message: errors.join(' | ') });
 
-    // Random $sample per difficulty tier — unassigned pool only (see note above)
+    // Random $sample per difficulty tier
     const [easyQs, mediumQs, hardQs] = await Promise.all([
-      easyCount   > 0 ? Question.aggregate([{ $match: { difficulty: 'easy',   isActive: true, quizId: null } }, { $sample: { size: easyCount   } }]) : [],
-      mediumCount > 0 ? Question.aggregate([{ $match: { difficulty: 'medium', isActive: true, quizId: null } }, { $sample: { size: mediumCount } }]) : [],
-      hardCount   > 0 ? Question.aggregate([{ $match: { difficulty: 'hard',   isActive: true, quizId: null } }, { $sample: { size: hardCount   } }]) : [],
+      easyCount   > 0 ? Question.aggregate([{ $match: { difficulty: 'easy',   isActive: true } }, { $sample: { size: easyCount   } }]) : [],
+      mediumCount > 0 ? Question.aggregate([{ $match: { difficulty: 'medium', isActive: true } }, { $sample: { size: mediumCount } }]) : [],
+      hardCount   > 0 ? Question.aggregate([{ $match: { difficulty: 'hard',   isActive: true } }, { $sample: { size: hardCount   } }]) : [],
     ]);
 
     // Merge + shuffle final list
@@ -181,8 +175,8 @@ router.patch('/:id/publish', protect, adminOnly, async (req, res) => {
     res.json({
       quiz,
       message: quiz.status === 'published'
-        ? 'Quiz published — now visible to students'
-        : 'Quiz moved back to draft'
+        ? '✅ Quiz published — now visible to students'
+        : '📝 Quiz moved back to draft'
     });
   } catch (err) {
     res.status(500).json({ message: err.message });

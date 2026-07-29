@@ -18,12 +18,12 @@ router.get('/profile', protect, async (req, res) => {
 router.put('/profile', protect, async (req, res) => {
   try {
     if (req.user.id === 'admin') return res.status(403).json({ message: 'Admin profile is fixed' });
-    const { name, role, branch, year, interests, bio, phone } = req.body;
+    const { name, branch, year, interests, bio, phone } = req.body;
     if (!name) return res.status(400).json({ message: 'Name is required' });
 
     const user = await User.findByIdAndUpdate(
       req.user._id,
-      { profile: { name, role, branch, year, interests, bio, phone }, profileComplete: true },
+      { profile: { name, branch, year, interests, bio, phone }, profileComplete: true },
       { new: true }
     ).select('-password');
 

@@ -2,7 +2,6 @@ import React, { useState, useEffect, useMemo } from 'react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, EmptyState, StatCard, PassBadge } from '../../components/UI'
-import { IconTrophy, IconTarget, IconCheck, IconAlertTriangle, IconTrending, IconSearch } from '../../components/Icons'
 
 function fmtTime(s) {
   const m = Math.floor((s || 0) / 60)
@@ -81,7 +80,7 @@ export default function AdminResults() {
   }
   const SortIcon = ({ col }) => {
     if (sortBy !== col) return <span className="text-gray-300 ml-1">↕</span>
-    return <span className="text-primary-500 ml-1">{sortDir === 'desc' ? '↓' : '↑'}</span>
+    return <span className="text-blue-500 ml-1">{sortDir === 'desc' ? '↓' : '↑'}</span>
   }
 
   if (loading) return <Layout title="All Results"><PageLoader /></Layout>
@@ -89,16 +88,16 @@ export default function AdminResults() {
   return (
     <Layout title="All Quiz Results">
       <div className="mb-6">
-        <h2 className="flex items-center gap-2 text-2xl font-black text-gray-900"><IconTrophy className="w-6 h-6 text-primary-600" /> All Results</h2>
+        <h2 className="text-2xl font-black text-gray-900">🏆 All Results</h2>
         <p className="text-gray-500 text-sm">{total} total submission{total !== 1 ? 's' : ''}</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon={<IconTarget className="w-5 h-5" />} label="Total Attempts" value={total}          color="blue"   />
-        <StatCard icon={<IconCheck className="w-5 h-5" />} label="Passed"          value={passed}         color="green"  />
-        <StatCard icon={<IconAlertTriangle className="w-5 h-5" />} label="Failed"           value={total - passed} color="red"    />
-        <StatCard icon={<IconTrending className="w-5 h-5" />} label="Avg Score"       value={`${avgPct}%`}  color="purple" />
+        <StatCard icon="🎯" label="Total Attempts" value={total}          color="blue"   />
+        <StatCard icon="✅" label="Passed"          value={passed}         color="green"  />
+        <StatCard icon="❌" label="Failed"           value={total - passed} color="red"    />
+        <StatCard icon="📈" label="Avg Score"       value={`${avgPct}%`}  color="purple" />
       </div>
 
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
@@ -106,22 +105,19 @@ export default function AdminResults() {
         {/* ── Filter bar ───────────────────────────────────────────────── */}
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-3 items-center">
           {/* Search */}
-          <div className="relative">
-            <IconSearch className="w-4 h-4 text-gray-300 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search name or email…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white w-52"
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="🔍 Search name or email…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-52"
+          />
 
           {/* Quiz filter */}
           <select
             value={quizFilter}
             onChange={e => setQuizFilter(e.target.value)}
-            className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="">All Quizzes</option>
             {quizTitles.map(t => <option key={t} value={t}>{t}</option>)}
@@ -134,7 +130,7 @@ export default function AdminResults() {
                 key={v}
                 onClick={() => setFilter(v)}
                 className={`px-4 py-2.5 text-sm font-bold transition-colors ${
-                  filter === v ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+                  filter === v ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 {l}
@@ -148,7 +144,7 @@ export default function AdminResults() {
             <select
               value={sortBy}
               onChange={e => { setSortBy(e.target.value); setSortDir('desc') }}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="date">Date</option>
               <option value="name">Name</option>
@@ -171,7 +167,7 @@ export default function AdminResults() {
 
         {/* ── Table ────────────────────────────────────────────────────── */}
         {results.length === 0 ? (
-          <EmptyState icon={<IconTrophy className="w-7 h-7" />} title="No results yet" description="Results will appear once students complete quizzes." />
+          <EmptyState icon="🏆" title="No results yet" description="Results will appear once students complete quizzes." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -194,7 +190,7 @@ export default function AdminResults() {
                       key={label}
                       onClick={col ? () => handleSort(col) : undefined}
                       className={`text-left text-xs font-black text-gray-500 uppercase tracking-wider px-4 py-3 whitespace-nowrap ${
-                        col ? 'cursor-pointer hover:text-primary-600 select-none' : ''
+                        col ? 'cursor-pointer hover:text-blue-600 select-none' : ''
                       }`}
                     >
                       {label}
@@ -211,7 +207,7 @@ export default function AdminResults() {
                       <td className="px-4 py-3.5 text-xs text-gray-400 font-bold">{i + 1}</td>
                       <td className="px-4 py-3.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
                             {(r.userId?.profile?.name || r.userId?.email || 'U')[0].toUpperCase()}
                           </div>
                           <div>
@@ -230,7 +226,7 @@ export default function AdminResults() {
                         <div className="flex items-center gap-1.5">
                           <div className="w-12 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${pct >= 75 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                              className={`h-full rounded-full ${pct >= 75 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>

@@ -34,6 +34,7 @@ app.use('/api/question',   require('./routes/question'));
 app.use('/api/admin/quiz', require('./routes/quizAdmin'));    // Admin quiz CRUD
 app.use('/api/quiz',       require('./routes/quizStudent'));  // Student quiz flow
 app.use('/api/admin',      require('./routes/admin'));
+app.use('/api/progress',   require('./routes/progress'));     // Student progress tracking (admin + granted users)
 
 app.use((req, res) => res.status(404).json({ message: `Route ${req.path} not found` }));
 app.use((err, req, res, next) => {

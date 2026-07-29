@@ -65,4 +65,23 @@ router.delete('/users/:id', async (req, res) => {
   } catch (err) { res.status(500).json({ message: err.message }); }
 });
 
+// PUT /api/admin/users/:id/progress-access
+// Grant or revoke a user's permission to view OTHER students' progress
+// via /api/progress. Only admins can call this.
+router.put('/users/:id/progress-access', async (req, res) => {
+  try {
+    const { canView } = req.body;
+    if (typeof canView !== 'boolean') {
+      return res.status(400).json({ message: 'canView (boolean) is required' });
+    }
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { canViewProgress: canView },
+      { new: true }
+    ).select('-password');
+    if (!user) return res.status(404).json({ message: 'User not found' });
+    res.json({ user, message: canView ? 'Progress-tracking access granted' : 'Progress-tracking access revoked' });
+  } catch (err) { res.status(500).json({ message: err.message }); }
+});
+
 module.exports = router;

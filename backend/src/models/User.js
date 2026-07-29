@@ -3,7 +3,6 @@ const bcrypt = require('bcryptjs');
 
 const profileSchema = new mongoose.Schema({
   name:      { type: String, default: '' },
-  role:      { type: String, default: '' }, // engineering job title, e.g. "Senior Engineer" — distinct from userSchema.role (auth role)
   branch:    { type: String, default: '' },
   year:      { type: String, default: '' },
   interests: { type: String, default: '' },
@@ -17,6 +16,9 @@ const userSchema = new mongoose.Schema({
   role:     { type: String, enum: ['user', 'admin'], default: 'user' },
   profile:  { type: profileSchema, default: () => ({}) },
   profileComplete: { type: Boolean, default: false },
+  // When true, this user (even though role='user') is permitted to view
+  // other students' progress via the /api/progress routes. Granted by admin.
+  canViewProgress: { type: Boolean, default: false },
 }, { timestamps: true });
 
 // Hash password before saving

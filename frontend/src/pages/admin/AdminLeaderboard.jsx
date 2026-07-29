@@ -2,8 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
-import { PageLoader, PassBadge, StatCard, RankBadge } from '../../components/UI'
-import { IconTrophy, IconUsers, IconCheck, IconAlertTriangle, IconTrending, IconMedal, IconSearch } from '../../components/Icons'
+import { PageLoader, PassBadge, StatCard } from '../../components/UI'
 
 function fmtTime(s) {
   const sec = s || 0
@@ -16,9 +15,9 @@ function PodiumCard({ entry, position, totalMarks }) {
   if (!entry) return <div className="flex-1" />
 
   const cfg = {
-    1: { bar: 'h-24', bg: 'bg-yellow-500/25 border-yellow-400/50', text: 'text-yellow-300', label: '1st', ring: 'ring-2 ring-yellow-400/60' },
-    2: { bar: 'h-16', bg: 'bg-slate-500/25 border-slate-400/50',   text: 'text-slate-300',  label: '2nd', ring: 'ring-2 ring-slate-400/40' },
-    3: { bar: 'h-10', bg: 'bg-amber-700/25 border-amber-600/40',   text: 'text-amber-400',  label: '3rd', ring: 'ring-2 ring-amber-600/40' },
+    1: { emoji: '🥇', bar: 'h-24', bg: 'bg-yellow-500/25 border-yellow-400/50', text: 'text-yellow-300', label: '1st', ring: 'ring-2 ring-yellow-400/60' },
+    2: { emoji: '🥈', bar: 'h-16', bg: 'bg-slate-500/25 border-slate-400/50',   text: 'text-slate-300',  label: '2nd', ring: 'ring-2 ring-slate-400/40' },
+    3: { emoji: '🥉', bar: 'h-10', bg: 'bg-amber-700/25 border-amber-600/40',   text: 'text-amber-400',  label: '3rd', ring: 'ring-2 ring-amber-600/40' },
   }[position]
 
   return (
@@ -35,7 +34,7 @@ function PodiumCard({ entry, position, totalMarks }) {
       </p>
       {/* Bar */}
       <div className={`w-full ${cfg.bar} rounded-t-xl border flex items-center justify-center font-black text-sm ${cfg.bg} ${cfg.text}`}>
-        <IconMedal className="w-6 h-6" />
+        {cfg.emoji}
       </div>
       <div className={`w-full py-1.5 text-center text-xs font-black rounded-b-sm ${cfg.text}`}>
         {cfg.label}
@@ -93,7 +92,7 @@ export default function AdminLeaderboard() {
   }
   const SortIcon = ({ col }) => {
     if (sortBy !== col) return <span className="text-white/30 ml-1">↕</span>
-    return <span className="text-amber-500 ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
+    return <span className="text-yellow-300 ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
   if (loading) return <Layout title="Leaderboard"><PageLoader /></Layout>
@@ -112,13 +111,13 @@ export default function AdminLeaderboard() {
       {/* Page header */}
       <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h2 className="flex items-center gap-2 text-2xl font-black text-gray-900"><IconTrophy className="w-6 h-6 text-primary-600" /> {quiz?.title}</h2>
+          <h2 className="text-2xl font-black text-gray-900">🏆 {quiz?.title}</h2>
           <p className="text-gray-500 text-sm">
             Pass: <strong>{quiz?.passMarks}/{quiz?.totalMarks}</strong>
             &nbsp;·&nbsp; {leaderboard.length} submission{leaderboard.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Link to="/admin/quizzes" className="text-sm text-primary-600 font-bold hover:underline">
+        <Link to="/admin/quizzes" className="text-sm text-blue-600 font-bold hover:underline">
           ← All Quizzes
         </Link>
       </div>
@@ -126,19 +125,19 @@ export default function AdminLeaderboard() {
       {/* Stats cards */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
-          <StatCard icon={<IconUsers className="w-5 h-5" />} label="Attempts"  value={stats.totalAttempts}     color="blue"   />
-          <StatCard icon={<IconCheck className="w-5 h-5" />} label="Passed"     value={stats.passed}            color="green"  />
-          <StatCard icon={<IconAlertTriangle className="w-5 h-5" />} label="Failed"      value={stats.failed}            color="red"    />
-          <StatCard icon={<IconTrending className="w-5 h-5" />} label="Avg Score"  value={`${stats.avgScore}%`}   color="purple" />
-          <StatCard icon={<IconTrophy className="w-5 h-5" />} label="Pass Rate"  value={`${stats.passRate}%`}   color="orange" />
+          <StatCard icon="👥" label="Attempts"  value={stats.totalAttempts}     color="blue"   />
+          <StatCard icon="✅" label="Passed"     value={stats.passed}            color="green"  />
+          <StatCard icon="❌" label="Failed"      value={stats.failed}            color="red"    />
+          <StatCard icon="📈" label="Avg Score"  value={`${stats.avgScore}%`}   color="purple" />
+          <StatCard icon="🏆" label="Pass Rate"  value={`${stats.passRate}%`}   color="orange" />
         </div>
       )}
 
       {/* ── Podium — Top 3 ───────────────────────────────────────────────── */}
       {leaderboard.length >= 2 && (
-        <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-purple-950 rounded-2xl p-6 mb-5">
-          <p className="flex items-center justify-center gap-2 text-xs font-black text-white/50 uppercase tracking-widest text-center mb-5">
-            <IconMedal className="w-4 h-4" /> Top Performers
+        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-2xl p-6 mb-5">
+          <p className="text-xs font-black text-white/50 uppercase tracking-widest text-center mb-5">
+            🏅 Top Performers
           </p>
           <div className="flex items-end justify-center gap-3">
             {podiumOrder.map((entry, i) => (
@@ -153,7 +152,7 @@ export default function AdminLeaderboard() {
         </div>
       )}
 
-      {/* ── Score distribution chart ─────────────────────────────────────── */}
+      //  {/* ── Score distribution chart ─────────────────────────────────────── */}
       {stats && leaderboard.length > 0 && (
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-5">
           <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">
@@ -166,7 +165,7 @@ export default function AdminLeaderboard() {
                 leaderboard.filter(e => e.percentage >= b && e.percentage < b + 10).length
               )))
               const h     = Math.max(count > 0 ? 8 : 0, (count / maxCnt) * 100)
-              const color = bucket >= 80 ? 'bg-emerald-500' : bucket >= 60 ? 'bg-primary-500' : bucket >= 40 ? 'bg-amber-500' : 'bg-rose-400'
+              const color = bucket >= 80 ? 'bg-emerald-500' : bucket >= 60 ? 'bg-blue-500' : bucket >= 40 ? 'bg-amber-500' : 'bg-red-400'
               return (
                 <div key={bucket} className="flex-1 flex flex-col items-center gap-1" title={`${bucket}–${bucket+10}%: ${count}`}>
                   {count > 0 && <span className="text-xs font-bold text-gray-600">{count}</span>}
@@ -187,23 +186,20 @@ export default function AdminLeaderboard() {
 
         {/* Filter bar */}
         <div className="p-4 border-b border-gray-100 flex flex-wrap gap-3 items-center">
-          <div className="relative">
-            <IconSearch className="w-4 h-4 text-gray-300 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search students…"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="border border-gray-200 rounded-xl pl-9 pr-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white w-48"
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="🔍 Search students…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-48"
+          />
           <div className="flex rounded-xl border border-gray-200 overflow-hidden">
             {[['all','All'],['pass','Pass'],['fail','Fail']].map(([v, l]) => (
               <button
                 key={v}
                 onClick={() => setFilter(v)}
                 className={`px-4 py-2.5 text-sm font-bold transition-colors ${
-                  filter === v ? 'bg-primary-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+                  filter === v ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 {l}
@@ -217,7 +213,7 @@ export default function AdminLeaderboard() {
             <select
               value={sortBy}
               onChange={e => { setSortBy(e.target.value); setSortDir('asc') }}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="rank">Rank</option>
               <option value="name">Name</option>
@@ -264,7 +260,7 @@ export default function AdminLeaderboard() {
                       key={label}
                       onClick={col ? () => handleSort(col) : undefined}
                       className={`text-left text-xs font-black text-gray-500 uppercase tracking-wider px-4 py-3 whitespace-nowrap ${
-                        col ? 'cursor-pointer hover:text-primary-600 select-none' : ''
+                        col ? 'cursor-pointer hover:text-blue-600 select-none' : ''
                       }`}
                     >
                       {label}{col && <SortIcon col={col} />}
@@ -274,14 +270,22 @@ export default function AdminLeaderboard() {
               </thead>
               <tbody className="divide-y divide-gray-50">
                 {filtered.map((e, i) => {
+                  const rankEmoji = e.rank === 1 ? '🥇' : e.rank === 2 ? '🥈' : e.rank === 3 ? '🥉' : null
                   return (
                     <tr key={i} className="hover:bg-gray-50/70 transition-colors">
                       <td className="px-4 py-3">
-                        <RankBadge rank={e.rank} />
+                        <div className="flex items-center gap-2">
+                          {rankEmoji
+                            ? <span className="text-xl leading-none">{rankEmoji}</span>
+                            : <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-xs font-black flex items-center justify-center">
+                                #{e.rank}
+                              </span>
+                          }
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-700 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
                             {(e.name || '?')[0].toUpperCase()}
                           </div>
                           <div>
@@ -295,7 +299,7 @@ export default function AdminLeaderboard() {
                         <div className="flex items-center gap-2">
                           <div className="w-14 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${e.percentage >= 75 ? 'bg-emerald-500' : e.percentage >= 50 ? 'bg-amber-500' : 'bg-rose-500'}`}
+                              className={`h-full rounded-full ${e.percentage >= 75 ? 'bg-emerald-500' : e.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                               style={{ width: `${e.percentage}%` }}
                             />
                           </div>
@@ -304,7 +308,7 @@ export default function AdminLeaderboard() {
                       </td>
                       <td className="px-4 py-3"><PassBadge status={e.passStatus} /></td>
                       <td className="px-4 py-3 text-emerald-600 font-bold">{e.correctAnswers ?? '—'}</td>
-                      <td className="px-4 py-3 text-rose-500 font-bold">{e.wrongAnswers ?? '—'}</td>
+                      <td className="px-4 py-3 text-red-500 font-bold">{e.wrongAnswers ?? '—'}</td>
                       <td className="px-4 py-3 font-mono text-gray-600 text-xs">{fmtTime(e.timeTaken)}</td>
                       <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">
                         {new Date(e.submittedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
