@@ -72,7 +72,7 @@ export default function Courses() {
                   <p className="text-sm text-gray-500 line-clamp-2">{c.description}</p>
                   <div className="mt-3 flex items-center justify-between">
                     <span className="text-xs text-gray-400">{new Date(c.createdAt).toLocaleDateString('en-IN')}</span>
-                    <span className="text-blue-600 text-sm font-semibold group-hover:underline">▶ Watch Now</span>
+                    <span className="text-blue-600 text-sm font-semibold group-hover:underline">▶ Start Learning</span>
                   </div>
                 </div>
               </Link>
