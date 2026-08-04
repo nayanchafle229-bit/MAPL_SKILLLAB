@@ -22,23 +22,23 @@ export default function QuizResult() {
   }, [id])
 
   if (loading) return <Layout title="Result"><PageLoader /></Layout>
-  if (!result)  return <Layout title="Result"><p className="text-gray-500 text-center py-12">Result not found.</p></Layout>
+  if (!result)  return <Layout title="Result"><p className="text-slate-400 text-center py-12">Result not found.</p></Layout>
 
   const pct  = result.percentage
   const pass = result.passStatus === 'PASS'
   const quiz = result.quizId
 
   const grade = pct>=90?{l:'Outstanding 🏆',c:'from-emerald-500 to-green-600'}
-              : pct>=75?{l:'Excellent 🌟',  c:'from-blue-500 to-indigo-600'}
+              : pct>=75?{l:'Excellent 🌟',  c:'from-primary-500 to-primary-600'}
               : pct>=60?{l:'Good Job 👍',   c:'from-yellow-500 to-orange-500'}
               : pct>=50?{l:'Average 📚',    c:'from-orange-400 to-red-500'}
               :         {l:'Try Again 💪',  c:'from-red-500 to-rose-600'}
 
   const diffData = result.diffBreakdown || {}
   const diffLevels = [
-    { k:'easy',   label:'Easy',   color:'bg-emerald-500', light:'bg-emerald-50 border-emerald-200' },
-    { k:'medium', label:'Medium', color:'bg-amber-500',   light:'bg-amber-50 border-amber-200' },
-    { k:'hard',   label:'Hard',   color:'bg-red-500',     light:'bg-red-50 border-red-200' },
+    { k:'easy',   label:'Easy',   color:'bg-accent-500', light:'bg-accent-500/10 border-accent-500/30' },
+    { k:'medium', label:'Medium', color:'bg-amber-500',   light:'bg-amber-500/10 border-amber-500/20' },
+    { k:'hard',   label:'Hard',   color:'bg-red-500',     light:'bg-red-500/10 border-red-500/20' },
   ]
 
   return (
@@ -80,20 +80,20 @@ export default function QuizResult() {
             ['⏱️','Time Taken', fmtTime(result.timeTaken||0)],
             ['🎖️','Pass Mark',`${quiz?.passMarks} (${quiz?.passPercentage}%)`],
           ].map(([ic,l,v])=>(
-            <div key={l} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 text-center">
+            <div key={l} className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-4 text-center">
               <span className="text-2xl">{ic}</span>
-              <p className="text-lg font-black text-gray-900 mt-1">{v}</p>
-              <p className="text-xs text-gray-500 font-medium">{l}</p>
+              <p className="text-lg font-black text-white mt-1">{v}</p>
+              <p className="text-xs text-slate-400 font-medium">{l}</p>
             </div>
           ))}
         </div>
 
         {/* Tabs */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="flex border-b border-gray-100">
+        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
+          <div className="flex border-b border-white/10">
             {[['overview','📊 Overview'],['answers','📋 Answer Review']].map(([t,l])=>(
               <button key={t} onClick={()=>setTab(t)}
-                className={`flex-1 py-4 text-sm font-bold transition-all ${tab===t?'text-blue-600 border-b-2 border-blue-600 bg-blue-50/50':'text-gray-500 hover:text-gray-700 hover:bg-gray-50'}`}>
+                className={`flex-1 py-4 text-sm font-bold transition-all ${tab===t?'text-primary-400 border-b-2 border-primary-500 bg-primary-500/10':'text-slate-400 hover:text-slate-300 hover:bg-white/5'}`}>
                 {l}
               </button>
             ))}
@@ -105,7 +105,7 @@ export default function QuizResult() {
               <div className="space-y-5">
                 {/* Difficulty breakdown */}
                 <div>
-                  <h3 className="text-sm font-black text-gray-700 uppercase tracking-wider mb-3">Difficulty-wise Analysis</h3>
+                  <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-3">Difficulty-wise Analysis</h3>
                   <div className="space-y-3">
                     {diffLevels.map(({ k, label, color, light }) => {
                       const d = diffData[k] || { correct:0, total:0 }
@@ -114,15 +114,15 @@ export default function QuizResult() {
                         <div key={k} className={`flex items-center gap-4 p-4 rounded-xl border ${light}`}>
                           <DifficultyBadge level={k} />
                           <div className="flex-1">
-                            <div className="flex justify-between text-xs font-semibold text-gray-600 mb-1.5">
+                            <div className="flex justify-between text-xs font-semibold text-slate-400 mb-1.5">
                               <span>{d.correct}/{d.total} correct</span>
                               <span>{dpct}%</span>
                             </div>
-                            <div className="w-full h-2.5 bg-white rounded-full border border-white overflow-hidden">
+                            <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
                               <div className={`h-full ${color} rounded-full transition-all duration-700`} style={{width:`${dpct}%`}}/>
                             </div>
                           </div>
-                          <span className="text-lg font-black text-gray-800 w-12 text-right">{dpct}%</span>
+                          <span className="text-lg font-black text-slate-100 w-12 text-right">{dpct}%</span>
                         </div>
                       )
                     })}
@@ -131,10 +131,10 @@ export default function QuizResult() {
 
                 {/* Performance visual */}
                 <div>
-                  <h3 className="text-sm font-black text-gray-700 uppercase tracking-wider mb-3">Performance Breakdown</h3>
-                  <div className="flex rounded-xl overflow-hidden h-8 bg-gray-100">
+                  <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-3">Performance Breakdown</h3>
+                  <div className="flex rounded-xl overflow-hidden h-8 bg-white/5">
                     {result.correctAnswers > 0 && (
-                      <div className="bg-emerald-500 flex items-center justify-center text-white text-xs font-black transition-all"
+                      <div className="bg-accent-500 flex items-center justify-center text-white text-xs font-black transition-all"
                         style={{width:`${(result.correctAnswers/(result.correctAnswers+result.wrongAnswers+(result.unattempted||0)))*100}%`}}
                         title={`Correct: ${result.correctAnswers}`}>
                         {result.correctAnswers>2 && result.correctAnswers}
@@ -148,16 +148,16 @@ export default function QuizResult() {
                       </div>
                     )}
                     {(result.unattempted||0) > 0 && (
-                      <div className="bg-gray-300 flex items-center justify-center text-gray-600 text-xs font-bold flex-1"
+                      <div className="bg-white/10 flex items-center justify-center text-slate-500 text-xs font-bold flex-1"
                         title={`Skipped: ${result.unattempted}`}>
                         {result.unattempted>2 && result.unattempted}
                       </div>
                     )}
                   </div>
-                  <div className="flex gap-4 mt-2 text-xs text-gray-500 justify-center">
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-emerald-500 rounded-sm"/>Correct ({result.correctAnswers})</span>
+                  <div className="flex gap-4 mt-2 text-xs text-slate-400 justify-center">
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-accent-500 rounded-sm"/>Correct ({result.correctAnswers})</span>
                     <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-red-400 rounded-sm"/>Wrong ({result.wrongAnswers})</span>
-                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-gray-300 rounded-sm"/>Skipped ({result.unattempted||0})</span>
+                    <span className="flex items-center gap-1.5"><span className="w-3 h-3 bg-white/20 rounded-sm"/>Skipped ({result.unattempted||0})</span>
                   </div>
                 </div>
               </div>
@@ -170,18 +170,18 @@ export default function QuizResult() {
                   const qData = a.questionId
                   const opts  = ['A','B','C','D']
                   return (
-                    <div key={i} className={`p-4 rounded-xl border-2 ${a.isCorrect ? 'border-emerald-200 bg-emerald-50' : a.selected ? 'border-red-200 bg-red-50' : 'border-gray-200 bg-gray-50'}`}>
+                    <div key={i} className={`p-4 rounded-xl border-2 ${a.isCorrect ? 'border-accent-500/30 bg-accent-500/10' : a.selected ? 'border-red-500/20 bg-red-500/10' : 'border-white/10 bg-white/5'}`}>
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="bg-white border border-gray-200 text-gray-600 text-xs font-black px-2.5 py-1 rounded-full">Q{i+1}</span>
+                          <span className="bg-white/5 border border-white/10 text-slate-400 text-xs font-black px-2.5 py-1 rounded-full">Q{i+1}</span>
                           {a.difficulty && <DifficultyBadge level={a.difficulty} />}
-                          <span className="text-xs font-semibold text-gray-500">{a.marks||1} mark{(a.marks||1)>1?'s':''}</span>
+                          <span className="text-xs font-semibold text-slate-400">{a.marks||1} mark{(a.marks||1)>1?'s':''}</span>
                         </div>
-                        <span className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black text-white ${a.isCorrect?'bg-emerald-500':a.selected?'bg-red-500':'bg-gray-400'}`}>
+                        <span className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black text-white ${a.isCorrect?'bg-accent-500':a.selected?'bg-red-500':'bg-slate-500'}`}>
                           {a.isCorrect?'✓':a.selected?'✗':'–'}
                         </span>
                       </div>
-                      <p className="text-sm font-semibold text-gray-800 mb-3 leading-relaxed">
+                      <p className="text-sm font-semibold text-slate-100 mb-3 leading-relaxed">
                         {qData?.question || 'Question data unavailable'}
                       </p>
                       {qData?.options && (
@@ -191,9 +191,9 @@ export default function QuizResult() {
                             const isSelected = opt === a.selected
                             return (
                               <div key={opt} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium ${
-                                isCorrect  ? 'bg-emerald-500 text-white' :
+                                isCorrect  ? 'bg-accent-500 text-white' :
                                 isSelected ? 'bg-red-400 text-white' :
-                                'bg-white border border-gray-200 text-gray-600'}`}>
+                                'bg-white/5 border border-white/10 text-slate-400'}`}>
                                 <span className="font-black w-4">{opt}.</span>
                                 <span className="flex-1">{qData.options[opt]}</span>
                                 {isCorrect  && <span className="ml-auto">✓</span>}
@@ -204,9 +204,9 @@ export default function QuizResult() {
                         </div>
                       )}
                       <div className="flex gap-4 text-xs mt-1">
-                        <span className="text-gray-500">Your: <strong className={a.isCorrect?'text-emerald-600':'text-red-600'}>{a.selected||'Not answered'}</strong></span>
-                        {!a.isCorrect && <span className="text-gray-500">Correct: <strong className="text-emerald-600">{a.correct}</strong></span>}
-                        <span className={`ml-auto font-black ${a.marksAwarded>0?'text-emerald-600':a.marksAwarded<0?'text-red-600':'text-gray-400'}`}>
+                        <span className="text-slate-400">Your: <strong className={a.isCorrect?'text-accent-400':'text-red-400'}>{a.selected||'Not answered'}</strong></span>
+                        {!a.isCorrect && <span className="text-slate-400">Correct: <strong className="text-accent-400">{a.correct}</strong></span>}
+                        <span className={`ml-auto font-black ${a.marksAwarded>0?'text-accent-400':a.marksAwarded<0?'text-red-400':'text-slate-500'}`}>
                           {a.marksAwarded>0?'+':''}{a.marksAwarded} marks
                         </span>
                       </div>
@@ -220,9 +220,9 @@ export default function QuizResult() {
 
         {/* Actions */}
         <div className="flex gap-3 flex-wrap">
-          <Link to="/quizzes"               className="flex-1 text-center bg-white border border-gray-200 text-gray-700 font-bold py-3.5 rounded-xl hover:bg-gray-50 transition-all text-sm">← Back to Quizzes</Link>
+          <Link to="/quizzes"               className="flex-1 text-center bg-white/5 border border-white/10 text-slate-300 font-bold py-3.5 rounded-xl hover:bg-white/5 transition-all text-sm">← Back to Quizzes</Link>
           <Link to={`/leaderboard/${quiz?._id||result.quizId}`} className="flex-1 text-center bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-all text-sm">🏆 Leaderboard</Link>
-          <Link to="/portfolio"             className="flex-1 text-center bg-blue-600 text-white font-bold py-3.5 rounded-xl hover:bg-blue-700 transition-all text-sm">📊 Portfolio</Link>
+          <Link to="/portfolio"             className="flex-1 text-center bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-500 transition-all text-sm">📊 Portfolio</Link>
         </div>
       </div>
     </Layout>

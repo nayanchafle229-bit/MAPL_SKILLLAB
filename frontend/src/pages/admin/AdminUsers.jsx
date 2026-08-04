@@ -48,8 +48,8 @@ export default function AdminUsers() {
 
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-gray-900">👥 Users</h2>
-          <p className="text-gray-500 text-sm">{users.length} registered user{users.length !== 1 ? 's' : ''}</p>
+          <h2 className="text-2xl font-black text-white">👥 Users</h2>
+          <p className="text-slate-400 text-sm">{users.length} registered user{users.length !== 1 ? 's' : ''}</p>
         </div>
         <input type="text" placeholder="🔍 Search users..."
           value={search} onChange={e => setSearch(e.target.value)}
@@ -62,39 +62,40 @@ export default function AdminUsers() {
         <EmptyState icon="👥" title="No users yet" description="Users will appear here after they register." />
       ) : (
         <div className="card overflow-hidden p-0">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+            <thead className="bg-white/5 border-b border-white/10">
               <tr>
                 {['#', 'User', 'Branch / Year', 'Interests', 'Joined', 'Profile', 'Progress Access', 'Actions'].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">{h}</th>
+                  <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wide px-4 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {filtered.map((u, i) => (
-                <tr key={u._id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-4 py-3 text-xs text-gray-400 font-bold">{i + 1}</td>
+                <tr key={u._id} className="hover:bg-white/5 transition-colors">
+                  <td className="px-4 py-3 text-xs text-slate-500 font-bold">{i + 1}</td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                         {(u.profile?.name || u.email)[0].toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{u.profile?.name || <span className="text-gray-400 italic">No name</span>}</p>
-                        <p className="text-xs text-gray-400">{u.email}</p>
+                        <p className="font-semibold text-white">{u.profile?.name || <span className="text-slate-500 italic">No name</span>}</p>
+                        <p className="text-xs text-slate-500">{u.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    <div>{u.profile?.branch || <span className="text-gray-400">—</span>}</div>
-                    <div className="text-xs text-gray-400">{u.profile?.year || ''}</div>
+                  <td className="px-4 py-3 text-sm text-slate-400">
+                    <div>{u.profile?.branch || <span className="text-slate-500">—</span>}</div>
+                    <div className="text-xs text-slate-500">{u.profile?.year || ''}</div>
                   </td>
                   <td className="px-4 py-3 max-w-[180px]">
                     {u.profile?.interests
-                      ? <p className="text-xs text-gray-500 line-clamp-2">{u.profile.interests}</p>
-                      : <span className="text-gray-400 text-xs">—</span>}
+                      ? <p className="text-xs text-slate-400 line-clamp-2">{u.profile.interests}</p>
+                      : <span className="text-slate-500 text-xs">—</span>}
                   </td>
-                  <td className="px-4 py-3 text-xs text-gray-500">
+                  <td className="px-4 py-3 text-xs text-slate-400">
                     {new Date(u.createdAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
                   </td>
                   <td className="px-4 py-3">
@@ -105,18 +106,18 @@ export default function AdminUsers() {
                   <td className="px-4 py-3">
                     <button onClick={() => toggleProgressAccess(u)}
                       title="Allow this user to view other students' progress"
-                      className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${u.canViewProgress ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}>
+                      className={`text-xs px-2.5 py-1 rounded-lg font-semibold transition-colors ${u.canViewProgress ? 'bg-accent-500/10 text-accent-400 hover:bg-accent-500/15' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
                       {u.canViewProgress ? '✓ Granted' : 'Grant Access'}
                     </button>
                   </td>
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-2">
                       <Link to={`/progress/${u._id}`}
-                        className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-2.5 py-1 rounded-lg font-semibold transition-colors">
+                        className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 px-2.5 py-1 rounded-lg font-semibold transition-colors">
                         Progress
                       </Link>
                       <button onClick={() => setDelId(u._id)}
-                        className="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-2.5 py-1 rounded-lg font-semibold transition-colors">
+                        className="text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 px-2.5 py-1 rounded-lg font-semibold transition-colors">
                         Delete
                       </button>
                     </div>
@@ -125,8 +126,9 @@ export default function AdminUsers() {
               ))}
             </tbody>
           </table>
+          </div>
           {filtered.length === 0 && (
-            <div className="text-center py-8 text-gray-500 text-sm">No users match your search.</div>
+            <div className="text-center py-8 text-slate-400 text-sm">No users match your search.</div>
           )}
         </div>
       )}

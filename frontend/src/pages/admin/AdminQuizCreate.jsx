@@ -29,26 +29,26 @@ import Layout from '../../components/Layout'
 // ─────────────────────────────────────────────────────────────────────────────
 const CATS  = ['General','JavaScript','React','Node.js','MongoDB','Python','MySQL','Web','Database','Other']
 const DIFFS = [
-  { key:'easy',   label:'Easy %',   bar:'bg-emerald-500', border:'border-emerald-300', light:'bg-emerald-50' },
-  { key:'medium', label:'Medium %', bar:'bg-amber-500',   border:'border-amber-300',   light:'bg-amber-50'   },
-  { key:'hard',   label:'Hard %',   bar:'bg-red-500',     border:'border-red-300',     light:'bg-red-50'     },
+  { key:'easy',   label:'Easy %',   bar:'bg-accent-500', border:'border-accent-500/40', light:'bg-accent-500/10' },
+  { key:'medium', label:'Medium %', bar:'bg-amber-500',   border:'border-amber-500/40',  light:'bg-amber-500/10'   },
+  { key:'hard',   label:'Hard %',   bar:'bg-red-500',     border:'border-red-500/40',    light:'bg-red-500/10'     },
 ]
 
 const INPUT_CLS = [
   'w-full min-w-0',
-  'border border-gray-200 rounded-xl',
+  'border border-white/10 rounded-xl',
   'px-4 py-2.5',
-  'text-sm text-gray-900',
-  'bg-white',
-  'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-  'placeholder:text-gray-400',
+  'text-sm text-white',
+  'bg-surface-card',
+  'focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent',
+  'placeholder:text-slate-500',
   'transition-shadow duration-150',
   'leading-normal',
   // overflow fix
   'overflow-hidden text-ellipsis',
 ].join(' ')
 
-const LABEL_CLS = 'block text-sm font-bold text-gray-700 mb-1.5 leading-tight'
+const LABEL_CLS = 'block text-sm font-bold text-slate-300 mb-1.5 leading-tight'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // PRIMITIVE INPUT COMPONENTS  (defined at module level — NEVER inside render)
@@ -64,7 +64,7 @@ const InputField = memo(function InputField({
     <div className="flex flex-col min-w-0">
       <label htmlFor={name} className={LABEL_CLS}>
         {label}
-        {required && <span className="text-red-500 ml-0.5" aria-hidden>*</span>}
+        {required && <span className="text-red-400 ml-0.5" aria-hidden>*</span>}
       </label>
       <input
         id={name}
@@ -81,7 +81,7 @@ const InputField = memo(function InputField({
         className={INPUT_CLS}
         autoComplete="off"
       />
-      {hint && <p className="text-xs text-gray-400 mt-1 leading-snug">{hint}</p>}
+      {hint && <p className="text-xs text-slate-500 mt-1 leading-snug">{hint}</p>}
     </div>
   )
 })
@@ -104,7 +104,7 @@ const TextAreaField = memo(function TextAreaField({
     <div className="flex flex-col min-w-0">
       <label htmlFor={name} className={LABEL_CLS}>
         {label}
-        {required && <span className="text-red-500 ml-0.5" aria-hidden>*</span>}
+        {required && <span className="text-red-400 ml-0.5" aria-hidden>*</span>}
       </label>
       <textarea
         id={name}
@@ -122,7 +122,7 @@ const TextAreaField = memo(function TextAreaField({
         ].join(' ')}
         style={{ minHeight: `${rows * 1.6}rem` }}
       />
-      {hint && <p className="text-xs text-gray-400 mt-1 leading-snug">{hint}</p>}
+      {hint && <p className="text-xs text-slate-500 mt-1 leading-snug">{hint}</p>}
     </div>
   )
 })
@@ -132,7 +132,7 @@ const CheckToggle = memo(function CheckToggle({ name, label, desc, checked, onCh
   return (
     <label
       htmlFor={`chk-${name}`}
-      className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-gray-50 transition-colors select-none"
+      className="flex items-start gap-3 cursor-pointer p-3 rounded-xl hover:bg-white/5 transition-colors select-none"
     >
       <input
         id={`chk-${name}`}
@@ -140,11 +140,11 @@ const CheckToggle = memo(function CheckToggle({ name, label, desc, checked, onCh
         name={name}
         checked={checked}
         onChange={onChange}
-        className="mt-0.5 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 flex-shrink-0 cursor-pointer"
+        className="mt-0.5 w-4 h-4 text-primary-400 rounded border-white/20 focus:ring-primary-500 flex-shrink-0 cursor-pointer"
       />
       <div className="min-w-0">
-        <p className="text-sm font-bold text-gray-800 leading-tight">{label}</p>
-        <p className="text-xs text-gray-500 mt-0.5 leading-snug">{desc}</p>
+        <p className="text-sm font-bold text-slate-100 leading-tight">{label}</p>
+        <p className="text-xs text-slate-400 mt-0.5 leading-snug">{desc}</p>
       </div>
     </label>
   )
@@ -158,7 +158,7 @@ const DiffRatioCard = memo(function DiffRatioCard({
 }) {
   const short = avail < count
   return (
-    <div className={`border-2 rounded-xl p-4 transition-colors ${short ? `${border} ${light}` : 'border-gray-200 bg-white'}`}>
+    <div className={`border-2 rounded-xl p-4 transition-colors ${short ? `${border} ${light}` : 'border-white/10 bg-white/5'}`}>
       <label htmlFor={`ratio-${diffKey}`} className={LABEL_CLS}>{label}</label>
       <input
         id={`ratio-${diffKey}`}
@@ -170,15 +170,15 @@ const DiffRatioCard = memo(function DiffRatioCard({
         max={100}
         className={[INPUT_CLS, 'mb-2'].join(' ')}
       />
-      <div className="h-1.5 rounded-full bg-gray-200 overflow-hidden mb-2">
+      <div className="h-1.5 rounded-full bg-white/10 overflow-hidden mb-2">
         <div
           className={`h-full ${bar} rounded-full transition-all duration-300`}
           style={{ width: `${Math.min(100, value)}%` }}
         />
       </div>
-      <p className={`text-xs font-semibold leading-snug ${short ? 'text-red-600' : 'text-gray-500'}`}>
+      <p className={`text-xs font-semibold leading-snug ${short ? 'text-red-400' : 'text-slate-400'}`}>
         Needs <strong>{count}</strong> questions
-        <span className={`ml-1 font-black ${short ? 'text-red-600' : 'text-emerald-600'}`}>
+        <span className={`ml-1 font-black ${short ? 'text-red-400' : 'text-accent-400'}`}>
           ({avail} in DB)
         </span>
       </p>
@@ -192,8 +192,8 @@ const DiffRatioCard = memo(function DiffRatioCard({
 
 const SectionCard = memo(function SectionCard({ title, children }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-      <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-5">{title}</h3>
+    <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-6">
+      <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-5">{title}</h3>
       {children}
     </div>
   )
@@ -353,15 +353,15 @@ export default function AdminQuizCreate() {
         {/* Page header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-gray-900 leading-tight">🧠 Create New Quiz</h2>
-            <p className="text-gray-500 text-sm mt-1">
+            <h2 className="text-2xl font-black text-white leading-tight">🧠 Create New Quiz</h2>
+            <p className="text-slate-400 text-sm mt-1">
               Configure difficulty ratios — the system auto-selects questions from the bank.
             </p>
           </div>
           <button
             type="button"
             onClick={() => navigate('/admin/quizzes')}
-            className="flex-shrink-0 text-sm text-gray-500 hover:text-gray-800 font-semibold transition-colors"
+            className="flex-shrink-0 text-sm text-slate-400 hover:text-slate-100 font-semibold transition-colors"
           >
             ← Back
           </button>
@@ -458,7 +458,7 @@ export default function AdminQuizCreate() {
                   max={form.totalMarks || undefined}
                   required
                 />
-                <p className="text-xs text-emerald-600 font-semibold mt-1.5">
+                <p className="text-xs text-accent-400 font-semibold mt-1.5">
                   = {passPercentage}% to pass
                 </p>
               </div>
@@ -476,16 +476,16 @@ export default function AdminQuizCreate() {
             </div>
 
             {/* Summary strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-blue-50 border border-blue-100 rounded-xl p-4">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-primary-500/10 border border-primary-500/20 rounded-xl p-4">
               {[
                 ['Questions',  form.totalQuestions],
                 ['Total Marks',form.totalMarks],
                 ['Pass Marks', form.passMarks],
                 ['Duration',   `${form.duration}m`],
               ].map(([lbl, val]) => (
-                <div key={lbl} className="bg-white rounded-lg p-3 border border-blue-100 text-center">
-                  <p className="text-base font-black text-blue-800 leading-tight">{val}</p>
-                  <p className="text-xs text-blue-500 mt-0.5">{lbl}</p>
+                <div key={lbl} className="bg-white/5 rounded-lg p-3 border border-primary-500/20 text-center">
+                  <p className="text-base font-black text-primary-300 leading-tight">{val}</p>
+                  <p className="text-xs text-primary-400 mt-0.5">{lbl}</p>
                 </div>
               ))}
             </div>
@@ -494,21 +494,21 @@ export default function AdminQuizCreate() {
           {/* ── 3. Difficulty Ratio ───────────────────────────────────────── */}
           <SectionCard title="🎯 Difficulty Ratio">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-slate-400">
                 Set what percentage of questions come from each difficulty level.
-                <strong className="text-gray-700"> Must total 100%.</strong>
+                <strong className="text-slate-300"> Must total 100%.</strong>
               </p>
               <span className={`text-sm font-black px-3 py-1 rounded-full ${
                 ratioSum === 100
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-red-100 text-red-700'
+                  ? 'bg-accent-500/15 text-accent-400'
+                  : 'bg-red-500/15 text-red-300'
               }`}>
                 {ratioSum}% {ratioSum === 100 ? '✓' : '≠ 100'}
               </span>
             </div>
 
             {/* Stacked visual bar */}
-            <div className="flex rounded-xl overflow-hidden h-7 mb-5 bg-gray-100 text-white text-xs font-black">
+            <div className="flex rounded-xl overflow-hidden h-7 mb-5 bg-white/5 text-white text-xs font-black">
               {DIFFS.map(d => {
                 const pct = Number(form.difficultyRatio[d.key]) || 0
                 return pct > 0 ? (
@@ -587,16 +587,16 @@ export default function AdminQuizCreate() {
 
           {/* ── Validation warnings ───────────────────────────────────────── */}
           {validationErrors.length > 0 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 space-y-1.5">
+            <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-1.5">
               {validationErrors.map((e, i) => (
-                <p key={i} className="text-xs font-semibold text-amber-700">⚠️ {e}</p>
+                <p key={i} className="text-xs font-semibold text-amber-300">⚠️ {e}</p>
               ))}
             </div>
           )}
 
           {/* API error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold">
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm font-semibold">
               ❌ {error}
             </div>
           )}
@@ -609,8 +609,8 @@ export default function AdminQuizCreate() {
               className={[
                 'flex-1 font-black py-4 rounded-2xl text-base transition-all shadow-sm',
                 loading || !canCreate
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white hover:shadow-md',
+                  ? 'bg-white/10 text-slate-500 cursor-not-allowed'
+                  : 'bg-primary-600 hover:bg-primary-500 text-white hover:shadow-md',
               ].join(' ')}
             >
               {loading ? '⏳ Creating Quiz…' : '🚀 Create Quiz (Draft)'}
@@ -618,13 +618,13 @@ export default function AdminQuizCreate() {
             <button
               type="button"
               onClick={() => navigate('/admin/quizzes')}
-              className="px-6 py-4 rounded-2xl border border-gray-200 text-gray-700 font-bold text-sm hover:bg-gray-50 transition-colors"
+              className="px-6 py-4 rounded-2xl border border-white/10 text-slate-300 font-bold text-sm hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
           </div>
 
-          <p className="text-center text-xs text-gray-400">
+          <p className="text-center text-xs text-slate-500">
             Quiz is created as a <strong>Draft</strong>. Go to Manage Quizzes → click <strong>Publish</strong> to make it visible to students.
           </p>
         </form>

@@ -79,11 +79,11 @@ export default function Profile() {
   const inner = (
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-gray-900">
+        <h2 className="text-2xl font-black text-white">
           {isNew ? '👋 Complete your profile' : '✏️ Edit Profile'}
         </h2>
 
-        <p className="text-gray-500 mt-1">
+        <p className="text-slate-400 mt-1">
           {isNew
             ? 'Fill in your details to get started with the platform.'
             : 'Update your profile information.'}
@@ -91,8 +91,8 @@ export default function Profile() {
       </div>
 
       {isNew && (
-        <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-2xl">
-          <p className="text-blue-700 text-sm font-medium">
+        <div className="mb-6 p-4 bg-primary-500/10 border border-primary-500/20 rounded-2xl">
+          <p className="text-primary-300 text-sm font-medium">
             📌 Profile setup required before accessing the platform.
           </p>
         </div>
@@ -100,17 +100,17 @@ export default function Profile() {
 
       <div className="card">
         {/* Avatar */}
-        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-100">
-          <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white">
+        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-white/10">
+          <div className="w-16 h-16 bg-gradient-to-br from-primary-500 to-primary-600 rounded-2xl flex items-center justify-center text-2xl font-black text-white">
             {(form.name || user?.email || 'U')[0].toUpperCase()}
           </div>
 
           <div>
-            <p className="font-bold text-gray-900">
+            <p className="font-bold text-white">
               {form.name || 'Your Name'}
             </p>
 
-            <p className="text-sm text-gray-500">{user?.email}</p>
+            <p className="text-sm text-slate-400">{user?.email}</p>
 
             <span className="badge-blue mt-1">
               {form.role || 'Engineer'}
@@ -122,7 +122,7 @@ export default function Profile() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {/* Name */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label className="block text-sm font-semibold text-slate-300 mb-1.5">
                 Full Name *
               </label>
 
@@ -138,7 +138,7 @@ export default function Profile() {
 
             {/* Phone */}
             <div>
-              <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+              <label className="block text-sm font-semibold text-slate-300 mb-1.5">
                 Phone
               </label>
 
@@ -154,7 +154,7 @@ export default function Profile() {
 
           {/* Engineering Role */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Engineering Role
             </label>
 
@@ -176,7 +176,7 @@ export default function Profile() {
 
           {/* Interests */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Interests / Skills
             </label>
 
@@ -191,7 +191,7 @@ export default function Profile() {
 
           {/* Bio */}
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1.5">
+            <label className="block text-sm font-semibold text-slate-300 mb-1.5">
               Short Bio
             </label>
 
@@ -239,7 +239,7 @@ export default function Profile() {
   // If no profile yet, show without layout sidebar
   if (isNew) {
     return (
-      <div className="min-h-screen bg-gray-50 p-6">
+      <div className="min-h-screen bg-surface-base p-6">
         {inner}
       </div>
     )

@@ -15,7 +15,7 @@ function PodiumCard({ entry, position, totalMarks }) {
   if (!entry) return <div className="flex-1" />
 
   const cfg = {
-    1: { emoji: '🥇', bar: 'h-24', bg: 'bg-yellow-500/25 border-yellow-400/50', text: 'text-yellow-300', label: '1st', ring: 'ring-2 ring-yellow-400/60' },
+    1: { emoji: '🥇', bar: 'h-24', bg: 'bg-yellow-500/25 border-yellow-400/50', text: 'text-amber-300', label: '1st', ring: 'ring-2 ring-yellow-400/60' },
     2: { emoji: '🥈', bar: 'h-16', bg: 'bg-slate-500/25 border-slate-400/50',   text: 'text-slate-300',  label: '2nd', ring: 'ring-2 ring-slate-400/40' },
     3: { emoji: '🥉', bar: 'h-10', bg: 'bg-amber-700/25 border-amber-600/40',   text: 'text-amber-400',  label: '3rd', ring: 'ring-2 ring-amber-600/40' },
   }[position]
@@ -92,11 +92,11 @@ export default function AdminLeaderboard() {
   }
   const SortIcon = ({ col }) => {
     if (sortBy !== col) return <span className="text-white/30 ml-1">↕</span>
-    return <span className="text-yellow-300 ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
+    return <span className="text-amber-300 ml-1">{sortDir === 'asc' ? '↑' : '↓'}</span>
   }
 
   if (loading) return <Layout title="Leaderboard"><PageLoader /></Layout>
-  if (!data)   return <Layout title="Leaderboard"><p className="text-gray-500 p-6">Not found.</p></Layout>
+  if (!data)   return <Layout title="Leaderboard"><p className="text-slate-400 p-6">Not found.</p></Layout>
 
   const { leaderboard = [], quiz } = data
   // Top 3 sorted by rank for podium (always show rank order 1→2→3)
@@ -111,13 +111,13 @@ export default function AdminLeaderboard() {
       {/* Page header */}
       <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-gray-900">🏆 {quiz?.title}</h2>
-          <p className="text-gray-500 text-sm">
+          <h2 className="text-2xl font-black text-white">🏆 {quiz?.title}</h2>
+          <p className="text-slate-400 text-sm">
             Pass: <strong>{quiz?.passMarks}/{quiz?.totalMarks}</strong>
             &nbsp;·&nbsp; {leaderboard.length} submission{leaderboard.length !== 1 ? 's' : ''}
           </p>
         </div>
-        <Link to="/admin/quizzes" className="text-sm text-blue-600 font-bold hover:underline">
+        <Link to="/admin/quizzes" className="text-sm text-primary-400 font-bold hover:underline">
           ← All Quizzes
         </Link>
       </div>
@@ -135,7 +135,7 @@ export default function AdminLeaderboard() {
 
       {/* ── Podium — Top 3 ───────────────────────────────────────────────── */}
       {leaderboard.length >= 2 && (
-        <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 rounded-2xl p-6 mb-5">
+        <div className="bg-gradient-to-br from-surface-card via-primary-900 to-primary-900 rounded-2xl p-6 mb-5">
           <p className="text-xs font-black text-white/50 uppercase tracking-widest text-center mb-5">
             🏅 Top Performers
           </p>
@@ -154,8 +154,8 @@ export default function AdminLeaderboard() {
 
       //  {/* ── Score distribution chart ─────────────────────────────────────── */}
       {stats && leaderboard.length > 0 && (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 mb-5">
-          <h3 className="text-xs font-black text-gray-500 uppercase tracking-widest mb-4">
+        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-5 mb-5">
+          <h3 className="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">
             Score Distribution
           </h3>
           <div className="flex items-end gap-1 h-20">
@@ -165,41 +165,41 @@ export default function AdminLeaderboard() {
                 leaderboard.filter(e => e.percentage >= b && e.percentage < b + 10).length
               )))
               const h     = Math.max(count > 0 ? 8 : 0, (count / maxCnt) * 100)
-              const color = bucket >= 80 ? 'bg-emerald-500' : bucket >= 60 ? 'bg-blue-500' : bucket >= 40 ? 'bg-amber-500' : 'bg-red-400'
+              const color = bucket >= 80 ? 'bg-accent-500' : bucket >= 60 ? 'bg-primary-500' : bucket >= 40 ? 'bg-amber-500' : 'bg-red-400'
               return (
                 <div key={bucket} className="flex-1 flex flex-col items-center gap-1" title={`${bucket}–${bucket+10}%: ${count}`}>
-                  {count > 0 && <span className="text-xs font-bold text-gray-600">{count}</span>}
+                  {count > 0 && <span className="text-xs font-bold text-slate-400">{count}</span>}
                   <div className={`w-full ${color} rounded-t-md`} style={{ height: `${h}%` }} />
-                  <span className="text-xs text-gray-400 font-medium">{bucket}</span>
+                  <span className="text-xs text-slate-500 font-medium">{bucket}</span>
                 </div>
               )
             })}
           </div>
-          <div className="flex justify-between text-xs text-gray-400 mt-1 px-0.5">
-            <span>0%</span><span className="text-gray-300">Score percentage →</span><span>100%</span>
+          <div className="flex justify-between text-xs text-slate-500 mt-1 px-0.5">
+            <span>0%</span><span className="text-slate-600">Score percentage →</span><span>100%</span>
           </div>
         </div>
       )}
 
       {/* ── Table with filters + sort ─────────────────────────────────────── */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+      <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
 
         {/* Filter bar */}
-        <div className="p-4 border-b border-gray-100 flex flex-wrap gap-3 items-center">
+        <div className="p-4 border-b border-white/10 flex flex-wrap gap-3 items-center">
           <input
             type="text"
             placeholder="🔍 Search students…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white w-48"
+            className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 w-48"
           />
-          <div className="flex rounded-xl border border-gray-200 overflow-hidden">
+          <div className="flex rounded-xl border border-white/10 overflow-hidden">
             {[['all','All'],['pass','Pass'],['fail','Fail']].map(([v, l]) => (
               <button
                 key={v}
                 onClick={() => setFilter(v)}
                 className={`px-4 py-2.5 text-sm font-bold transition-colors ${
-                  filter === v ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-50'
+                  filter === v ? 'bg-primary-600 text-white' : 'text-slate-400 hover:bg-white/5'
                 }`}
               >
                 {l}
@@ -209,11 +209,11 @@ export default function AdminLeaderboard() {
 
           {/* Sort controls */}
           <div className="flex items-center gap-2">
-            <label className="text-xs font-semibold text-gray-500 whitespace-nowrap">Sort:</label>
+            <label className="text-xs font-semibold text-slate-400 whitespace-nowrap">Sort:</label>
             <select
               value={sortBy}
               onChange={e => { setSortBy(e.target.value); setSortDir('asc') }}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="rank">Rank</option>
               <option value="name">Name</option>
@@ -223,27 +223,27 @@ export default function AdminLeaderboard() {
             </select>
             <button
               onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
-              className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white hover:bg-gray-50 font-bold text-gray-600"
+              className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 hover:bg-white/5 font-bold text-slate-400"
               title="Toggle sort direction"
             >
               {sortDir === 'asc' ? '↑' : '↓'}
             </button>
           </div>
 
-          <span className="text-xs text-gray-400 ml-auto">
+          <span className="text-xs text-slate-500 ml-auto">
             {filtered.length} student{filtered.length !== 1 ? 's' : ''}
           </span>
         </div>
 
         {/* Table */}
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-gray-400 text-sm">
+          <div className="text-center py-12 text-slate-500 text-sm">
             {leaderboard.length === 0 ? 'No submissions yet.' : 'No results match your filter.'}
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-white/5 border-b border-white/10">
                 <tr>
                   {[
                     ['Rank',       'rank'],
@@ -259,8 +259,8 @@ export default function AdminLeaderboard() {
                     <th
                       key={label}
                       onClick={col ? () => handleSort(col) : undefined}
-                      className={`text-left text-xs font-black text-gray-500 uppercase tracking-wider px-4 py-3 whitespace-nowrap ${
-                        col ? 'cursor-pointer hover:text-blue-600 select-none' : ''
+                      className={`text-left text-xs font-black text-slate-400 uppercase tracking-wider px-4 py-3 whitespace-nowrap ${
+                        col ? 'cursor-pointer hover:text-primary-400 select-none' : ''
                       }`}
                     >
                       {label}{col && <SortIcon col={col} />}
@@ -268,16 +268,16 @@ export default function AdminLeaderboard() {
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-white/5">
                 {filtered.map((e, i) => {
                   const rankEmoji = e.rank === 1 ? '🥇' : e.rank === 2 ? '🥈' : e.rank === 3 ? '🥉' : null
                   return (
-                    <tr key={i} className="hover:bg-gray-50/70 transition-colors">
+                    <tr key={i} className="hover:bg-white/5 transition-colors">
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
                           {rankEmoji
                             ? <span className="text-xl leading-none">{rankEmoji}</span>
-                            : <span className="w-7 h-7 rounded-full bg-gray-100 text-gray-500 text-xs font-black flex items-center justify-center">
+                            : <span className="w-7 h-7 rounded-full bg-white/5 text-slate-400 text-xs font-black flex items-center justify-center">
                                 #{e.rank}
                               </span>
                           }
@@ -285,21 +285,21 @@ export default function AdminLeaderboard() {
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
                             {(e.name || '?')[0].toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-bold text-gray-900 text-sm">{e.name}</p>
-                            <p className="text-xs text-gray-400">{e.email}</p>
+                            <p className="font-bold text-white text-sm">{e.name}</p>
+                            <p className="text-xs text-slate-500">{e.email}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-4 py-3 font-black">{e.score}/{quiz?.totalMarks}</td>
                       <td className="px-4 py-3">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                          <div className="w-14 h-1.5 bg-white/10 rounded-full overflow-hidden">
                             <div
-                              className={`h-full rounded-full ${e.percentage >= 75 ? 'bg-emerald-500' : e.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                              className={`h-full rounded-full ${e.percentage >= 75 ? 'bg-accent-500' : e.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                               style={{ width: `${e.percentage}%` }}
                             />
                           </div>
@@ -307,10 +307,10 @@ export default function AdminLeaderboard() {
                         </div>
                       </td>
                       <td className="px-4 py-3"><PassBadge status={e.passStatus} /></td>
-                      <td className="px-4 py-3 text-emerald-600 font-bold">{e.correctAnswers ?? '—'}</td>
-                      <td className="px-4 py-3 text-red-500 font-bold">{e.wrongAnswers ?? '—'}</td>
-                      <td className="px-4 py-3 font-mono text-gray-600 text-xs">{fmtTime(e.timeTaken)}</td>
-                      <td className="px-4 py-3 text-xs text-gray-400 whitespace-nowrap">
+                      <td className="px-4 py-3 text-accent-400 font-bold">{e.correctAnswers ?? '—'}</td>
+                      <td className="px-4 py-3 text-red-400 font-bold">{e.wrongAnswers ?? '—'}</td>
+                      <td className="px-4 py-3 font-mono text-slate-400 text-xs">{fmtTime(e.timeTaken)}</td>
+                      <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
                         {new Date(e.submittedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
                       </td>
                     </tr>

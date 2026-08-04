@@ -45,7 +45,7 @@ export default function CourseWatch() {
   }
 
   if (loading) return <Layout title="Course"><PageLoader /></Layout>
-  if (!course) return <Layout title="Course"><p className="text-gray-500">Course not found.</p></Layout>
+  if (!course) return <Layout title="Course"><p className="text-slate-400">Course not found.</p></Layout>
 
   const embedUrl = getEmbedUrl(course.videoUrl)
 
@@ -63,11 +63,11 @@ export default function CourseWatch() {
           <div className="card">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <h1 className="text-xl font-black text-gray-900 mb-2">{course.title}</h1>
+                <h1 className="text-xl font-black text-white mb-2">{course.title}</h1>
                 <div className="flex items-center gap-2 flex-wrap">
                   {course.category && <span className="badge-blue">{course.category}</span>}
                   {progress?.status === 'completed' && (
-                    <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs font-black px-3 py-1 rounded-full">
+                    <span className="inline-flex items-center gap-1 bg-accent-500/15 text-accent-400 text-xs font-black px-3 py-1 rounded-full">
                       ✓ Completed
                     </span>
                   )}
@@ -83,9 +83,9 @@ export default function CourseWatch() {
                 <Link to="/quiz" className="btn-primary text-sm">🧠 Take Quiz</Link>
               </div>
             </div>
-            <p className="text-gray-600 mt-4 leading-relaxed">{course.description}</p>
-            <div className="mt-4 pt-4 border-t border-gray-100">
-              <p className="text-xs text-gray-400">Added on {new Date(course.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+            <p className="text-slate-400 mt-4 leading-relaxed">{course.description}</p>
+            <div className="mt-4 pt-4 border-t border-white/10">
+              <p className="text-xs text-slate-500">Added on {new Date(course.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
             </div>
           </div>
         </div>
@@ -93,9 +93,9 @@ export default function CourseWatch() {
         {/* Sidebar */}
         <div className="space-y-4">
           <div className="card">
-            <h3 className="font-bold text-gray-900 mb-3">📋 Other Courses</h3>
+            <h3 className="font-bold text-white mb-3">📋 Other Courses</h3>
             {courses.length === 0 ? (
-              <p className="text-sm text-gray-400">No other courses available.</p>
+              <p className="text-sm text-slate-500">No other courses available.</p>
             ) : (
               <div className="space-y-3">
                 {courses.map(c => {
@@ -103,14 +103,14 @@ export default function CourseWatch() {
                   const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null
                   return (
                     <Link to={`/courses/${c._id}`} key={c._id}
-                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-gray-50 transition-all group">
+                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group">
                       <div className="w-20 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
                         {thumb ? <img src={thumb} alt={c.title} className="w-full h-full object-cover" />
                           : <div className="w-full h-full flex items-center justify-center text-2xl">🎬</div>}
                       </div>
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold text-gray-800 line-clamp-2 group-hover:text-blue-600 transition-colors">{c.title}</p>
-                        {c.category && <p className="text-xs text-gray-400 mt-0.5">{c.category}</p>}
+                        <p className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-primary-400 transition-colors">{c.title}</p>
+                        {c.category && <p className="text-xs text-slate-500 mt-0.5">{c.category}</p>}
                       </div>
                     </Link>
                   )
@@ -119,11 +119,11 @@ export default function CourseWatch() {
             )}
           </div>
 
-          <div className="card bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-100">
+          <div className="card bg-gradient-to-br from-primary-500/10 to-accent-500/10 border-primary-500/20">
             <div className="text-center">
               <div className="text-3xl mb-2">🧠</div>
-              <h3 className="font-bold text-gray-900 mb-1">Ready to test yourself?</h3>
-              <p className="text-sm text-gray-500 mb-4">Take a quiz with {40} random questions</p>
+              <h3 className="font-bold text-white mb-1">Ready to test yourself?</h3>
+              <p className="text-sm text-slate-400 mb-4">Take a quiz with {40} random questions</p>
               <Link to="/quiz" className="btn-primary w-full text-center block">Start Quiz</Link>
             </div>
           </div>

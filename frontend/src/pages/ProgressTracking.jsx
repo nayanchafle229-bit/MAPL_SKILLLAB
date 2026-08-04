@@ -44,8 +44,8 @@ export default function ProgressTracking() {
     <Layout title="Progress Tracking">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-gray-900">📊 Student Progress</h2>
-          <p className="text-gray-500 text-sm">Track quiz performance across all students</p>
+          <h2 className="text-2xl font-black text-white">📊 Student Progress</h2>
+          <p className="text-slate-400 text-sm">Track quiz performance across all students</p>
         </div>
         <input type="text" placeholder="🔍 Search students..."
           value={search} onChange={e => setSearch(e.target.value)}
@@ -60,14 +60,14 @@ export default function ProgressTracking() {
       </div>
 
       <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Sort by:</span>
+        <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Sort by:</span>
         {[
           { key:'recent',   label:'Most Recent' },
           { key:'best',     label:'Best Score' },
           { key:'attempts', label:'Most Attempts' },
         ].map(o => (
           <button key={o.key} onClick={() => setSortBy(o.key)}
-            className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${sortBy===o.key ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>
+            className={`text-xs font-semibold px-3 py-1.5 rounded-full transition-colors ${sortBy===o.key ? 'bg-primary-600 text-white' : 'bg-white/5 text-slate-400 hover:bg-white/10'}`}>
             {o.label}
           </button>
         ))}
@@ -77,42 +77,43 @@ export default function ProgressTracking() {
         <EmptyState icon="👥" title="No students yet" description="Students will appear here after they register." />
       ) : (
         <div className="card overflow-hidden p-0">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+            <thead className="bg-white/5 border-b border-white/10">
               <tr>
                 {['Student', 'Attempts', 'Passed', 'Avg %', 'Best %', 'Courses Watched', 'Courses Completed', 'Last Activity', ''].map(h => (
-                  <th key={h} className="text-left text-xs font-semibold text-gray-500 uppercase tracking-wide px-4 py-3">{h}</th>
+                  <th key={h} className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wide px-4 py-3">{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {sorted.map(s => (
-                <tr key={s._id} className="hover:bg-gray-50 transition-colors">
+                <tr key={s._id} className="hover:bg-white/5 transition-colors">
                   <td className="px-4 py-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-9 h-9 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
+                      <div className="w-9 h-9 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
                         {(s.profile?.name || s.email)[0].toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-semibold text-gray-900">{s.profile?.name || <span className="text-gray-400 italic">No name</span>}</p>
-                        <p className="text-xs text-gray-400">{s.email}</p>
+                        <p className="font-semibold text-white">{s.profile?.name || <span className="text-slate-500 italic">No name</span>}</p>
+                        <p className="text-xs text-slate-500">{s.email}</p>
                       </div>
                     </div>
                   </td>
-                  <td className="px-4 py-3 font-semibold text-gray-700">{s.progress.totalAttempts}</td>
-                  <td className="px-4 py-3 font-semibold text-emerald-600">{s.progress.passedCount}</td>
-                  <td className="px-4 py-3 font-bold text-gray-800">{s.progress.avgPercentage || '—'}{s.progress.totalAttempts ? '%' : ''}</td>
-                  <td className="px-4 py-3 font-bold text-gray-800">{s.progress.bestPercentage || '—'}{s.progress.totalAttempts ? '%' : ''}</td>
-                  <td className="px-4 py-3 font-semibold text-gray-700">{s.progress.coursesStarted}</td>
-                  <td className="px-4 py-3 font-semibold text-emerald-600">{s.progress.coursesCompleted}</td>
-                  <td className="px-4 py-3 text-xs text-gray-500">
+                  <td className="px-4 py-3 font-semibold text-slate-300">{s.progress.totalAttempts}</td>
+                  <td className="px-4 py-3 font-semibold text-accent-400">{s.progress.passedCount}</td>
+                  <td className="px-4 py-3 font-bold text-slate-100">{s.progress.avgPercentage || '—'}{s.progress.totalAttempts ? '%' : ''}</td>
+                  <td className="px-4 py-3 font-bold text-slate-100">{s.progress.bestPercentage || '—'}{s.progress.totalAttempts ? '%' : ''}</td>
+                  <td className="px-4 py-3 font-semibold text-slate-300">{s.progress.coursesStarted}</td>
+                  <td className="px-4 py-3 font-semibold text-accent-400">{s.progress.coursesCompleted}</td>
+                  <td className="px-4 py-3 text-xs text-slate-400">
                     {s.progress.lastAttemptAt
                       ? new Date(s.progress.lastAttemptAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })
-                      : <span className="text-gray-400">No activity</span>}
+                      : <span className="text-slate-500">No activity</span>}
                   </td>
                   <td className="px-4 py-3">
                     <Link to={`/progress/${s._id}`}
-                      className="text-xs bg-blue-50 text-blue-600 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-semibold transition-colors">
+                      className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 px-3 py-1.5 rounded-lg font-semibold transition-colors">
                       View Progress →
                     </Link>
                   </td>
@@ -120,8 +121,9 @@ export default function ProgressTracking() {
               ))}
             </tbody>
           </table>
+          </div>
           {sorted.length === 0 && (
-            <div className="text-center py-8 text-gray-500 text-sm">No students match your search.</div>
+            <div className="text-center py-8 text-slate-400 text-sm">No students match your search.</div>
           )}
         </div>
       )}

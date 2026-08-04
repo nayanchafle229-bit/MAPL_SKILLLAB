@@ -44,8 +44,8 @@ const BULK_PLACEHOLDER = `[
 ]`
 
 // ─── Input style ──────────────────────────────────────────────────────────────
-const INPUT_CLS = 'w-full min-w-0 border border-gray-200 rounded-xl px-4 py-2.5 text-sm text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-shadow'
-const LABEL_CLS = 'block text-sm font-semibold text-gray-700 mb-1.5 leading-tight'
+const INPUT_CLS = 'w-full min-w-0 border border-white/10 rounded-xl px-4 py-2.5 text-sm text-white bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500 placeholder:text-slate-500 transition-shadow'
+const LABEL_CLS = 'block text-sm font-semibold text-slate-300 mb-1.5 leading-tight'
 
 // ─── Option Letter Badge ──────────────────────────────────────────────────────
 const OptionBadge = memo(function OptionBadge({ letter, isCorrect, onClick }) {
@@ -57,8 +57,8 @@ const OptionBadge = memo(function OptionBadge({ letter, isCorrect, onClick }) {
       className={[
         'w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0 transition-all',
         isCorrect
-          ? 'bg-emerald-500 text-white shadow-sm ring-2 ring-emerald-300'
-          : 'bg-gray-100 text-gray-600 hover:bg-emerald-100 hover:text-emerald-700',
+          ? 'bg-accent-500 text-white shadow-sm ring-2 ring-emerald-300'
+          : 'bg-white/5 text-slate-400 hover:bg-accent-500/15 hover:text-accent-400',
       ].join(' ')}
     >
       {letter}
@@ -103,7 +103,7 @@ const QuestionForm = memo(function QuestionForm({
       <div>
         <div className="flex items-center justify-between mb-2">
           <label className={LABEL_CLS} style={{ marginBottom: 0 }}>Options *</label>
-          <span className="text-xs text-gray-400 font-medium">
+          <span className="text-xs text-slate-500 font-medium">
             Click letter to set correct answer
           </span>
         </div>
@@ -127,7 +127,7 @@ const QuestionForm = memo(function QuestionForm({
             </div>
           ))}
         </div>
-        <p className="text-xs text-emerald-600 font-semibold mt-2">
+        <p className="text-xs text-accent-400 font-semibold mt-2">
           ✓ Correct answer: <strong>Option {form.correctAnswer}</strong>
         </p>
       </div>
@@ -163,7 +163,7 @@ const QuestionForm = memo(function QuestionForm({
       </div>
 
       {error && (
-        <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">
+        <p className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">
           ❌ {error}
         </p>
       )}
@@ -172,7 +172,7 @@ const QuestionForm = memo(function QuestionForm({
         <button
           type="submit"
           disabled={saving}
-          className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
+          className="flex-1 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
         >
           {saving ? '⏳ Saving…' : isEditing ? '✓ Update Question' : '+ Add Question'}
         </button>
@@ -389,9 +389,9 @@ export default function AdminQuestions() {
       {/* Bulk import modal */}
       <Modal open={bulkModal} onClose={() => { setBulkModal(false); setFormError('') }} title="Bulk Import Questions">
         <div className="space-y-4">
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-xl text-xs text-blue-700 leading-relaxed">
+          <div className="p-3 bg-primary-500/10 border border-primary-500/20 rounded-xl text-xs text-primary-300 leading-relaxed">
             <p className="font-bold mb-1">Expected JSON format:</p>
-            <p>Array of objects, each with: <code className="bg-blue-100 px-1 rounded">question</code>, <code className="bg-blue-100 px-1 rounded">options</code> (A–D), <code className="bg-blue-100 px-1 rounded">correctAnswer</code>, optionally <code className="bg-blue-100 px-1 rounded">category</code>, <code className="bg-blue-100 px-1 rounded">difficulty</code>, <code className="bg-blue-100 px-1 rounded">marks</code>.</p>
+            <p>Array of objects, each with: <code className="bg-primary-500/15 px-1 rounded">question</code>, <code className="bg-primary-500/15 px-1 rounded">options</code> (A–D), <code className="bg-primary-500/15 px-1 rounded">correctAnswer</code>, optionally <code className="bg-primary-500/15 px-1 rounded">category</code>, <code className="bg-primary-500/15 px-1 rounded">difficulty</code>, <code className="bg-primary-500/15 px-1 rounded">marks</code>.</p>
           </div>
           <textarea
             value={bulkText}
@@ -403,19 +403,19 @@ export default function AdminQuestions() {
             style={{ minHeight: '14rem' }}
           />
           {formError && (
-            <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-200 rounded-xl px-4 py-2.5">❌ {formError}</p>
+            <p className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">❌ {formError}</p>
           )}
           <div className="flex gap-3">
             <button
               onClick={saveBulk}
               disabled={saving || !bulkText.trim()}
-              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
+              className="flex-1 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
             >
               {saving ? '⏳ Importing…' : '📥 Import Questions'}
             </button>
             <button
               onClick={() => { setBulkModal(false); setFormError('') }}
-              className="px-5 py-3 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors"
+              className="px-5 py-3 rounded-xl border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 transition-colors"
             >
               Cancel
             </button>
@@ -425,7 +425,7 @@ export default function AdminQuestions() {
 
       {/* Toast */}
       {toast && (
-        <div className="fixed top-5 right-5 z-50 bg-gray-900 text-white text-sm font-semibold px-5 py-3 rounded-xl shadow-2xl animate-pulse">
+        <div className="fixed top-5 right-5 z-50 bg-surface-raised text-white border border-white/10 text-sm font-semibold px-5 py-3 rounded-xl shadow-2xl animate-pulse">
           {toast}
         </div>
       )}
@@ -433,24 +433,24 @@ export default function AdminQuestions() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-gray-900">❓ Question Bank</h2>
+          <h2 className="text-2xl font-black text-white">❓ Question Bank</h2>
           <div className="flex gap-3 mt-1.5 flex-wrap text-xs font-semibold">
-            <span className="bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-full">Easy: {diffCount.easy}</span>
-            <span className="bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">Medium: {diffCount.medium}</span>
-            <span className="bg-red-100 text-red-700 px-2.5 py-1 rounded-full">Hard: {diffCount.hard}</span>
-            <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full">Total: {questions.length}</span>
+            <span className="bg-accent-500/15 text-accent-400 px-2.5 py-1 rounded-full">Easy: {diffCount.easy}</span>
+            <span className="bg-amber-500/15 text-amber-300 px-2.5 py-1 rounded-full">Medium: {diffCount.medium}</span>
+            <span className="bg-red-500/15 text-red-300 px-2.5 py-1 rounded-full">Hard: {diffCount.hard}</span>
+            <span className="bg-white/5 text-slate-400 px-2.5 py-1 rounded-full">Total: {questions.length}</span>
           </div>
         </div>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => { setFormError(''); setBulkModal(true) }}
-            className="bg-white border border-gray-200 hover:bg-gray-50 text-gray-700 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
+            className="bg-white/5 border border-white/10 hover:bg-white/5 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
           >
             📥 Bulk Import
           </button>
           <button
             onClick={openAdd}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
+            className="bg-primary-600 hover:bg-primary-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
           >
             + Add Question
           </button>
@@ -464,17 +464,17 @@ export default function AdminQuestions() {
           placeholder="🔍 Search questions…"
           value={search}
           onChange={handleSearch}
-          className="border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white flex-1 min-w-[180px] max-w-xs"
+          className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 flex-1 min-w-[180px] max-w-xs"
         />
-        <select value={filterCat}  onChange={handleCatFilter}  className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select value={filterCat}  onChange={handleCatFilter}  className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500">
           <option value="">All Categories</option>
           {cats.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={filterDiff} onChange={handleDiffFilter} className="border border-gray-200 rounded-xl px-3 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <select value={filterDiff} onChange={handleDiffFilter} className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500">
           <option value="">All Difficulties</option>
           {DIFFS.map(d => <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>)}
         </select>
-        <span className="self-center text-sm text-gray-400 ml-auto">{filtered.length} questions</span>
+        <span className="self-center text-sm text-slate-500 ml-auto">{filtered.length} questions</span>
       </div>
 
       {questions.length === 0 ? (
@@ -484,41 +484,41 @@ export default function AdminQuestions() {
           description="Add individual questions or use Bulk Import for large sets (e.g. the 200-question MySQL JSON)."
           action={
             <div className="flex gap-3 justify-center">
-              <button onClick={openAdd} className="bg-blue-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Add Question</button>
-              <button onClick={() => setBulkModal(true)} className="bg-white border border-gray-200 text-gray-700 font-bold px-5 py-2.5 rounded-xl text-sm">📥 Bulk Import</button>
+              <button onClick={openAdd} className="bg-primary-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Add Question</button>
+              <button onClick={() => setBulkModal(true)} className="bg-white/5 border border-white/10 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-sm">📥 Bulk Import</button>
             </div>
           }
         />
       ) : (
         <>
           {/* Question table */}
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+          <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead className="bg-gray-50 border-b border-gray-200">
+                <thead className="bg-white/5 border-b border-white/10">
                   <tr>
                     {['#','Question','Options','Answer','Category','Diff','Marks','Actions'].map(h => (
-                      <th key={h} className="text-left text-xs font-black text-gray-500 uppercase tracking-wider px-4 py-3 whitespace-nowrap">
+                      <th key={h} className="text-left text-xs font-black text-slate-400 uppercase tracking-wider px-4 py-3 whitespace-nowrap">
                         {h}
                       </th>
                     ))}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-50">
+                <tbody className="divide-y divide-white/5">
                   {paged.map((q, i) => (
-                    <tr key={q._id} className="hover:bg-gray-50/70 transition-colors">
-                      <td className="px-4 py-3 text-xs text-gray-400 font-bold whitespace-nowrap">
+                    <tr key={q._id} className="hover:bg-white/5 transition-colors">
+                      <td className="px-4 py-3 text-xs text-slate-500 font-bold whitespace-nowrap">
                         {(page - 1) * PER_PAGE + i + 1}
                       </td>
                       <td className="px-4 py-3 max-w-xs">
-                        <p className="text-sm font-medium text-gray-900 line-clamp-2 break-words leading-snug">
+                        <p className="text-sm font-medium text-white line-clamp-2 break-words leading-snug">
                           {q.question}
                         </p>
                       </td>
                       <td className="px-4 py-3 min-w-[180px]">
                         <div className="space-y-0.5">
                           {OPTS.map(o => (
-                            <div key={o} className={`text-xs leading-snug truncate ${q.correctAnswer===o ? 'text-emerald-700 font-bold' : 'text-gray-500'}`}>
+                            <div key={o} className={`text-xs leading-snug truncate ${q.correctAnswer===o ? 'text-accent-400 font-bold' : 'text-slate-400'}`}>
                               <span className="font-black mr-1">{o}.</span>
                               {q.options?.[o]}
                               {q.correctAnswer === o && ' ✓'}
@@ -527,38 +527,38 @@ export default function AdminQuestions() {
                         </div>
                       </td>
                       <td className="px-4 py-3">
-                        <span className="inline-flex items-center justify-center w-7 h-7 bg-emerald-500 text-white rounded-lg font-black text-xs">
+                        <span className="inline-flex items-center justify-center w-7 h-7 bg-accent-500 text-white rounded-lg font-black text-xs">
                           {q.correctAnswer}
                         </span>
                       </td>
                       <td className="px-4 py-3">
                         {q.category
-                          ? <span className="text-xs bg-blue-50 text-blue-600 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">{q.category}</span>
-                          : <span className="text-gray-300 text-xs">—</span>}
+                          ? <span className="text-xs bg-primary-500/10 text-primary-400 px-2.5 py-1 rounded-full font-semibold whitespace-nowrap">{q.category}</span>
+                          : <span className="text-slate-600 text-xs">—</span>}
                       </td>
                       <td className="px-4 py-3">
                         <span className={`text-xs font-bold px-2.5 py-1 rounded-full whitespace-nowrap ${
-                          q.difficulty === 'easy'   ? 'bg-emerald-100 text-emerald-700' :
-                          q.difficulty === 'hard'   ? 'bg-red-100 text-red-700' :
-                                                      'bg-amber-100 text-amber-700'
+                          q.difficulty === 'easy'   ? 'bg-accent-500/15 text-accent-400' :
+                          q.difficulty === 'hard'   ? 'bg-red-500/15 text-red-300' :
+                                                      'bg-amber-500/15 text-amber-300'
                         }`}>
                           {q.difficulty}
                         </span>
                       </td>
-                      <td className="px-4 py-3 font-bold text-gray-700 text-xs whitespace-nowrap">
+                      <td className="px-4 py-3 font-bold text-slate-300 text-xs whitespace-nowrap">
                         {q.marks || 1}
                       </td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1.5">
                           <button
                             onClick={() => openEdit(q)}
-                            className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-600 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                            className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-400 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => setDelId(q._id)}
-                            className="text-xs bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
+                            className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap"
                           >
                             Del
                           </button>
@@ -577,7 +577,7 @@ export default function AdminQuestions() {
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={page === 1}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 rounded-xl border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 ← Prev
               </button>
@@ -593,8 +593,8 @@ export default function AdminQuestions() {
                     onClick={() => setPage(p)}
                     className={`w-9 h-9 rounded-xl text-sm font-bold transition-colors ${
                       page === p
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white border border-gray-200 text-gray-700 hover:bg-gray-50'
+                        ? 'bg-primary-600 text-white'
+                        : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/5'
                     }`}
                   >
                     {p}
@@ -604,11 +604,11 @@ export default function AdminQuestions() {
               <button
                 onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={page === totalPages}
-                className="px-4 py-2 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 rounded-xl border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
                 Next →
               </button>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-slate-500">
                 Page {page}/{totalPages} · {filtered.length} questions
               </span>
             </div>

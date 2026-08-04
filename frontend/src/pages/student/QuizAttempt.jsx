@@ -20,10 +20,10 @@ import { PageLoader, ConfirmDialog } from '../../components/UI'
 
 const DiffBadge = memo(function DiffBadge({ level }) {
   const cls = {
-    easy:   'bg-emerald-100 text-emerald-700',
-    medium: 'bg-amber-100 text-amber-700',
-    hard:   'bg-red-100 text-red-700',
-  }[level] || 'bg-gray-100 text-gray-500'
+    easy:   'bg-accent-500/15 text-accent-400',
+    medium: 'bg-amber-500/15 text-amber-300',
+    hard:   'bg-red-500/15 text-red-300',
+  }[level] || 'bg-white/5 text-slate-400'
   return (
     <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${cls}`}>
       {level}
@@ -35,7 +35,7 @@ const DiffBadge = memo(function DiffBadge({ level }) {
 const TimerDisplay = memo(function TimerDisplay({ seconds }) {
   const m   = Math.floor(seconds / 60)
   const s   = seconds % 60
-  const cls = seconds < 300 ? 'text-red-500' : seconds < 600 ? 'text-amber-500' : 'text-emerald-500'
+  const cls = seconds < 300 ? 'text-red-400' : seconds < 600 ? 'text-amber-500' : 'text-emerald-500'
   return (
     <div className={`flex items-center gap-1.5 font-mono font-black text-xl ${cls}`}>
       <span>⏱️</span>
@@ -53,20 +53,20 @@ const OptionButton = memo(function OptionButton({ label, text, selected, onClick
       className={[
         'w-full flex items-center gap-4 p-4 rounded-xl border-2 text-left transition-all',
         selected
-          ? 'border-blue-500 bg-blue-50 shadow-sm'
-          : 'border-gray-200 hover:border-blue-300 hover:bg-blue-50/40',
+          ? 'border-primary-500 bg-primary-500/10 shadow-sm'
+          : 'border-white/10 hover:border-primary-400 hover:bg-primary-500/10',
       ].join(' ')}
     >
       <span className={[
         'w-9 h-9 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0 transition-all',
-        selected ? 'bg-blue-600 text-white shadow' : 'bg-gray-100 text-gray-600',
+        selected ? 'bg-primary-600 text-white shadow' : 'bg-white/5 text-slate-400',
       ].join(' ')}>
         {label}
       </span>
-      <span className={`text-sm font-medium leading-relaxed flex-1 text-left break-words ${selected ? 'text-blue-800' : 'text-gray-700'}`}>
+      <span className={`text-sm font-medium leading-relaxed flex-1 text-left break-words ${selected ? 'text-primary-300' : 'text-slate-300'}`}>
         {text}
       </span>
-      {selected && <span className="ml-auto text-blue-500 flex-shrink-0 text-lg">✓</span>}
+      {selected && <span className="ml-auto text-primary-400 flex-shrink-0 text-lg">✓</span>}
     </button>
   )
 })
@@ -80,9 +80,9 @@ const PaletteDot = memo(function PaletteDot({ num, isCurrent, isAnswered, onClic
       title={`Q${num}${isAnswered ? ' ✓' : ''}`}
       className={[
         'w-full aspect-square rounded-lg text-xs font-black transition-all',
-        isCurrent  ? 'bg-blue-600 text-white shadow-sm scale-110' :
-        isAnswered ? 'bg-emerald-500 text-white' :
-                     'bg-gray-100 text-gray-500 hover:bg-gray-200',
+        isCurrent  ? 'bg-primary-600 text-white shadow-sm scale-110' :
+        isAnswered ? 'bg-accent-500 text-white' :
+                     'bg-white/5 text-slate-400 hover:bg-white/10',
       ].join(' ')}
     >
       {num}
@@ -217,7 +217,7 @@ export default function QuizAttempt() {
   // ═══════════════════════════════════════════════════════════════════════════
   if (phase === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-base">
         <PageLoader text="Loading quiz…" />
       </div>
     )
@@ -228,16 +228,16 @@ export default function QuizAttempt() {
   // ═══════════════════════════════════════════════════════════════════════════
   if (phase === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
-        <div className="bg-white rounded-2xl shadow-xl border border-gray-100 p-8 max-w-sm w-full text-center">
+      <div className="min-h-screen flex items-center justify-center bg-surface-base p-6">
+        <div className="bg-surface-card rounded-2xl shadow-xl border border-white/10 p-8 max-w-sm w-full text-center">
           <div className="text-5xl mb-4">⚠️</div>
-          <h2 className="text-lg font-black text-gray-900 mb-2">Could Not Load Quiz</h2>
-          <p className="text-sm text-red-600 font-medium mb-6 bg-red-50 border border-red-200 rounded-xl px-4 py-3">
+          <h2 className="text-lg font-black text-white mb-2">Could Not Load Quiz</h2>
+          <p className="text-sm text-red-400 font-medium mb-6 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
             {errorMsg}
           </p>
           <button
             onClick={() => navigate('/quizzes')}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-sm transition-colors"
+            className="w-full bg-primary-600 hover:bg-primary-500 text-white font-bold py-3 rounded-xl text-sm transition-colors"
           >
             ← Back to Quizzes
           </button>
@@ -251,13 +251,13 @@ export default function QuizAttempt() {
   // ═══════════════════════════════════════════════════════════════════════════
   if (phase === 'intro') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-blue-950 p-6">
-        <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg p-8">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-card to-primary-900 p-6">
+        <div className="bg-surface-raised rounded-3xl shadow-2xl w-full max-w-lg p-8">
           <div className="text-center mb-6">
             <div className="text-5xl mb-3">🧠</div>
-            <h1 className="text-2xl font-black text-gray-900 mb-1 break-words">{quiz?.title}</h1>
+            <h1 className="text-2xl font-black text-white mb-1 break-words">{quiz?.title}</h1>
             {quiz?.description && (
-              <p className="text-gray-500 text-sm leading-relaxed mt-1">{quiz.description}</p>
+              <p className="text-slate-400 text-sm leading-relaxed mt-1">{quiz.description}</p>
             )}
           </div>
 
@@ -268,29 +268,29 @@ export default function QuizAttempt() {
               ['⏱️', `${quiz?.duration}m`,          'Time Limit'],
               ['🎯', `${quiz?.passMarks} (${quiz?.passPercentage}%)`, 'Pass Marks'],
             ].map(([ic, v, l]) => (
-              <div key={l} className="bg-blue-50 border border-blue-100 rounded-xl p-3 text-center">
+              <div key={l} className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-3 text-center">
                 <span className="text-2xl leading-none">{ic}</span>
-                <p className="font-black text-gray-900 mt-1 text-sm leading-tight">{v}</p>
-                <p className="text-xs text-gray-400 leading-tight">{l}</p>
+                <p className="font-black text-white mt-1 text-sm leading-tight">{v}</p>
+                <p className="text-xs text-slate-500 leading-tight">{l}</p>
               </div>
             ))}
           </div>
 
           {quiz?.attemptsLeft !== undefined && (
-            <p className="text-center text-xs text-gray-500 mb-4 font-medium">
-              Attempts remaining: <strong className="text-blue-600">{quiz.attemptsLeft}</strong> / {quiz.attemptsAllowed}
+            <p className="text-center text-xs text-slate-400 mb-4 font-medium">
+              Attempts remaining: <strong className="text-primary-400">{quiz.attemptsLeft}</strong> / {quiz.attemptsAllowed}
             </p>
           )}
 
-          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6 text-left">
+          <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6 text-left">
             <p className="text-xs font-black text-amber-800 mb-2 uppercase tracking-wide">📌 Instructions</p>
-            <ul className="text-xs text-amber-700 space-y-1.5 leading-snug">
+            <ul className="text-xs text-amber-300 space-y-1.5 leading-snug">
               <li>• Questions are randomly shuffled every attempt</li>
               <li>• Navigate freely using Prev / Next or the question palette</li>
               <li>• Timer auto-submits when time runs out</li>
               <li>• Unanswered questions are marked as incorrect</li>
               {quiz?.negativeMarking && (
-                <li className="font-bold text-red-700">
+                <li className="font-bold text-red-300">
                   ⚠️ Negative marking: −{quiz.negativeMarksPerQ} mark per wrong answer
                 </li>
               )}
@@ -299,7 +299,7 @@ export default function QuizAttempt() {
 
           <button
             onClick={startQuiz}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-2xl text-lg transition-all shadow-lg hover:shadow-xl"
+            className="w-full bg-primary-600 hover:bg-primary-500 text-white font-black py-4 rounded-2xl text-lg transition-all shadow-lg hover:shadow-xl"
           >
             🚀 Begin Quiz
           </button>
@@ -313,11 +313,11 @@ export default function QuizAttempt() {
   // ═══════════════════════════════════════════════════════════════════════════
   if (phase === 'submitting') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="min-h-screen flex items-center justify-center bg-surface-base">
         <div className="text-center">
           <div className="text-5xl mb-4 animate-bounce">📤</div>
-          <p className="text-xl font-black text-gray-900">Evaluating your answers…</p>
-          <p className="text-gray-500 mt-2 text-sm">Calculating score, rank and result</p>
+          <p className="text-xl font-black text-white">Evaluating your answers…</p>
+          <p className="text-slate-400 mt-2 text-sm">Calculating score, rank and result</p>
         </div>
       </div>
     )
@@ -332,7 +332,7 @@ export default function QuizAttempt() {
   const progPct    = total > 0 ? ((current + 1) / total) * 100 : 0
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-surface-base flex flex-col">
 
       {/* Confirm submit dialog */}
       <ConfirmDialog
@@ -349,11 +349,11 @@ export default function QuizAttempt() {
       />
 
       {/* Sticky header */}
-      <div className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-20">
+      <div className="bg-surface-card/95 backdrop-blur-xl border-b border-white/10 shadow-sm sticky top-0 z-20">
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between gap-4 flex-wrap">
           <div className="min-w-0 flex-1">
-            <p className="font-black text-gray-900 text-sm truncate">{quiz?.title}</p>
-            <p className="text-xs text-gray-500">
+            <p className="font-black text-white text-sm truncate">{quiz?.title}</p>
+            <p className="text-xs text-slate-400">
               Question {current + 1} / {total} &nbsp;·&nbsp; {answered} answered
             </p>
           </div>
@@ -362,16 +362,16 @@ export default function QuizAttempt() {
             <button
               type="button"
               onClick={() => setConfirm(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-black px-5 py-2.5 rounded-xl transition-colors shadow-sm"
+              className="bg-primary-600 hover:bg-primary-500 text-white text-sm font-black px-5 py-2.5 rounded-xl transition-colors shadow-sm"
             >
               Submit
             </button>
           </div>
         </div>
         {/* Overall progress bar */}
-        <div className="h-1 bg-gray-100">
+        <div className="h-1 bg-white/5">
           <div
-            className="h-full bg-blue-500 transition-all duration-300"
+            className="h-full bg-primary-500 transition-all duration-300"
             style={{ width: `${progPct}%` }}
           />
         </div>
@@ -380,7 +380,7 @@ export default function QuizAttempt() {
       {/* Error banner (submit retry) */}
       {errorMsg && (
         <div className="max-w-5xl mx-auto w-full px-4 pt-4">
-          <div className="bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-sm font-semibold">
+          <div className="bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm font-semibold">
             ❌ {errorMsg}
           </div>
         </div>
@@ -391,26 +391,26 @@ export default function QuizAttempt() {
 
         {/* Question area */}
         <div className="lg:col-span-3 space-y-4">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-6">
 
             {/* Meta badges */}
             <div className="flex items-center gap-2 mb-4 flex-wrap">
-              <span className="bg-blue-100 text-blue-700 text-xs font-black px-3 py-1 rounded-full">
+              <span className="bg-primary-500/15 text-primary-300 text-xs font-black px-3 py-1 rounded-full">
                 Q{current + 1}
               </span>
               <DiffBadge level={q.difficulty} />
               {q.category && (
-                <span className="bg-gray-100 text-gray-600 text-xs font-semibold px-2.5 py-1 rounded-full">
+                <span className="bg-white/5 text-slate-400 text-xs font-semibold px-2.5 py-1 rounded-full">
                   {q.category}
                 </span>
               )}
-              <span className="text-xs text-gray-400 ml-auto font-medium">
+              <span className="text-xs text-slate-500 ml-auto font-medium">
                 {q.marks || 1} mark{(q.marks || 1) > 1 ? 's' : ''}
               </span>
             </div>
 
             {/* Question text */}
-            <p className="text-gray-900 font-semibold text-base leading-relaxed mb-6 break-words">
+            <p className="text-white font-semibold text-base leading-relaxed mb-6 break-words">
               {q.question}
             </p>
 
@@ -438,18 +438,18 @@ export default function QuizAttempt() {
               type="button"
               onClick={prev}
               disabled={current === 0}
-              className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               ← Previous
             </button>
-            <span className="text-sm text-gray-500 font-medium">
-              <span className="text-blue-600 font-black">{answered}</span> / {total} answered
+            <span className="text-sm text-slate-400 font-medium">
+              <span className="text-primary-400 font-black">{answered}</span> / {total} answered
             </span>
             <button
               type="button"
               onClick={next}
               disabled={current === total - 1}
-              className="px-5 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              className="px-5 py-2.5 rounded-xl border border-white/10 text-sm font-semibold text-slate-300 hover:bg-white/5 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Next →
             </button>
@@ -458,8 +458,8 @@ export default function QuizAttempt() {
 
         {/* Question palette sidebar */}
         <div className="lg:col-span-1">
-          <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-4 sticky top-24">
-            <p className="text-xs font-black text-gray-500 uppercase tracking-widest mb-3">
+          <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-4 lg:sticky lg:top-24">
+            <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">
               Question Palette
             </p>
 
@@ -478,26 +478,26 @@ export default function QuizAttempt() {
             {/* Legend */}
             <div className="space-y-1.5 text-xs mb-4">
               {[
-                ['bg-blue-600',   'Current'],
-                ['bg-emerald-500','Answered'],
-                ['bg-gray-100 border border-gray-200', 'Not answered'],
+                ['bg-primary-600',   'Current'],
+                ['bg-accent-500','Answered'],
+                ['bg-white/5 border border-white/10', 'Not answered'],
               ].map(([cls, lbl]) => (
                 <div key={lbl} className="flex items-center gap-2">
                   <span className={`w-4 h-4 rounded flex-shrink-0 ${cls}`} />
-                  <span className="text-gray-500 font-medium">{lbl}</span>
+                  <span className="text-slate-400 font-medium">{lbl}</span>
                 </div>
               ))}
             </div>
 
             {/* Progress */}
             <div className="mb-4">
-              <div className="flex justify-between text-xs text-gray-500 mb-1">
+              <div className="flex justify-between text-xs text-slate-400 mb-1">
                 <span>Progress</span>
                 <span>{answered}/{total}</span>
               </div>
-              <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+              <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                  className="h-full bg-primary-500 rounded-full transition-all duration-300"
                   style={{ width: total > 0 ? `${(answered / total) * 100}%` : '0%' }}
                 />
               </div>
@@ -506,7 +506,7 @@ export default function QuizAttempt() {
             <button
               type="button"
               onClick={() => setConfirm(true)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-black py-3 rounded-xl transition-colors"
+              className="w-full bg-primary-600 hover:bg-primary-500 text-white text-sm font-black py-3 rounded-xl transition-colors"
             >
               Submit Quiz
             </button>
