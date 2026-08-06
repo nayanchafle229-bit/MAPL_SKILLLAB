@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader } from '../components/UI'
+import { getLevel } from '../utils/levels'
+import Markdown from '../components/Markdown'
 
 function getYouTubeId(url) {
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
@@ -15,6 +17,8 @@ function getEmbedUrl(url) {
   return url
 }
 
+// (rich notes rendering now handled by the shared <Markdown> component)
+
 export default function CourseWatch() {
   const { id } = useParams()
   const [course, setCourse]   = useState(null)
@@ -22,6 +26,7 @@ export default function CourseWatch() {
   const [loading, setLoading] = useState(true)
   const [progress, setProgress] = useState(null) // { status, completedAt, ... } | null
   const [marking, setMarking] = useState(false)
+  const [tab, setTab] = useState('overview') // 'overview' | 'notes'
 
   useEffect(() => {
     Promise.all([api.get(`/course/${id}`), api.get('/course')])
@@ -35,6 +40,8 @@ export default function CourseWatch() {
     api.post(`/course/${id}/watch`)
       .then(({ data }) => setProgress(data.progress))
       .catch(() => {}) // non-fatal — e.g. admin account, or a transient error
+
+    setTab('overview')
   }, [id])
 
   const markComplete = () => {
@@ -48,6 +55,8 @@ export default function CourseWatch() {
   if (!course) return <Layout title="Course"><p className="text-slate-400">Course not found.</p></Layout>
 
   const embedUrl = getEmbedUrl(course.videoUrl)
+  const level = getLevel(course.level)
+  const hasNotes = !!course.notes?.trim()
 
   return (
     <Layout title={course.title}>
@@ -66,6 +75,9 @@ export default function CourseWatch() {
                 <h1 className="text-xl font-black text-white mb-2">{course.title}</h1>
                 <div className="flex items-center gap-2 flex-wrap">
                   {course.category && <span className="badge-blue">{course.category}</span>}
+                  <span className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full border ${level.badge}`}>
+                    {level.icon} {level.label}
+                  </span>
                   {progress?.status === 'completed' && (
                     <span className="inline-flex items-center gap-1 bg-accent-500/15 text-accent-400 text-xs font-black px-3 py-1 rounded-full">
                       ✓ Completed
@@ -83,9 +95,32 @@ export default function CourseWatch() {
                 <Link to="/quiz" className="btn-primary text-sm">🧠 Take Quiz</Link>
               </div>
             </div>
-            <p className="text-slate-400 mt-4 leading-relaxed">{course.description}</p>
-            <div className="mt-4 pt-4 border-t border-white/10">
-              <p className="text-xs text-slate-500">Added on {new Date(course.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+
+            {/* Overview / Notes tabs — like Coursera's video + reading material tabs */}
+            <div className="mt-5 flex items-center gap-1 border-b border-white/10">
+              <button onClick={() => setTab('overview')}
+                className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${tab === 'overview' ? 'border-primary-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
+                📖 Overview
+              </button>
+              <button onClick={() => setTab('notes')}
+                className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${tab === 'notes' ? 'border-primary-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
+                📝 Notes {hasNotes && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-primary-400 inline-block align-middle" />}
+              </button>
+            </div>
+
+            <div className="pt-4">
+              {tab === 'overview' ? (
+                <>
+                  <p className="text-slate-400 leading-relaxed">{course.description}</p>
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    <p className="text-xs text-slate-500">Added on {new Date(course.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                  </div>
+                </>
+              ) : hasNotes ? (
+                <Markdown>{course.notes}</Markdown>
+              ) : (
+                <p className="text-sm text-slate-500 italic">No notes have been added for this course yet.</p>
+              )}
             </div>
           </div>
         </div>
@@ -101,6 +136,7 @@ export default function CourseWatch() {
                 {courses.map(c => {
                   const ytId = getYouTubeId(c.videoUrl)
                   const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/mqdefault.jpg` : null
+                  const cLevel = getLevel(c.level)
                   return (
                     <Link to={`/courses/${c._id}`} key={c._id}
                       className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group">
@@ -110,7 +146,10 @@ export default function CourseWatch() {
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-primary-400 transition-colors">{c.title}</p>
-                        {c.category && <p className="text-xs text-slate-500 mt-0.5">{c.category}</p>}
+                        <div className="flex items-center gap-1.5 mt-0.5">
+                          {c.category && <p className="text-xs text-slate-500">{c.category}</p>}
+                          <span className="text-xs">{cLevel.icon}</span>
+                        </div>
                       </div>
                     </Link>
                   )

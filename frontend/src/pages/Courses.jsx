@@ -1,18 +1,61 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader, EmptyState } from '../components/UI'
+import { LEVELS, getLevel } from '../utils/levels'
 
 function getYouTubeId(url) {
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   return m ? m[1] : null
 }
 
+function CourseCard({ c }) {
+  const ytId = getYouTubeId(c.videoUrl)
+  const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null
+  const level = getLevel(c.level)
+  return (
+    <Link to={`/courses/${c._id}`}
+      className="card group hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer p-0 overflow-hidden flex-shrink-0">
+      <div className="aspect-video bg-gradient-to-br from-slate-700 to-surface-base relative overflow-hidden">
+        {thumb
+          ? <img src={thumb} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+          : <div className="w-full h-full flex items-center justify-center text-5xl">🎬</div>
+        }
+        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all flex items-center justify-center">
+          <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+            <svg className="w-5 h-5 text-primary-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+          </div>
+        </div>
+        {c.category && (
+          <span className="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+            {c.category}
+          </span>
+        )}
+        <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full ${level.chip}`}>
+          {level.icon} {level.label}
+        </span>
+      </div>
+      <div className="p-4">
+        <h3 className="font-bold text-white mb-1 line-clamp-1">{c.title}</h3>
+        <p className="text-sm text-slate-400 line-clamp-2">{c.description}</p>
+        <div className="mt-3 flex items-center justify-between">
+          <span className="text-xs text-slate-500">{new Date(c.createdAt).toLocaleDateString('en-IN')}</span>
+          <span className="text-primary-400 text-sm font-semibold group-hover:underline">▶ Watch Now</span>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 export default function Courses() {
   const [courses, setCourses] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch]   = useState('')
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [activeLevel, setActiveLevel] = useState('All')
 
   useEffect(() => {
     api.get('/course')
@@ -20,10 +63,32 @@ export default function Courses() {
       .finally(() => setLoading(false))
   }, [])
 
-  const filtered = courses.filter(c =>
+  // Categories derived from the actual courses, Coursera/Udemy-style chips
+  const categories = useMemo(() => {
+    const counts = {}
+    courses.forEach(c => {
+      const cat = c.category || 'General'
+      counts[cat] = (counts[cat] || 0) + 1
+    })
+    return Object.entries(counts).sort((a, b) => a[0].localeCompare(b[0]))
+  }, [courses])
+
+  const searched = useMemo(() => courses.filter(c =>
     c.title.toLowerCase().includes(search.toLowerCase()) ||
     c.category?.toLowerCase().includes(search.toLowerCase())
-  )
+  ), [courses, search])
+
+  const filtered = useMemo(() => searched.filter(c =>
+    (activeCategory === 'All' || (c.category || 'General') === activeCategory) &&
+    (activeLevel === 'All' || (c.level || 'easy') === activeLevel)
+  ), [searched, activeCategory, activeLevel])
+
+  // Group the filtered results by level so they read like Coursera's
+  // "Beginner / Intermediate / Advanced" learning-path rows.
+  const grouped = useMemo(() => {
+    const groups = LEVELS.map(l => ({ ...l, courses: filtered.filter(c => (c.level || 'easy') === l.value) }))
+    return groups.filter(g => g.courses.length > 0)
+  }, [filtered])
 
   if (loading) return <Layout title="Courses"><PageLoader /></Layout>
 
@@ -39,45 +104,59 @@ export default function Courses() {
           className="input-field max-w-xs" />
       </div>
 
+      {/* Browse by category — Coursera/Udemy style chip row */}
+      <div className="mb-4 overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 min-w-max">
+          <button onClick={() => setActiveCategory('All')}
+            className={`text-sm font-semibold px-4 py-2 rounded-full border transition-colors flex-shrink-0 ${activeCategory === 'All' ? 'bg-primary-600 border-primary-600 text-white' : 'border-white/10 text-slate-300 hover:bg-white/5'}`}>
+            All Categories
+          </button>
+          {categories.map(([name, count]) => (
+            <button key={name} onClick={() => setActiveCategory(name)}
+              className={`text-sm font-semibold px-4 py-2 rounded-full border transition-colors flex-shrink-0 ${activeCategory === name ? 'bg-primary-600 border-primary-600 text-white' : 'border-white/10 text-slate-300 hover:bg-white/5'}`}>
+              {name} <span className="opacity-70">({count})</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* Browse by level */}
+      <div className="mb-6 overflow-x-auto pb-1">
+        <div className="flex items-center gap-2 min-w-max">
+          <button onClick={() => setActiveLevel('All')}
+            className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-colors flex-shrink-0 ${activeLevel === 'All' ? 'bg-slate-600 border-slate-600 text-white' : 'border-white/10 text-slate-400 hover:bg-white/5'}`}>
+            All Levels
+          </button>
+          {LEVELS.map(l => (
+            <button key={l.value} onClick={() => setActiveLevel(l.value)}
+              className={`text-xs font-bold px-3 py-1.5 rounded-full border transition-colors flex-shrink-0 ${activeLevel === l.value ? `${l.chip} border-transparent` : 'border-white/10 text-slate-400 hover:bg-white/5'}`}>
+              {l.icon} {l.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {filtered.length === 0 ? (
-        <EmptyState icon="📚" title="No courses found" description={search ? 'Try a different search term.' : 'The admin hasn\'t added any courses yet.'} />
-      ) : (
+        <EmptyState icon="📚" title="No courses found" description={search || activeCategory !== 'All' || activeLevel !== 'All' ? 'Try a different search, category or level.' : 'The admin hasn\'t added any courses yet.'} />
+      ) : activeLevel !== 'All' ? (
+        // A specific level is selected — just show a flat grid
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {filtered.map(c => {
-            const ytId = getYouTubeId(c.videoUrl)
-            const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null
-            return (
-              <Link to={`/courses/${c._id}`} key={c._id}
-                className="card group hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer p-0 overflow-hidden">
-                <div className="aspect-video bg-gradient-to-br from-slate-700 to-surface-base relative overflow-hidden">
-                  {thumb
-                    ? <img src={thumb} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-                    : <div className="w-full h-full flex items-center justify-center text-5xl">🎬</div>
-                  }
-                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all flex items-center justify-center">
-                    <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-                      <svg className="w-5 h-5 text-primary-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M8 5v14l11-7z"/>
-                      </svg>
-                    </div>
-                  </div>
-                  {c.category && (
-                    <span className="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
-                      {c.category}
-                    </span>
-                  )}
-                </div>
-                <div className="p-4">
-                  <h3 className="font-bold text-white mb-1 line-clamp-1">{c.title}</h3>
-                  <p className="text-sm text-slate-400 line-clamp-2">{c.description}</p>
-                  <div className="mt-3 flex items-center justify-between">
-                    <span className="text-xs text-slate-500">{new Date(c.createdAt).toLocaleDateString('en-IN')}</span>
-                    <span className="text-primary-400 text-sm font-semibold group-hover:underline">▶ Watch Now</span>
-                  </div>
-                </div>
-              </Link>
-            )
-          })}
+          {filtered.map(c => <CourseCard key={c._id} c={c} />)}
+        </div>
+      ) : (
+        // No level filter — show Coursera-style rows grouped by level
+        <div className="space-y-8">
+          {grouped.map(g => (
+            <div key={g.value}>
+              <div className="flex items-center gap-2 mb-3">
+                <h3 className="text-lg font-black text-white">{g.icon} {g.label}</h3>
+                <span className="text-xs text-slate-500">{g.courses.length} course{g.courses.length !== 1 ? 's' : ''}</span>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+                {g.courses.map(c => <CourseCard key={c._id} c={c} />)}
+              </div>
+            </div>
+          ))}
         </div>
       )}
     </Layout>

@@ -4,11 +4,37 @@ const Course = require('../models/Course');
 const CourseProgress = require('../models/CourseProgress');
 const { protect, adminOnly } = require('../middleware/auth');
 
+const { COURSE_LEVELS } = Course;
+
 // GET /api/course — all users
+// Supports optional ?category=&level= query filters so the frontend can
+// do server-side filtering too if it ever needs to (the Courses page
+// currently filters client-side against the full list it already has).
 router.get('/', protect, async (req, res) => {
   try {
-    const courses = await Course.find().sort({ createdAt: -1 });
+    const filter = {};
+    if (req.query.category) filter.category = req.query.category;
+    if (req.query.level) filter.level = req.query.level;
+    const courses = await Course.find(filter).sort({ createdAt: -1 });
     res.json({ courses });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/course/meta/categories — distinct categories with course counts
+// and the fixed list of levels, so the frontend can build the
+// "browse by category" / "browse by level" chips like Coursera/Udemy.
+router.get('/meta/categories', protect, async (req, res) => {
+  try {
+    const categories = await Course.aggregate([
+      { $group: { _id: '$category', count: { $sum: 1 } } },
+      { $sort: { _id: 1 } },
+    ]);
+    res.json({
+      categories: categories.map(c => ({ name: c._id || 'General', count: c.count })),
+      levels: COURSE_LEVELS,
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -97,11 +123,18 @@ router.get('/:id', protect, async (req, res) => {
 // POST /api/course — admin only
 router.post('/', protect, adminOnly, async (req, res) => {
   try {
-    const { title, description, videoUrl, category } = req.body;
+    const { title, description, videoUrl, category, level, notes } = req.body;
     if (!title || !description || !videoUrl) {
       return res.status(400).json({ message: 'Title, description and video URL are required' });
     }
-    const course = await Course.create({ title, description, videoUrl, category, createdBy: req.user._id });
+    if (level && !COURSE_LEVELS.includes(level)) {
+      return res.status(400).json({ message: `Level must be one of: ${COURSE_LEVELS.join(', ')}` });
+    }
+    const course = await Course.create({
+      title, description, videoUrl, category, notes,
+      level: level || 'easy',
+      createdBy: req.user._id,
+    });
     res.status(201).json({ course, message: 'Course created successfully' });
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -111,7 +144,10 @@ router.post('/', protect, adminOnly, async (req, res) => {
 // PUT /api/course/:id — admin only
 router.put('/:id', protect, adminOnly, async (req, res) => {
   try {
-    const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (req.body.level && !COURSE_LEVELS.includes(req.body.level)) {
+      return res.status(400).json({ message: `Level must be one of: ${COURSE_LEVELS.join(', ')}` });
+    }
+    const course = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!course) return res.status(404).json({ message: 'Course not found' });
     res.json({ course, message: 'Course updated' });
   } catch (err) {

@@ -64,11 +64,70 @@ const sampleQuestions = [
 ];
 
 const sampleCourses = [
-  { title: 'JavaScript Fundamentals', description: 'Master the core concepts of JavaScript including variables, functions, closures, async/await and the DOM.', videoUrl: 'https://www.youtube.com/watch?v=W6NZfCO5SIk', category: 'JavaScript' },
-  { title: 'React.js Complete Guide', description: 'Build modern UIs with React hooks, context API, React Router and best practices for production apps.', videoUrl: 'https://www.youtube.com/watch?v=bMknfKXIFA8', category: 'React' },
-  { title: 'Node.js & Express Backend', description: 'Build scalable REST APIs with Node.js, Express, middleware, authentication and MongoDB integration.', videoUrl: 'https://www.youtube.com/watch?v=Oe421EPjeBE', category: 'Node.js' },
-  { title: 'MongoDB & Mongoose', description: 'Learn NoSQL database design, CRUD operations, aggregation pipelines and Mongoose schemas with real projects.', videoUrl: 'https://www.youtube.com/watch?v=ExcRbA7fy_A', category: 'MongoDB' },
-  { title: 'Full Stack MERN Project', description: 'End-to-end project building a full stack app with MongoDB, Express, React and Node.js from scratch.', videoUrl: 'https://www.youtube.com/watch?v=7CqJlxBYj-M', category: 'General' },
+  { title: 'JavaScript Fundamentals', description: 'Master the core concepts of JavaScript including variables, functions, closures, async/await and the DOM.', videoUrl: 'https://www.youtube.com/watch?v=W6NZfCO5SIk', category: 'JavaScript', level: 'easy',
+    notes: `# What you'll learn
+- Variables (\`var\` / \`let\` / \`const\`) and scope
+- Functions, closures and the **\`this\`** keyword
+- The event loop and \`async\`/\`await\`
+- DOM basics
+
+## Quick reference
+
+\`\`\`js
+// let/const are block-scoped, var is function-scoped
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 0); // 0, 1, 2
+}
+\`\`\`
+
+> **Tip:** work through the video first, then use this page as a cheat sheet before attempting the quiz.
+
+Further reading: [MDN JavaScript Guide](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide)` },
+  { title: 'React.js Complete Guide', description: 'Build modern UIs with React hooks, context API, React Router and best practices for production apps.', videoUrl: 'https://www.youtube.com/watch?v=bMknfKXIFA8', category: 'React', level: 'intermediate',
+    notes: `# Key topics
+- \`useState\` / \`useEffect\` / \`useContext\`
+- Component composition vs prop drilling
+- React Router basics
+- Performance: \`memo\`, \`useCallback\`, \`useMemo\`
+
+| Hook | Purpose |
+|---|---|
+| useState | Local component state |
+| useEffect | Side effects & lifecycle |
+| useContext | Read shared/global state |
+
+> Pause the video and rebuild each example yourself before moving on — typing it out beats copy-pasting.` },
+  { title: 'Node.js & Express Backend', description: 'Build scalable REST APIs with Node.js, Express, middleware, authentication and MongoDB integration.', videoUrl: 'https://www.youtube.com/watch?v=Oe421EPjeBE', category: 'Node.js', level: 'intermediate',
+    notes: `# Key topics
+- Express routing & middleware
+- JWT-based authentication
+- Connecting to MongoDB with Mongoose
+- Error handling patterns
+
+\`\`\`js
+app.use((err, req, res, next) => {
+  res.status(500).json({ message: err.message });
+});
+\`\`\`` },
+  { title: 'MongoDB & Mongoose', description: 'Learn NoSQL database design, CRUD operations, aggregation pipelines and Mongoose schemas with real projects.', videoUrl: 'https://www.youtube.com/watch?v=ExcRbA7fy_A', category: 'MongoDB', level: 'advanced',
+    notes: `# Key topics
+1. Schema design & validation
+2. Indexes and query performance
+3. The aggregation pipeline
+4. Transactions
+
+> **Advanced course** — you should already be comfortable with basic CRUD operations before starting this one.` },
+  { title: 'Full Stack MERN Project', description: 'End-to-end project building a full stack app with MongoDB, Express, React and Node.js from scratch.', videoUrl: 'https://www.youtube.com/watch?v=7CqJlxBYj-M', category: 'General', level: 'god',
+    notes: `# God Mode 🔥
+This is the capstone project — it assumes you're comfortable with everything in the **Easy**, **Intermediate** and **Advanced** courses.
+
+- Architect the full stack from scratch
+- Wire up auth, API and frontend together
+- Deploy the finished app
+
+---
+
+Good luck. 🚀` },
 ];
 
 async function seed() {

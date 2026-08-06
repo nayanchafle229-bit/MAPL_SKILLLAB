@@ -3,9 +3,11 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { AuthProvider, useAuth } from './context/AuthContext'
 
 // Auth pages
-import Login    from './pages/Login'
-import Register from './pages/Register'
-import Profile  from './pages/Profile'
+import Login          from './pages/Login'
+import Register       from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword  from './pages/ResetPassword'
+import Profile        from './pages/Profile'
 
 // Student pages
 import Dashboard        from './pages/Dashboard'
@@ -81,6 +83,8 @@ export default function App() {
           <Route path="/"         element={<Navigate to="/login" replace />} />
           <Route path="/login"    element={<PublicRoute><Login /></PublicRoute>} />
           <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+          <Route path="/forgot-password"       element={<PublicRoute><ForgotPassword /></PublicRoute>} />
+          <Route path="/reset-password/:token" element={<PublicRoute><ResetPassword /></PublicRoute>} />
 
           {/* Student — protected */}
           <Route path="/profile"           element={<ProtectedRoute><Profile /></ProtectedRoute>} />

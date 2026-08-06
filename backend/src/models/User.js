@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
   // When true, this user (even though role='user') is permitted to view
   // other students' progress via the /api/progress routes. Granted by admin.
   canViewProgress: { type: Boolean, default: false },
+  // Password reset — we store a SHA-256 hash of the token (never the raw
+  // token) so a leaked database never exposes usable reset links.
+  resetPasswordToken:   { type: String, default: undefined },
+  resetPasswordExpires: { type: Date,   default: undefined },
 }, { timestamps: true });
 
 // Hash password before saving
@@ -35,6 +39,8 @@ userSchema.methods.comparePassword = async function (plain) {
 userSchema.methods.toSafeObject = function () {
   const obj = this.toObject();
   delete obj.password;
+  delete obj.resetPasswordToken;
+  delete obj.resetPasswordExpires;
   return obj;
 };
 

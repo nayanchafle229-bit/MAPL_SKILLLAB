@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { Modal, ConfirmDialog, Alert, PageLoader, EmptyState } from '../../components/UI'
+import { LEVELS, getLevel } from '../../utils/levels'
+import Markdown from '../../components/Markdown'
 
-const EMPTY = { title: '', description: '', videoUrl: '', category: '' }
+const EMPTY = { title: '', description: '', videoUrl: '', category: '', level: 'easy', notes: '' }
 const CATS  = ['JavaScript','React','Node.js','MongoDB','Python','General','Web','Database','Other']
 
 export default function AdminCourses() {
@@ -16,6 +18,7 @@ export default function AdminCourses() {
   const [error,   setError]   = useState('')
   const [success, setSuccess] = useState('')
   const [delId,   setDelId]   = useState(null)
+  const [notesPreview, setNotesPreview] = useState(false)
 
   const load = () => {
     setLoading(true)
@@ -23,8 +26,8 @@ export default function AdminCourses() {
   }
   useEffect(load, [])
 
-  const openAdd  = () => { setEditing(null); setForm(EMPTY); setError(''); setModal(true) }
-  const openEdit = (c) => { setEditing(c); setForm({ title: c.title, description: c.description, videoUrl: c.videoUrl, category: c.category || '' }); setError(''); setModal(true) }
+  const openAdd  = () => { setEditing(null); setForm(EMPTY); setError(''); setNotesPreview(false); setModal(true) }
+  const openEdit = (c) => { setEditing(c); setForm({ title: c.title, description: c.description, videoUrl: c.videoUrl, category: c.category || '', level: c.level || 'easy', notes: c.notes || '' }); setError(''); setNotesPreview(false); setModal(true) }
   const handle   = e => setForm(f => ({ ...f, [e.target.name]: e.target.value }))
 
   const save = async (e) => {
@@ -58,7 +61,7 @@ export default function AdminCourses() {
       <ConfirmDialog open={!!delId} onClose={() => setDelId(null)} onConfirm={deleteCourse}
         title="Delete Course?" message="This will permanently remove this course." confirmLabel="Delete" danger />
 
-      <Modal open={modal} onClose={() => setModal(false)} title={editing ? 'Edit Course' : 'Add New Course'}>
+      <Modal open={modal} onClose={() => setModal(false)} title={editing ? 'Edit Course' : 'Add New Course'} wide>
         <form onSubmit={save} className="space-y-4">
           <div>
             <label className="block text-sm font-semibold text-slate-300 mb-1">Title *</label>
@@ -74,12 +77,47 @@ export default function AdminCourses() {
             <input name="videoUrl" value={form.videoUrl} onChange={handle} placeholder="https://youtube.com/watch?v=..." className="input-field" required />
             <p className="text-xs text-slate-500 mt-1">YouTube URLs are supported and will auto-embed.</p>
           </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-1">Category</label>
+              <select name="category" value={form.category} onChange={handle} className="input-field">
+                <option value="">Select category</option>
+                {CATS.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-semibold text-slate-300 mb-1">Level *</label>
+              <select name="level" value={form.level} onChange={handle} className="input-field" required>
+                {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+              </select>
+            </div>
+          </div>
           <div>
-            <label className="block text-sm font-semibold text-slate-300 mb-1">Category</label>
-            <select name="category" value={form.category} onChange={handle} className="input-field">
-              <option value="">Select category</option>
-              {CATS.map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-semibold text-slate-300">Notes (optional)</label>
+              <div className="flex items-center gap-1 bg-white/5 rounded-lg p-0.5">
+                <button type="button" onClick={() => setNotesPreview(false)}
+                  className={`text-xs font-bold px-3 py-1 rounded-md transition-colors ${!notesPreview ? 'bg-primary-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>
+                  Write
+                </button>
+                <button type="button" onClick={() => setNotesPreview(true)}
+                  className={`text-xs font-bold px-3 py-1 rounded-md transition-colors ${notesPreview ? 'bg-primary-600 text-white' : 'text-slate-400 hover:text-slate-200'}`}>
+                  Preview
+                </button>
+              </div>
+            </div>
+            {notesPreview ? (
+              <div className="input-field min-h-[160px] max-h-72 overflow-y-auto">
+                {form.notes.trim()
+                  ? <Markdown>{form.notes}</Markdown>
+                  : <p className="text-sm text-slate-500 italic">Nothing to preview yet — write some notes first.</p>}
+              </div>
+            ) : (
+              <textarea name="notes" value={form.notes} onChange={handle} rows={7}
+                placeholder={'Full Markdown supported — like Coursera/Udemy course notes:\n\n# Heading\n**bold**, *italic*, `inline code`\n- bullet list\n1. numbered list\n> blockquote\n[link](https://example.com)\n\n```js\nconst x = 1;\n```'}
+                className="input-field resize-none font-mono text-sm" />
+            )}
+            <p className="text-xs text-slate-500 mt-1">Shown in a "Notes" tab next to the video, like Coursera — supports headings, bold/italic, lists, tables, quotes, links and code blocks.</p>
           </div>
           {error && <Alert type="error" message={error} />}
           <div className="flex gap-3 pt-2">
@@ -119,8 +157,14 @@ export default function AdminCourses() {
               </div>
               <h3 className="font-bold text-white mb-1 line-clamp-1">{c.title}</h3>
               <p className="text-sm text-slate-400 line-clamp-2 mb-3">{c.description}</p>
-              <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 mb-3 flex-wrap">
                 {c.category && <span className="badge-blue">{c.category}</span>}
+                <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border ${getLevel(c.level).badge}`}>
+                  {getLevel(c.level).icon} {getLevel(c.level).label}
+                </span>
+                {c.notes && <span className="text-xs text-slate-500">📝 has notes</span>}
+              </div>
+              <div className="flex items-center justify-between">
                 <a href={c.videoUrl} target="_blank" rel="noreferrer"
                   className="text-xs text-primary-400 hover:underline">🔗 Open Link</a>
               </div>
