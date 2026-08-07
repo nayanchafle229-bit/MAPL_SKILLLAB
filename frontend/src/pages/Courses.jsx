@@ -30,7 +30,7 @@ function CourseCard({ c }) {
           </div>
         </div>
         {c.category && (
-          <span className="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">
+          <span className="absolute top-3 left-3 bg-primary-600 text-White text-xs font-bold px-2.5 py-1 rounded-full">
             {c.category}
           </span>
         )}

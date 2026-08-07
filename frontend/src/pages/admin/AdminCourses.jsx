@@ -6,7 +6,7 @@ import { LEVELS, getLevel } from '../../utils/levels'
 import Markdown from '../../components/Markdown'
 
 const EMPTY = { title: '', description: '', videoUrl: '', category: '', level: 'easy', notes: '' }
-const CATS  = ['JavaScript','React','Node.js','MongoDB','Python','General','Web','Database','Other']
+const CATS  = ['Industrial Automation Concepts & Process Control','Field Instrumentation, Final Control Elements & Loop Engineering','Control System Hardware, Panel & Architecture Design','Industrial Communication Protocols & Networks','Control Logic Programming & Configuration','HMI/SCADA Design, Alarm Management & Operations','Standards, Codes & Engineering Documentation','Functional Safety, Interlocks & Critical Systems','Industry Application Engineering (Vertical Domains)','Industrial Data, Historians & OT Cybersecurity','Project Execution, Commissioning & Lifecycle Support','Other']
 
 export default function AdminCourses() {
   const [courses, setCourses] = useState([])

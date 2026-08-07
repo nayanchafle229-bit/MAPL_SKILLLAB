@@ -6,6 +6,7 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 const { protect } = require('../middleware/auth');
 const { sendPasswordResetEmail } = require('../utils/email');
+const unlockEngine = require('../services/unlockEngine');
 
 const signToken = (id, role) =>
   jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN || '7d' });
@@ -21,6 +22,19 @@ router.post('/register', async (req, res) => {
     if (exists) return res.status(409).json({ message: 'Email already registered' });
 
     const user = await User.create({ email: email.toLowerCase(), password, role: 'user' });
+
+    // Seed this user's curriculum progress (44 rows: every category's L1
+    // unlocked, everything else locked — see unlockEngine.initializeUserProgress).
+    // Failure here shouldn't fail registration — the account is already
+    // created — but it must be visible, since a silent failure means this
+    // user's curriculum map renders empty until someone notices and re-runs
+    // it by hand.
+    try {
+      await unlockEngine.initializeUserProgress(user._id);
+    } catch (progressErr) {
+      console.error(`[register] failed to seed Progress for user ${user._id}:`, progressErr.message);
+    }
+
     const token = signToken(user._id, user.role);
 
     res.status(201).json({

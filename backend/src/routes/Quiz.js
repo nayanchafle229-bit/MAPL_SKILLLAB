@@ -13,6 +13,10 @@ const quizSchema = new mongoose.Schema({
   // Which of the 4 curriculum levels this quiz gates (mirrors Course.level).
   level:          { type: String, enum: QUIZ_LEVELS, default: null },
   // The module/course this quiz assesses.
+  // The module this quiz gates. courseId above is legacy (points at the old
+  // flat Course model); moduleId is what the unlock engine and the L4 case-
+  // study flow actually use. Set by the import script.
+  moduleId:       { type: mongoose.Schema.Types.ObjectId, ref: 'Module', default: null },
   courseId:       { type: mongoose.Schema.Types.ObjectId, ref: 'Course', default: null },
   totalQuestions: { type: Number, required: true, min: 1 },
   totalMarks:     { type: Number, required: true, min: 1 },

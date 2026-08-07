@@ -90,8 +90,25 @@ const PaletteDot = memo(function PaletteDot({ num, isCurrent, isAnswered, onClic
   )
 })
 
+// ── Numeric answer input (for NUMERIC-type questions) ──────────────────────────
+const NumericInput = memo(function NumericInput({ value, onChange }) {
+  return (
+    <div className="space-y-2">
+      <input
+        type="number"
+        inputMode="decimal"
+        step="any"
+        value={value ?? ''}
+        onChange={e => onChange(e.target.value)}
+        placeholder="Type your numeric answer…"
+        className="w-full p-4 rounded-xl border-2 border-white/10 bg-transparent text-white font-semibold text-base focus:border-primary-500 focus:outline-none transition-colors"
+      />
+      <p className="text-xs text-slate-500">Accepted within ±5% of the correct value.</p>
+    </div>
+  )
+})
+
 // ── Main Component ─────────────────────────────────────────────────────────────
-const OPT_LABELS = ['A', 'B', 'C', 'D']
 
 export default function QuizAttempt() {
   const { id } = useParams()
@@ -151,9 +168,10 @@ export default function QuizAttempt() {
       : 0
 
     // Build payload: each answer carries optMap so backend can reverse-map
+    // MCQ/NUMERIC selected is a string; MULTI selected is an array of labels.
     const payload = questions.map(q => ({
       questionId: q._id,
-      selected:   answers[q._id]?.selected || '',
+      selected:   answers[q._id]?.selected ?? (q.type === 'MULTI' ? [] : ''),
       optMap:     answers[q._id]?.optMap   || q._optMap || {},
     }))
 
@@ -194,13 +212,28 @@ export default function QuizAttempt() {
     setPhase('quiz')
   }, [])
 
-  // ── Select an answer ───────────────────────────────────────────────────────
-  // Stores: selected label (in the shuffled space) + the optMap for that question
+  // ── Select an answer (MCQ — single label) ───────────────────────────────────
   const selectAnswer = useCallback((qId, label, optMap) => {
     setAnswers(prev => ({
       ...prev,
       [qId]: { selected: label, optMap },
     }))
+  }, [])
+
+  // ── Toggle an answer (MULTI — array of labels) ──────────────────────────────
+  const toggleMultiAnswer = useCallback((qId, label, optMap) => {
+    setAnswers(prev => {
+      const current = Array.isArray(prev[qId]?.selected) ? prev[qId].selected : []
+      const selected = current.includes(label)
+        ? current.filter(l => l !== label)
+        : [...current, label]
+      return { ...prev, [qId]: { selected, optMap } }
+    })
+  }, [])
+
+  // ── Set a typed numeric answer (NUMERIC) ────────────────────────────────────
+  const setNumericAnswer = useCallback((qId, value) => {
+    setAnswers(prev => ({ ...prev, [qId]: { selected: value, optMap: {} } }))
   }, [])
 
   const goTo = useCallback((i) => setCurrent(i), [])
@@ -209,7 +242,9 @@ export default function QuizAttempt() {
 
   // ── Derived ────────────────────────────────────────────────────────────────
   const q        = questions[current]
-  const answered = useMemo(() => Object.keys(answers).length, [answers])
+  const answered = useMemo(() => Object.values(answers).filter(a =>
+    Array.isArray(a?.selected) ? a.selected.length > 0 : !!a?.selected
+  ).length, [answers])
   const total    = questions.length
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -328,8 +363,10 @@ export default function QuizAttempt() {
   // ═══════════════════════════════════════════════════════════════════════════
   if (!q) return null   // guard: questions not loaded yet
 
-  const qAnswered  = !!answers[q._id]?.selected
+  const qSelected  = answers[q._id]?.selected
+  const qAnswered  = Array.isArray(qSelected) ? qSelected.length > 0 : !!qSelected
   const progPct    = total > 0 ? ((current + 1) / total) * 100 : 0
+  const optionKeys = ['A','B','C','D','E'].filter(l => q.options?.[l])
 
   return (
     <div className="min-h-screen bg-surface-base flex flex-col">
@@ -399,6 +436,11 @@ export default function QuizAttempt() {
                 Q{current + 1}
               </span>
               <DiffBadge level={q.difficulty} />
+              {q.type && q.type !== 'MCQ' && (
+                <span className="bg-amber-500/15 text-amber-300 text-xs font-black px-2.5 py-1 rounded-full">
+                  {q.type === 'MULTI' ? 'Select all that apply' : 'Numeric entry'}
+                </span>
+              )}
               {q.category && (
                 <span className="bg-white/5 text-slate-400 text-xs font-semibold px-2.5 py-1 rounded-full">
                   {q.category}
@@ -414,21 +456,33 @@ export default function QuizAttempt() {
               {q.question}
             </p>
 
-            {/* Options */}
+            {/* Options — rendering depends on question type */}
             <div className="space-y-3">
-              {OPT_LABELS.map(label => {
-                const text = q.options?.[label]
-                if (!text) return null
-                return (
-                  <OptionButton
-                    key={label}
-                    label={label}
-                    text={text}
-                    selected={answers[q._id]?.selected === label}
-                    onClick={() => selectAnswer(q._id, label, q._optMap)}
-                  />
-                )
-              })}
+              {q.type === 'NUMERIC' ? (
+                <NumericInput
+                  value={qSelected}
+                  onChange={val => setNumericAnswer(q._id, val)}
+                />
+              ) : (
+                optionKeys.map(label => {
+                  const text = q.options?.[label]
+                  if (!text) return null
+                  const isSelected = q.type === 'MULTI'
+                    ? Array.isArray(qSelected) && qSelected.includes(label)
+                    : qSelected === label
+                  return (
+                    <OptionButton
+                      key={label}
+                      label={label}
+                      text={text}
+                      selected={isSelected}
+                      onClick={() => q.type === 'MULTI'
+                        ? toggleMultiAnswer(q._id, label, q._optMap)
+                        : selectAnswer(q._id, label, q._optMap)}
+                    />
+                  )
+                })
+              )}
             </div>
           </div>
 
@@ -469,7 +523,7 @@ export default function QuizAttempt() {
                   key={qq._id}
                   num={i + 1}
                   isCurrent={i === current}
-                  isAnswered={!!answers[qq._id]?.selected}
+                  isAnswered={Array.isArray(answers[qq._id]?.selected) ? answers[qq._id].selected.length > 0 : !!answers[qq._id]?.selected}
                   onClick={() => goTo(i)}
                 />
               ))}

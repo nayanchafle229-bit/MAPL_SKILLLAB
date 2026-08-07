@@ -2,7 +2,10 @@ const mongoose = require('mongoose');
 
 const answerSchema = new mongoose.Schema({
   questionId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Question' },
-  selected:     { type: String, enum: ['A','B','C','D',''], default: '' },
+  // MCQ: a single letter ("B"). MULTI: sorted comma-separated letters
+  // ("A,C,E"). NUMERIC: the typed value as a string ("40"). No longer
+  // enum-restricted to A-D so all three question types can be recorded.
+  selected:     { type: String, default: '' },
   correct:      { type: String },
   isCorrect:    { type: Boolean, default: false },
   marksAwarded: { type: Number, default: 0 },

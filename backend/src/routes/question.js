@@ -50,11 +50,19 @@ router.post('/', protect, adminOnly, async (req, res) => {
   try {
     const body = req.body;
 
+    // A question is valid if it has text, a correct answer, and — unless
+    // it's NUMERIC (which has no options) — at least options A and B.
+    const isValid = (q) => {
+      if (!q.question || !q.correctAnswer) return false;
+      if (q.type === 'NUMERIC') return true;
+      return !!(q.options?.A && q.options?.B);
+    };
+
     // Bulk insert: array of questions
     if (Array.isArray(body)) {
       for (const q of body) {
-        if (!q.question || !q.options?.A || !q.options?.B || !q.options?.C || !q.options?.D || !q.correctAnswer) {
-          return res.status(400).json({ message: 'Each question needs: question, options A-D, correctAnswer' });
+        if (!isValid(q)) {
+          return res.status(400).json({ message: 'Each question needs: question, correctAnswer, and (unless NUMERIC) options A & B' });
         }
       }
       const created = await Question.insertMany(body);
@@ -62,11 +70,11 @@ router.post('/', protect, adminOnly, async (req, res) => {
     }
 
     // Single question
-    const { question, options, correctAnswer, category, difficulty } = body;
-    if (!question || !options?.A || !options?.B || !options?.C || !options?.D || !correctAnswer) {
-      return res.status(400).json({ message: 'question, options (A-D) and correctAnswer required' });
+    const { question, type, options, correctAnswer, category, difficulty, qId, level, moduleTopic, rationale } = body;
+    if (!isValid(body)) {
+      return res.status(400).json({ message: 'question, correctAnswer, and (unless NUMERIC) options A & B are required' });
     }
-    const q = await Question.create({ question, options, correctAnswer, category, difficulty });
+    const q = await Question.create({ question, type, options, correctAnswer, category, difficulty, qId, level, moduleTopic, rationale });
     res.status(201).json({ question: q, message: 'Question added' });
   } catch (err) {
     res.status(500).json({ message: err.message });

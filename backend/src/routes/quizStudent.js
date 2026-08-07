@@ -3,6 +3,8 @@ const router     = express.Router();
 const Quiz       = require('../models/Quiz');
 const Question   = require('../models/Question');
 const QuizResult = require('../models/QuizResult');
+const CaseSubmission = require('../models/CaseSubmission');
+const unlockEngine = require('../services/unlockEngine');
 const { protect } = require('../middleware/auth');
 
 function shuffle(arr) {
@@ -83,30 +85,59 @@ router.get('/:id/start', protect, async (req, res) => {
       });
     }
 
-    // Shuffle question order
-    let questions = [...quiz.questions];
-    if (quiz.shuffleQuestions) questions = shuffle(questions);
+    // Draw a random subset from the pool. The blueprint sizes each bank at
+    // 3x the exam length specifically so this draw is meaningfully
+    // different each attempt — quiz.questions is the full pool (e.g. 45 for
+    // an L1 quiz), quiz.totalQuestions (15) is how many actually get asked.
+    let questions = shuffle([...quiz.questions]).slice(0, quiz.totalQuestions);
+    if (!quiz.shuffleQuestions) {
+      // Preserve pool order for the drawn subset if shuffling is disabled —
+      // re-sort by original index rather than re-shuffling.
+      const poolOrder = new Map(quiz.questions.map((q, i) => [q._id.toString(), i]));
+      questions.sort((a, b) => poolOrder.get(a._id.toString()) - poolOrder.get(b._id.toString()));
+    }
 
     // Build client-safe question objects (no correctAnswer)
-    const optionKeys = ['A','B','C','D'];
+    // Options are dynamic (A-D for most, A-E for 5-option MCQ/MULTI) —
+    // NUMERIC questions have no options at all.
     const clientQs = questions.map(q => {
-      let opts = optionKeys.map(k => ({ key: k, text: q.options[k] }));
+      const presentKeys = ['A','B','C','D','E'].filter(k => (q.options?.[k] || '').trim() !== '');
+
+      if (q.type === 'NUMERIC' || presentKeys.length === 0) {
+        return {
+          _id:        q._id,
+          question:   q.question,
+          type:       q.type,
+          difficulty: q.difficulty,
+          marks:      q.marks || 1,
+          category:   q.category,
+          level:      q.level,
+          moduleTopic: q.moduleTopic,
+          options:    {},
+          _optMap:    {},
+        };
+      }
+
+      let opts = presentKeys.map(k => ({ key: k, text: q.options[k] }));
       if (quiz.shuffleOptions) opts = shuffle(opts);
 
       // Build option map so submit can reverse-resolve shuffled label → original key
       const optMap = {};
       opts.forEach((o, i) => {
-        optMap[optionKeys[i]] = { text: o.text, originalKey: o.key };
+        optMap[presentKeys[i]] = { text: o.text, originalKey: o.key };
       });
 
       return {
         _id:        q._id,
         question:   q.question,
+        type:       q.type,
         difficulty: q.difficulty,
         marks:      q.marks || 1,
         category:   q.category,
-        // Shuffled options (A/B/C/D labels may map to different original options)
-        options:    Object.fromEntries(optionKeys.map((l, i) => [l, opts[i].text])),
+        level:      q.level,
+        moduleTopic: q.moduleTopic,
+        // Shuffled options (labels may map to different original options)
+        options:    Object.fromEntries(presentKeys.map((l, i) => [l, opts[i].text])),
         // Sent to client so submit can reverse-map without server state
         _optMap:    optMap,
       };
@@ -160,8 +191,28 @@ router.post('/:id/submit', protect, async (req, res) => {
 
     // Fetch correct answers from DB
     const qIds      = answers.map(a => a.questionId);
-    const dbQuestions = await Question.find({ _id: { $in: qIds } }).select('correctAnswer difficulty marks negativeMarks').lean();
+    const dbQuestions = await Question.find({ _id: { $in: qIds } }).select('correctAnswer difficulty marks negativeMarks type').lean();
     const qMap = Object.fromEntries(dbQuestions.map(q => [q._id.toString(), q]));
+
+    // Grades one answer against its correct value, type-aware:
+    //  MCQ     — exact single-letter match
+    //  MULTI   — exact set match (sorted comma list), no partial credit
+    //  NUMERIC — accepted within +/-5% of the correct value
+    function gradeAnswer(type, resolvedSelected, correctAnswer) {
+      if (!resolvedSelected) return false;
+      if (type === 'MULTI') {
+        const norm = s => s.split(',').map(x => x.trim().toUpperCase()).filter(Boolean).sort().join(',');
+        return norm(resolvedSelected) === norm(correctAnswer);
+      }
+      if (type === 'NUMERIC') {
+        const given = parseFloat(resolvedSelected);
+        const correct = parseFloat(correctAnswer);
+        if (Number.isNaN(given) || Number.isNaN(correct)) return false;
+        if (correct === 0) return given === 0;
+        return Math.abs(given - correct) / Math.abs(correct) <= 0.05;
+      }
+      return resolvedSelected.trim().toUpperCase() === correctAnswer.trim().toUpperCase();
+    }
 
     // Evaluate each answer
     let score = 0;
@@ -180,15 +231,27 @@ router.post('/:id/submit', protect, async (req, res) => {
       const qMarks = dbQ.marks || 1;
       if (diffBreakdown[diff]) diffBreakdown[diff].total++;
 
-      // Reverse-map shuffled option label → original key
+      // Reverse-map shuffled option label(s) → original key(s).
+      // MCQ/MULTI: a.selected is a letter or an array of letters that were
+      // shown to the student in shuffled order — map each back through
+      // a.optMap. NUMERIC: a.selected is the typed value, used as-is.
       let resolvedSelected = '';
-      if (a.selected && a.optMap?.[a.selected]) {
+      const qType = dbQ.type || 'MCQ';
+      if (qType === 'NUMERIC') {
+        resolvedSelected = (a.selected ?? '').toString().trim();
+      } else if (Array.isArray(a.selected)) {
+        resolvedSelected = a.selected
+          .map(k => a.optMap?.[k]?.originalKey || k)
+          .filter(Boolean)
+          .sort()
+          .join(',');
+      } else if (a.selected && a.optMap?.[a.selected]) {
         resolvedSelected = a.optMap[a.selected].originalKey || a.selected;
       } else {
         resolvedSelected = a.selected || '';
       }
 
-      const isCorrect = resolvedSelected !== '' && resolvedSelected === dbQ.correctAnswer;
+      const isCorrect = gradeAnswer(qType, resolvedSelected, dbQ.correctAnswer);
       let marksAwarded = 0;
 
       if (!resolvedSelected) {
@@ -242,6 +305,15 @@ router.post('/:id/submit', protect, async (req, res) => {
     // Increment quiz attempt counter
     await Quiz.findByIdAndUpdate(quiz._id, { $inc: { attemptCount: 1 } });
 
+    // Gating: a normal (non-case-study) quiz unlocks its dependents the
+    // moment it's passed. An L4 quiz passing here only clears the
+    // auto-graded half — the module isn't actually 'passed' until a
+    // reviewer also passes the case study (see routes/caseReview.js), so we
+    // deliberately do NOT call the unlock engine in that branch.
+    if (!quiz.hasCaseStudy && passStatus === 'PASS' && quiz.moduleId) {
+      await unlockEngine.onModulePassed(req.user._id, quiz.moduleId, { scorePercent: percentage });
+    }
+
     // ISSUE 5 FIX: compute rank (100 marks = Rank 1, 99 = Rank 2, ties share rank)
     const allResults = await QuizResult.find({ quizId: quiz._id })
       .sort({ score: -1, timeTaken: 1 })
@@ -279,9 +351,12 @@ router.post('/:id/submit', protect, async (req, res) => {
         attemptNumber:  attemptsDone + 1,
         attemptsAllowed: quiz.attemptsAllowed,
       },
-      message: passStatus === 'PASS'
-        ? `🎉 Congratulations! You PASSED with ${percentage}% (Rank #${assignedRank})`
-        : `You scored ${percentage}%. Pass mark is ${quiz.passPercentage}%. Try again!`,
+      requiresCaseStudy: quiz.hasCaseStudy && passStatus === 'PASS',
+      message: passStatus !== 'PASS'
+        ? `You scored ${percentage}%. Pass mark is ${quiz.passPercentage}%. Try again!`
+        : quiz.hasCaseStudy
+          ? `Scenario section passed at ${percentage}%. Submit your case study to complete this level.`
+          : `🎉 Congratulations! You PASSED with ${percentage}% (Rank #${assignedRank})`,
     });
   } catch (err) {
     console.error('POST /api/quiz/:id/submit error:', err);
@@ -323,6 +398,82 @@ router.get('/result/:id', protect, async (req, res) => {
     }
 
     res.json({ result });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ────────────────────────────────────────────────────────────
+// POST /api/quiz/:id/case-study — submit the L4 written case study.
+// Separate from /:id/submit on purpose: the auto-graded scenario questions
+// grade instantly, but the case study needs a human, so it's a distinct
+// student action taken only after they've already passed the auto-graded
+// half (enforced by requiring a PASS'd QuizResult below).
+// ────────────────────────────────────────────────────────────
+router.post('/:id/case-study', protect, async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.id);
+    if (!quiz) return res.status(404).json({ message: 'Quiz not found' });
+    if (!quiz.hasCaseStudy) return res.status(400).json({ message: 'This quiz has no case study component' });
+
+    const { response } = req.body;
+    if (!response || !response.trim()) {
+      return res.status(400).json({ message: 'A written response is required' });
+    }
+
+    const latestPass = await QuizResult.findOne({ userId: req.user._id, quizId: quiz._id, passStatus: 'PASS' })
+      .sort({ createdAt: -1 });
+    if (!latestPass) {
+      return res.status(400).json({ message: 'Pass the scenario questions before submitting the case study' });
+    }
+
+    const existing = await CaseSubmission.findOne({ quizResultId: latestPass._id });
+    if (existing?.status === 'passed') {
+      return res.status(409).json({ message: 'This case study has already been passed' });
+    }
+    if (existing?.status === 'pending_review') {
+      return res.status(409).json({ message: 'A submission is already awaiting review', submissionId: existing._id });
+    }
+
+    const attemptNumber = (await CaseSubmission.countDocuments({ userId: req.user._id, quizId: quiz._id })) + 1;
+
+    const submission = await CaseSubmission.create({
+      userId: req.user._id,
+      quizId: quiz._id,
+      moduleId: quiz.moduleId,
+      quizResultId: latestPass._id,
+      prompt: quiz.caseStudyPrompt,
+      response: response.trim(),
+      attemptNumber,
+    });
+
+    res.status(201).json({
+      success: true,
+      submission: { _id: submission._id, status: submission.status, submittedAt: submission.submittedAt },
+      message: 'Case study submitted. A reviewer will grade it and you\'ll see the result here once complete.',
+    });
+  } catch (err) {
+    console.error('POST /api/quiz/:id/case-study error:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// GET /api/quiz/:id/case-study — check status of your latest case study submission
+router.get('/:id/case-study', protect, async (req, res) => {
+  try {
+    const submission = await CaseSubmission.findOne({ userId: req.user._id, quizId: req.params.id })
+      .sort({ submittedAt: -1 });
+    if (!submission) return res.json({ submission: null });
+    res.json({
+      submission: {
+        _id: submission._id,
+        status: submission.status,
+        reviewNotes: submission.reviewNotes,
+        submittedAt: submission.submittedAt,
+        reviewedAt: submission.reviewedAt,
+        attemptNumber: submission.attemptNumber,
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
