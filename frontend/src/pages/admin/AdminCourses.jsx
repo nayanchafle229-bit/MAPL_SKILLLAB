@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { Modal, ConfirmDialog, Alert, PageLoader, EmptyState } from '../../components/UI'
@@ -31,7 +31,19 @@ export default function AdminCourses() {
   const [success, setSuccess] = useState('')
   const [delId,   setDelId]   = useState(null)
   const [notesPreview, setNotesPreview] = useState(false)
+  const [search, setSearch]   = useState('')
+  const [activeCategory, setActiveCategory] = useState('All')
+  const [activeLevel, setActiveLevel] = useState('All')
 
+  const filteredCourses = useMemo(() => {
+    return courses.filter(c => {
+      const matchSearch = c.title.toLowerCase().includes(search.toLowerCase()) || 
+                          (c.category && c.category.toLowerCase().includes(search.toLowerCase()))
+      const matchCat = activeCategory === 'All' || c.category === activeCategory
+      const matchLevel = activeLevel === 'All' || c.level === activeLevel
+      return matchSearch && matchCat && matchLevel
+    })
+  }, [courses, search, activeCategory, activeLevel])
   const load = () => {
     setLoading(true)
     api.get('/course').then(({ data }) => setCourses(data.courses || [])).finally(() => setLoading(false))
@@ -141,12 +153,26 @@ export default function AdminCourses() {
         </form>
       </Modal>
 
-      <div className="flex items-center justify-between mb-6">
+      <div className="mb-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white">📚 Courses</h2>
-          <p className="text-slate-400 text-sm">{courses.length} course{courses.length !== 1 ? 's' : ''}</p>
+          <h2 className="text-2xl font-black text-white">📚 Manage Courses</h2>
+          <p className="text-slate-400 text-sm">{courses.length} course{courses.length !== 1 ? 's' : ''} total</p>
         </div>
-        <button onClick={openAdd} className="btn-primary">+ Add Course</button>
+        
+        <div className="flex flex-col sm:flex-row gap-3 w-full xl:w-auto">
+          <select value={activeCategory} onChange={e => setActiveCategory(e.target.value)} className="input-field flex-1 sm:max-w-[250px]">
+            <option value="All">All Categories</option>
+            {CATS.map(c => <option key={c} value={c}>{c}</option>)}
+          </select>
+          <select value={activeLevel} onChange={e => setActiveLevel(e.target.value)} className="input-field flex-1 sm:max-w-[160px]">
+            <option value="All">All Levels</option>
+            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+          </select>
+          <input type="text" placeholder="🔍 Search..."
+            value={search} onChange={e => setSearch(e.target.value)}
+            className="input-field flex-1 sm:max-w-[160px]" />
+          <button onClick={openAdd} className="btn-primary flex-shrink-0 whitespace-nowrap">+ Add Course</button>
+        </div>
       </div>
 
       {success && <div className="mb-4"><Alert type="success" message={success} /></div>}
@@ -154,9 +180,11 @@ export default function AdminCourses() {
       {courses.length === 0 ? (
         <EmptyState icon="📚" title="No courses yet" description="Add your first course to get started."
           action={<button onClick={openAdd} className="btn-primary">+ Add Course</button>} />
+      ) : filteredCourses.length === 0 ? (
+        <EmptyState icon="🔍" title="No matching courses" description="Try adjusting your search or filters." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-          {courses.map(c => (
+          {filteredCourses.map(c => (
             <div key={c._id} className="card hover:shadow-md transition-shadow">
               <div className="flex items-start justify-between gap-2 mb-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0">

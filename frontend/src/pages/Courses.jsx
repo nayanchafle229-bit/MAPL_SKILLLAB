@@ -108,14 +108,28 @@ export default function Courses() {
 
   return (
     <Layout title="Courses">
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-white">📚 All Courses</h2>
           <p className="text-slate-400 text-sm mt-1">{courses.length} course{courses.length !== 1 ? 's' : ''} available</p>
         </div>
-        <input type="text" placeholder="🔍 Search courses..."
-          value={search} onChange={e => setSearch(e.target.value)}
-          className="input-field max-w-xs" />
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          <select value={activeCategory} onChange={e => setActiveCategory(e.target.value)} className="input-field flex-1 sm:max-w-[250px]">
+            <option value="All">All Categories</option>
+            {categories.map(([name, count]) => (
+              <option key={name} value={name}>{name} ({count})</option>
+            ))}
+          </select>
+          <select value={activeLevel} onChange={e => setActiveLevel(e.target.value)} className="input-field flex-1 sm:max-w-[160px]">
+            <option value="All">All Levels</option>
+            {LEVELS.map(l => (
+              <option key={l.value} value={l.value}>{l.icon} {l.label}</option>
+            ))}
+          </select>
+          <input type="text" placeholder="🔍 Search courses..."
+            value={search} onChange={e => setSearch(e.target.value)}
+            className="input-field flex-1 sm:max-w-xs" />
+        </div>
       </div>
 
       {/* Browse by category — Coursera/Udemy style chip row */}
