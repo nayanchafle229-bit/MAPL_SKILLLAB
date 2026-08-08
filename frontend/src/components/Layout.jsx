@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext'
 
 const userNav = [
   { to:'/dashboard',  icon:'🏠', label:'Dashboard' },
+  { to:'/curriculum', icon:'🗺️', label:'Curriculum' },
   { to:'/quizzes',    icon:'🧠', label:'My Quizzes' },
   { to:'/courses',    icon:'📚', label:'Courses' },
   { to:'/history',    icon:'📊', label:'Results' },
@@ -12,19 +13,21 @@ const userNav = [
 ]
 const adminNav = [
   { to:'/admin',                icon:'📈', label:'Dashboard' },
+  { to:'/curriculum',           icon:'🗺️', label:'Curriculum' },
   { to:'/admin/quizzes',        icon:'🧠', label:'Quizzes' },
   { to:'/admin/questions',      icon:'❓', label:'Questions' },
   { to:'/admin/courses',        icon:'📚', label:'Courses' },
   { to:'/admin/users',          icon:'👥', label:'Users' },
   { to:'/admin/results',        icon:'🏆', label:'Results' },
+  { to:'/admin/case-review',    icon:'📝', label:'Case Review' },
   { to:'/progress',             icon:'📊', label:'Progress Tracking' },
 ]
 
 // Trimmed sets for the mobile bottom tab bar (max 4 + a "More" button)
 const userBottomNav  = [
   { to:'/dashboard',  icon:'🏠', label:'Home' },
+  { to:'/curriculum', icon:'🗺️', label:'Curriculum' },
   { to:'/quizzes',    icon:'🧠', label:'Quizzes' },
-  { to:'/courses',    icon:'📚', label:'Courses' },
   { to:'/portfolio',  icon:'🏆', label:'Portfolio' },
 ]
 const adminBottomNav = [

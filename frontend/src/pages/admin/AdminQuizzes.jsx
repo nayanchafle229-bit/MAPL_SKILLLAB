@@ -198,18 +198,18 @@ export default function AdminQuizzes() {
                     {q.avgScore > 0 && <span>📈 Avg: <strong>{q.avgScore}%</strong></span>}
                   </div>
 
-                  {/* Difficulty ratio bar */}
-                  <div className="flex items-center gap-3">
-                    <div className="flex rounded-lg overflow-hidden h-2.5 flex-1 max-w-[200px] bg-white/5">
-                      {q.difficultyRatio?.easy   > 0 && <div className="bg-accent-400" style={{ width: `${q.difficultyRatio.easy}%` }} title={`Easy ${q.difficultyRatio.easy}%`} />}
-                      {q.difficultyRatio?.medium > 0 && <div className="bg-amber-400"   style={{ width: `${q.difficultyRatio.medium}%` }} title={`Medium ${q.difficultyRatio.medium}%`} />}
-                      {q.difficultyRatio?.hard   > 0 && <div className="bg-red-400"     style={{ width: `${q.difficultyRatio.hard}%` }} title={`Hard ${q.difficultyRatio.hard}%`} />}
-                    </div>
-                    <div className="flex gap-3 text-xs text-slate-500">
-                      <span><span className="text-emerald-500 font-bold">●</span> {q.difficultyRatio?.easy}%E</span>
-                      <span><span className="text-amber-500 font-bold">●</span> {q.difficultyRatio?.medium}%M</span>
-                      <span><span className="text-red-400 font-bold">●</span> {q.difficultyRatio?.hard}%H</span>
-                    </div>
+                  {/* Level & Blueprint badges */}
+                  <div className="flex items-center gap-2 mt-2">
+                    {q.level && (
+                      <span className="text-xs bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-lg font-black border border-indigo-500/20 uppercase tracking-wider">
+                        {q.level}
+                      </span>
+                    )}
+                    {q.level === 'legend' && (
+                      <span className="text-xs bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-lg font-black border border-amber-500/20">
+                        📄 Includes Case Study
+                      </span>
+                    )}
                   </div>
                 </div>
 

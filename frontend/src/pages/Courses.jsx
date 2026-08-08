@@ -15,9 +15,8 @@ function CourseCard({ c }) {
   const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null
   const level = getLevel(c.level)
   return (
-    <Link to={`/courses/${c._id}`}
-      className="card group hover:shadow-md hover:-translate-y-1 transition-all duration-200 cursor-pointer p-0 overflow-hidden flex-shrink-0">
-      <div className="aspect-video bg-gradient-to-br from-slate-700 to-surface-base relative overflow-hidden">
+    <div className="card group hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-0 overflow-hidden flex-shrink-0 flex flex-col">
+      <Link to={`/courses/${c._id}`} className="block relative aspect-video bg-gradient-to-br from-slate-700 to-surface-base overflow-hidden">
         {thumb
           ? <img src={thumb} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
           : <div className="w-full h-full flex items-center justify-center text-5xl">🎬</div>
@@ -30,23 +29,38 @@ function CourseCard({ c }) {
           </div>
         </div>
         {c.category && (
-          <span className="absolute top-3 left-3 bg-primary-600 text-White text-xs font-bold px-2.5 py-1 rounded-full">
+          <span className="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
             {c.category}
           </span>
         )}
-        <span className={`absolute top-3 right-3 text-xs font-bold px-2.5 py-1 rounded-full ${level.chip}`}>
-          {level.icon} {level.label}
-        </span>
-      </div>
-      <div className="p-4">
-        <h3 className="font-bold text-white mb-1 line-clamp-1">{c.title}</h3>
-        <p className="text-sm text-slate-400 line-clamp-2">{c.description}</p>
-        <div className="mt-3 flex items-center justify-between">
-          <span className="text-xs text-slate-500">{new Date(c.createdAt).toLocaleDateString('en-IN')}</span>
-          <span className="text-primary-400 text-sm font-semibold group-hover:underline">▶ Watch Now</span>
+      </Link>
+      <div className="p-4 flex-1 flex flex-col">
+        <Link to={`/courses/${c._id}`} className="block">
+          <h3 className="font-bold text-white mb-1 line-clamp-1 hover:text-primary-400 transition-colors">{c.title}</h3>
+          <p className="text-sm text-slate-400 line-clamp-2 mb-4">{c.description}</p>
+        </Link>
+        <div className="mt-auto flex items-center justify-between">
+          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${level.chip}`}>
+            {level.icon} {level.label}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <Link to={`/courses/${c._id}`} className="text-primary-400 text-sm font-semibold hover:underline mr-1">
+              ▶ Watch Now
+            </Link>
+            {/* Open in New Tab */}
+            <a href={`/courses/${c._id}`} target="_blank" rel="noopener noreferrer" 
+               className="p-1.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-md transition-colors" title="Open in new tab">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+            </a>
+            {/* Full Screen mode via query param */}
+            <Link to={`/courses/${c._id}?fullscreen=true`}
+               className="p-1.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-md transition-colors" title="Watch Full Screen">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+            </Link>
+          </div>
         </div>
       </div>
-    </Link>
+    </div>
   )
 }
 

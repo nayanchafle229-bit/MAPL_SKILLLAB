@@ -14,19 +14,16 @@ import React, {
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
 import { PageLoader, ConfirmDialog } from '../../components/UI'
+import { LEVEL_MAP } from '../../utils/levels'
 
 // ── Sub-components defined at module level (no focus-loss risk here since
 //    QuizAttempt does not use inputs — only buttons — but good practice) ────────
 
 const DiffBadge = memo(function DiffBadge({ level }) {
-  const cls = {
-    easy:   'bg-accent-500/15 text-accent-400',
-    medium: 'bg-amber-500/15 text-amber-300',
-    hard:   'bg-red-500/15 text-red-300',
-  }[level] || 'bg-white/5 text-slate-400'
+  const lvl = LEVEL_MAP[level] || LEVEL_MAP['apprentice']
   return (
-    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${cls}`}>
-      {level}
+    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold border ${lvl.badge}`}>
+      {lvl.icon} {lvl.label}
     </span>
   )
 })
@@ -180,7 +177,14 @@ export default function QuizAttempt() {
         answers: payload,
         timeTaken,
       })
-      navigate(`/result/${data.result._id}`)
+      // L4 quizzes: passing the auto-graded scenario questions isn't the
+      // finish line — a case study still needs to be written and reviewed.
+      // Everything else goes straight to the normal result screen.
+      if (data.requiresCaseStudy) {
+        navigate(`/quiz/${id}/case-study`, { state: { resultId: data.result._id } })
+      } else {
+        navigate(`/result/${data.result._id}`)
+      }
     } catch (err) {
       submitCalled.current = false
       setErrorMsg(err.response?.data?.message || 'Submission failed — please try again')
@@ -435,7 +439,7 @@ export default function QuizAttempt() {
               <span className="bg-primary-500/15 text-primary-300 text-xs font-black px-3 py-1 rounded-full">
                 Q{current + 1}
               </span>
-              <DiffBadge level={q.difficulty} />
+              <DiffBadge level={q.level} />
               {q.type && q.type !== 'MCQ' && (
                 <span className="bg-amber-500/15 text-amber-300 text-xs font-black px-2.5 py-1 rounded-full">
                   {q.type === 'MULTI' ? 'Select all that apply' : 'Numeric entry'}

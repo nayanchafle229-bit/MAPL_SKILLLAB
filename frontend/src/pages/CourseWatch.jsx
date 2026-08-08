@@ -28,6 +28,9 @@ export default function CourseWatch() {
   const [marking, setMarking] = useState(false)
   const [tab, setTab] = useState('overview') // 'overview' | 'notes'
 
+  // Read fullscreen query param
+  const isFullscreen = new URLSearchParams(window.location.search).get('fullscreen') === 'true';
+
   useEffect(() => {
     Promise.all([api.get(`/course/${id}`), api.get('/course')])
       .then(([cRes, allRes]) => {
@@ -54,9 +57,24 @@ export default function CourseWatch() {
   if (loading) return <Layout title="Course"><PageLoader /></Layout>
   if (!course) return <Layout title="Course"><p className="text-slate-400">Course not found.</p></Layout>
 
-  const embedUrl = getEmbedUrl(course.videoUrl)
+  const embedUrl = getEmbedUrl(course.videoUrl) + (isFullscreen ? '&autoplay=1' : '')
   const level = getLevel(course.level)
   const hasNotes = !!course.notes?.trim()
+
+  if (isFullscreen) {
+    return (
+      <div className="fixed inset-0 z-50 bg-black flex flex-col">
+        <div className="absolute top-4 right-4 z-50">
+          <Link to={`/courses/${id}`} className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 backdrop-blur-sm transition-colors flex items-center justify-center" title="Exit Full Screen">
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+          </Link>
+        </div>
+        <iframe src={embedUrl} title={course.title}
+          className="w-full h-full border-0" allowFullScreen
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+      </div>
+    )
+  }
 
   return (
     <Layout title={course.title}>

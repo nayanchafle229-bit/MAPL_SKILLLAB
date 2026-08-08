@@ -11,6 +11,9 @@ import Profile        from './pages/Profile'
 
 // Student pages
 import Dashboard        from './pages/Dashboard'
+import Curriculum       from './pages/student/Curriculum'
+import ModuleDetail     from './pages/student/ModuleDetail'
+import CaseStudy        from './pages/student/CaseStudy'
 import Courses          from './pages/Courses'
 import CourseWatch      from './pages/CourseWatch'
 import History          from './pages/History'
@@ -31,6 +34,7 @@ import AdminResults     from './pages/admin/AdminResults'
 import AdminQuizzes     from './pages/admin/AdminQuizzes'
 import AdminQuizCreate  from './pages/admin/AdminQuizCreate'
 import AdminLeaderboard from './pages/admin/AdminLeaderboard'
+import AdminCaseReview  from './pages/admin/AdminCaseReview'
 
 // ── Route Guards ────────────────────────────────────────
 function ProtectedRoute({ children, adminOnly = false }) {
@@ -89,6 +93,9 @@ export default function App() {
           {/* Student — protected */}
           <Route path="/profile"           element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/dashboard"         element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/curriculum"        element={<ProtectedRoute><Curriculum /></ProtectedRoute>} />
+          <Route path="/curriculum/:moduleKey" element={<ProtectedRoute><ModuleDetail /></ProtectedRoute>} />
+          <Route path="/quiz/:id/case-study"   element={<ProtectedRoute><CaseStudy /></ProtectedRoute>} />
           <Route path="/courses"           element={<ProtectedRoute><Courses /></ProtectedRoute>} />
           <Route path="/courses/:id"       element={<ProtectedRoute><CourseWatch /></ProtectedRoute>} />
           <Route path="/quizzes"           element={<ProtectedRoute><QuizList /></ProtectedRoute>} />
@@ -111,6 +118,7 @@ export default function App() {
           <Route path="/admin/quizzes"                 element={<ProtectedRoute adminOnly><AdminQuizzes /></ProtectedRoute>} />
           <Route path="/admin/quizzes/create"          element={<ProtectedRoute adminOnly><AdminQuizCreate /></ProtectedRoute>} />
           <Route path="/admin/quizzes/:id/leaderboard" element={<ProtectedRoute adminOnly><AdminLeaderboard /></ProtectedRoute>} />
+          <Route path="/admin/case-review"             element={<ProtectedRoute adminOnly><AdminCaseReview /></ProtectedRoute>} />
 
           {/* Catch-all */}
           <Route path="*" element={<Navigate to="/login" replace />} />

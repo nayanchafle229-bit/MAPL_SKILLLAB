@@ -23,7 +23,7 @@ router.post('/', protect, adminOnly, async (req, res) => {
   try {
     const {
       title, description, totalQuestions, totalMarks,
-      passMarks, duration, difficultyRatio,
+      passMarks, duration, level, caseStudyPrompt,
       negativeMarking, negativeMarksPerQ,
       shuffleQuestions, shuffleOptions,
       category, attemptsAllowed,
@@ -35,45 +35,25 @@ router.post('/', protect, adminOnly, async (req, res) => {
     if (!totalMarks)     return res.status(400).json({ message: 'totalMarks is required' });
     if (!passMarks)      return res.status(400).json({ message: 'passMarks is required' });
     if (!duration)       return res.status(400).json({ message: 'duration is required' });
-
-    // Validate difficulty ratio sums to 100
-    const { easy = 0, medium = 0, hard = 0 } = difficultyRatio || {};
-    const ratioSum = Math.round(easy + medium + hard);
-    if (ratioSum !== 100) {
-      return res.status(400).json({
-        message: `Difficulty ratios must sum to 100. Got: ${easy}+${medium}+${hard} = ${ratioSum}`
-      });
-    }
-
-    // Compute exact question counts per difficulty
-    const easyCount   = Math.round((easy   / 100) * totalQuestions);
-    const mediumCount = Math.round((medium / 100) * totalQuestions);
-    const hardCount   = totalQuestions - easyCount - mediumCount;
+    if (!level)          return res.status(400).json({ message: 'level is required' });
 
     // Validate enough questions exist
-    const [easyAvail, mediumAvail, hardAvail] = await Promise.all([
-      Question.countDocuments({ difficulty: 'easy',   isActive: true }),
-      Question.countDocuments({ difficulty: 'medium', isActive: true }),
-      Question.countDocuments({ difficulty: 'hard',   isActive: true }),
+    const qCount = await Question.countDocuments({ level, category, isActive: true });
+    
+    if (totalQuestions > 0 && totalQuestions > qCount) {
+      return res.status(400).json({ message: `Need ${totalQuestions} ${level} questions for ${category}, only ${qCount} in DB` });
+    }
+
+    // Random $sample matching category and level
+    const questions = await Question.aggregate([
+      { $match: { level, category, isActive: true } },
+      { $sample: { size: Number(totalQuestions) } }
     ]);
 
-    const errors = [];
-    if (easyCount   > 0 && easyCount   > easyAvail)   errors.push(`Need ${easyCount} easy questions, only ${easyAvail} in DB`);
-    if (mediumCount > 0 && mediumCount > mediumAvail)  errors.push(`Need ${mediumCount} medium questions, only ${mediumAvail} in DB`);
-    if (hardCount   > 0 && hardCount   > hardAvail)    errors.push(`Need ${hardCount} hard questions, only ${hardAvail} in DB`);
-    if (errors.length) return res.status(400).json({ message: errors.join(' | ') });
+    // Shuffle list
+    const selectedQuestionIds = shuffle(questions).map(q => q._id);
 
-    // Random $sample per difficulty tier
-    const [easyQs, mediumQs, hardQs] = await Promise.all([
-      easyCount   > 0 ? Question.aggregate([{ $match: { difficulty: 'easy',   isActive: true } }, { $sample: { size: easyCount   } }]) : [],
-      mediumCount > 0 ? Question.aggregate([{ $match: { difficulty: 'medium', isActive: true } }, { $sample: { size: mediumCount } }]) : [],
-      hardCount   > 0 ? Question.aggregate([{ $match: { difficulty: 'hard',   isActive: true } }, { $sample: { size: hardCount   } }]) : [],
-    ]);
-
-    // Merge + shuffle final list
-    const selectedQuestionIds = shuffle([...easyQs, ...mediumQs, ...hardQs]).map(q => q._id);
-
-    if (selectedQuestionIds.length !== totalQuestions) {
+    if (selectedQuestionIds.length !== Number(totalQuestions)) {
       return res.status(500).json({ message: `Expected ${totalQuestions} questions but got ${selectedQuestionIds.length}` });
     }
 
@@ -88,8 +68,8 @@ router.post('/', protect, adminOnly, async (req, res) => {
       passMarks,
       passPercentage,
       duration,
-      difficultyRatio:   { easy, medium, hard },
-      questionCounts:    { easy: easyCount, medium: mediumCount, hard: hardCount },
+      level,
+      caseStudyPrompt:   level === 'legend' ? (caseStudyPrompt || '') : '',
       questions:         selectedQuestionIds,   // ← correct field name
       negativeMarking:   !!negativeMarking,
       negativeMarksPerQ: parseFloat(negativeMarksPerQ) || 0.25,
@@ -190,7 +170,7 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
   try {
     const allowed = ['title','description','passMarks','duration','status',
                      'negativeMarking','negativeMarksPerQ','shuffleQuestions',
-                     'shuffleOptions','attemptsAllowed','category'];
+                     'shuffleOptions','attemptsAllowed','category','caseStudyPrompt'];
     const update = {};
     allowed.forEach(k => { if (req.body[k] !== undefined) update[k] = req.body[k]; });
 

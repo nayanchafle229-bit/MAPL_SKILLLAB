@@ -15,6 +15,24 @@
     background-attachment: fixed;
     min-height: 100vh;
   }
+
+  /* Fix: native <select> dropdown popups (and other native form UI like
+     date pickers) default to a light/white popup on most browsers. Since
+     our theme uses light text (text-slate-100/200) meant for a dark
+     background, that text becomes invisible once the browser renders the
+     option list on its own white popup. `color-scheme: dark` tells the
+     browser to draw native controls — including the <option> popup — in
+     dark mode, matching this app's theme automatically. */
+  select { color-scheme: dark; }
+
+  /* Belt-and-braces for browsers/engines that only partially honor
+     color-scheme on the option popup: force explicit dark colors on the
+     options themselves so text is always legible against their background,
+     regardless of what background the browser ends up using. */
+  select option {
+    color: #e2e8f0;      /* slate-200 */
+    background-color: #171d33; /* surface-raised */
+  }
 }
 
 @layer components {

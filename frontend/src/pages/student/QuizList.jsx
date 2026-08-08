@@ -8,33 +8,17 @@ import { Link, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, PassBadge } from '../../components/UI'
+import { LEVEL_MAP } from '../../utils/levels'
 
 function fmtDuration(mins) {
   if (!mins) return '—'
   return mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`
 }
 
-function DiffBar({ ratio }) {
-  if (!ratio) return null
-  return (
-    <div className="space-y-1">
-      <div className="flex rounded-md overflow-hidden h-2 bg-white/5">
-        {ratio.easy   > 0 && <div className="bg-accent-400 transition-all" style={{ width: `${ratio.easy}%` }} title={`Easy ${ratio.easy}%`} />}
-        {ratio.medium > 0 && <div className="bg-amber-400 transition-all"   style={{ width: `${ratio.medium}%` }} title={`Medium ${ratio.medium}%`} />}
-        {ratio.hard   > 0 && <div className="bg-red-400 transition-all"     style={{ width: `${ratio.hard}%` }} title={`Hard ${ratio.hard}%`} />}
-      </div>
-      <div className="flex gap-3 text-xs text-slate-500 justify-center">
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-accent-400 rounded-full" />Easy {ratio.easy}%</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-amber-400 rounded-full" />Med {ratio.medium}%</span>
-        <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-400 rounded-full" />Hard {ratio.hard}%</span>
-      </div>
-    </div>
-  )
-}
-
 function QuizCard({ q }) {
   const navigate = useNavigate()
   const pct = q.myPct !== null && q.myPct !== undefined
+  const lvl = LEVEL_MAP[q.level] || LEVEL_MAP['apprentice'] // Default fallback if missing
 
   return (
     <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
@@ -89,8 +73,12 @@ function QuizCard({ q }) {
           )}
         </div>
 
-        {/* Difficulty bar */}
-        <DiffBar ratio={q.difficultyRatio} />
+        {/* Level badge */}
+        <div className="flex justify-center mt-2">
+          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${lvl.badge}`}>
+            {lvl.icon} {lvl.label}
+          </span>
+        </div>
 
         {/* Attempts badge */}
         {q.attemptsAllowed > 1 && (

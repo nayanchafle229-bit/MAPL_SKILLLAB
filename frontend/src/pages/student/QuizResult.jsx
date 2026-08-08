@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
-import { PageLoader, ScoreRing, PassBadge, DifficultyBadge, RankBadge } from '../../components/UI'
+import { PageLoader, ScoreRing, PassBadge, RankBadge } from '../../components/UI'
 
 function fmtTime(s) {
   const m = Math.floor(s/60); const sec = s%60
@@ -34,12 +34,6 @@ export default function QuizResult() {
               : pct>=50?{l:'Average 📚',    c:'from-orange-400 to-red-500'}
               :         {l:'Try Again 💪',  c:'from-red-500 to-rose-600'}
 
-  const diffData = result.diffBreakdown || {}
-  const diffLevels = [
-    { k:'easy',   label:'Easy',   color:'bg-accent-500', light:'bg-accent-500/10 border-accent-500/30' },
-    { k:'medium', label:'Medium', color:'bg-amber-500',   light:'bg-amber-500/10 border-amber-500/20' },
-    { k:'hard',   label:'Hard',   color:'bg-red-500',     light:'bg-red-500/10 border-red-500/20' },
-  ]
 
   return (
     <Layout title="Quiz Result">
@@ -103,31 +97,7 @@ export default function QuizResult() {
             {/* Overview Tab */}
             {tab === 'overview' && (
               <div className="space-y-5">
-                {/* Difficulty breakdown */}
-                <div>
-                  <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-3">Difficulty-wise Analysis</h3>
-                  <div className="space-y-3">
-                    {diffLevels.map(({ k, label, color, light }) => {
-                      const d = diffData[k] || { correct:0, total:0 }
-                      const dpct = d.total > 0 ? Math.round((d.correct/d.total)*100) : 0
-                      return (
-                        <div key={k} className={`flex items-center gap-4 p-4 rounded-xl border ${light}`}>
-                          <DifficultyBadge level={k} />
-                          <div className="flex-1">
-                            <div className="flex justify-between text-xs font-semibold text-slate-400 mb-1.5">
-                              <span>{d.correct}/{d.total} correct</span>
-                              <span>{dpct}%</span>
-                            </div>
-                            <div className="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
-                              <div className={`h-full ${color} rounded-full transition-all duration-700`} style={{width:`${dpct}%`}}/>
-                            </div>
-                          </div>
-                          <span className="text-lg font-black text-slate-100 w-12 text-right">{dpct}%</span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
+
 
                 {/* Performance visual */}
                 <div>
@@ -174,7 +144,6 @@ export default function QuizResult() {
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="bg-white/5 border border-white/10 text-slate-400 text-xs font-black px-2.5 py-1 rounded-full">Q{i+1}</span>
-                          {a.difficulty && <DifficultyBadge level={a.difficulty} />}
                           <span className="text-xs font-semibold text-slate-400">{a.marks||1} mark{(a.marks||1)>1?'s':''}</span>
                         </div>
                         <span className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black text-white ${a.isCorrect?'bg-accent-500':a.selected?'bg-red-500':'bg-slate-500'}`}>
