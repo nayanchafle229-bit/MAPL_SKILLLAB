@@ -56,7 +56,31 @@ router.get('/', protect, async (req, res) => {
       });
     }
 
-    const LEVEL_ORDER = ['apprentice', 'adept', 'master', 'legend'];
+    const { getHighestUnlockedLevelIndex, getPendingLevelQuiz, isLevelLocked, LEVELS: LEVEL_ORDER } = require('../services/levelProgression');
+    
+    let pendingLevelQuiz = null;
+    let pendingLevel = null;
+
+    if (!isAdmin) {
+      const highestUnlockedIndex = await getHighestUnlockedLevelIndex(req.user._id);
+      const highestUnlockedLevelStr = LEVEL_ORDER[highestUnlockedIndex];
+      
+      if (highestUnlockedLevelStr) {
+        pendingLevelQuiz = await getPendingLevelQuiz(req.user._id, highestUnlockedLevelStr);
+        if (pendingLevelQuiz) pendingLevel = highestUnlockedLevelStr;
+      }
+      
+      // Enforce global level lock
+      for (const [catId, catModules] of modulesByCategory.entries()) {
+        for (const m of catModules) {
+          const globalLocked = await isLevelLocked(req.user._id, m.level);
+          if (m.status !== 'passed') {
+            m.status = globalLocked ? 'locked' : 'unlocked';
+          }
+        }
+      }
+    }
+
     const curriculum = categories.map((cat) => {
       const catModules = modulesByCategory.get(cat._id.toString()) || [];
       catModules.sort((a, b) => LEVEL_ORDER.indexOf(a.level) - LEVEL_ORDER.indexOf(b.level));
@@ -71,7 +95,7 @@ router.get('/', protect, async (req, res) => {
       };
     });
 
-    res.json({ curriculum });
+    res.json({ curriculum, pendingLevelQuiz, pendingLevel });
   } catch (err) {
     console.error('GET /api/curriculum error:', err);
     res.status(500).json({ message: err.message });
@@ -92,10 +116,19 @@ router.get('/modules/:moduleKey', protect, async (req, res) => {
     const isAdmin = req.user.role === 'admin';
     let status = 'unlocked';
     if (!isAdmin) {
+      const { isLevelLocked } = require('../services/levelProgression');
+      const globalLocked = await isLevelLocked(req.user._id, mod.level);
+      
       const progress = await Progress.findOne({ userId: req.user._id, moduleId: mod._id });
-      status = progress?.status || 'locked';
+      
+      if (progress?.status === 'passed') {
+        status = 'passed';
+      } else {
+        status = globalLocked ? 'locked' : 'unlocked';
+      }
+      
       if (status === 'locked') {
-        return res.status(403).json({ message: 'This module is locked. Pass its prerequisite first.' });
+        return res.status(403).json({ message: 'This module is locked. Complete all previous level courses and quizzes first.' });
       }
     }
 

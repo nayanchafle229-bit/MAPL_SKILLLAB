@@ -3,6 +3,7 @@ const router = express.Router();
 const Course = require('../models/Course');
 const CourseProgress = require('../models/CourseProgress');
 const { protect, adminOnly } = require('../middleware/auth');
+const { getHighestUnlockedLevelIndex, getPendingLevelQuiz, LEVELS } = require('../services/levelProgression');
 
 const { COURSE_LEVELS } = Course;
 
@@ -15,8 +16,30 @@ router.get('/', protect, async (req, res) => {
     const filter = {};
     if (req.query.category) filter.category = req.query.category;
     if (req.query.level) filter.level = req.query.level;
-    const courses = await Course.find(filter).sort({ createdAt: -1 });
-    res.json({ courses });
+    const courses = await Course.find(filter).sort({ createdAt: -1 }).lean();
+    
+    if (req.user.role !== 'admin') {
+      const highestUnlockedIndex = await getHighestUnlockedLevelIndex(req.user._id);
+      let pendingLevelQuiz = null;
+      let pendingLevel = null;
+      
+      for (const c of courses) {
+        const levelIndex = LEVELS.indexOf(c.level);
+        c.locked = levelIndex > highestUnlockedIndex;
+      }
+
+      // Check if user is eligible to take the level quiz for their current highest unlocked level
+      const highestUnlockedLevelStr = LEVELS[highestUnlockedIndex];
+      if (highestUnlockedLevelStr) {
+        pendingLevelQuiz = await getPendingLevelQuiz(req.user._id, highestUnlockedLevelStr);
+        if (pendingLevelQuiz) pendingLevel = highestUnlockedLevelStr;
+      }
+
+      res.json({ courses, pendingLevelQuiz, pendingLevel });
+    } else {
+      for (const c of courses) c.locked = false;
+      res.json({ courses });
+    }
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -72,6 +95,12 @@ router.post('/:id/watch', protect, async (req, res) => {
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: 'Course not found' });
 
+    const { isLevelLocked } = require('../services/levelProgression');
+    const globalLocked = await isLevelLocked(req.user._id, course.level);
+    if (globalLocked) {
+      return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
+    }
+
     const existing = await CourseProgress.findOne({ userId: req.user._id, courseId: req.params.id });
     if (existing) {
       existing.lastWatchedAt = new Date();
@@ -98,6 +127,12 @@ router.post('/:id/complete', protect, async (req, res) => {
     const course = await Course.findById(req.params.id);
     if (!course) return res.status(404).json({ message: 'Course not found' });
 
+    const { isLevelLocked } = require('../services/levelProgression');
+    const globalLocked = await isLevelLocked(req.user._id, course.level);
+    if (globalLocked) {
+      return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
+    }
+
     const progress = await CourseProgress.findOneAndUpdate(
       { userId: req.user._id, courseId: req.params.id },
       { status: 'completed', completedAt: new Date(), lastWatchedAt: new Date(), $setOnInsert: { startedAt: new Date() } },
@@ -112,8 +147,17 @@ router.post('/:id/complete', protect, async (req, res) => {
 // GET /api/course/:id
 router.get('/:id', protect, async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id);
+    const course = await Course.findById(req.params.id).lean();
     if (!course) return res.status(404).json({ message: 'Course not found' });
+
+    if (req.user.role !== 'admin') {
+      const { isLevelLocked } = require('../services/levelProgression');
+      const globalLocked = await isLevelLocked(req.user._id, course.level);
+      if (globalLocked) {
+        return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
+      }
+    }
+
     res.json({ course });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -1,4 +1,11 @@
 const mongoose = require('mongoose');
+const dns = require('dns');
+
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {
+  // fallback if system DNS cannot be customized
+}
 
 const connectDB = async () => {
   const uri = process.env.MONGODB_URI;
@@ -18,7 +25,7 @@ const connectDB = async () => {
   };
 
   console.log('⏳ Connecting to MongoDB Atlas...');
-  console.log('   Host: cluster0.arcqild.mongodb.net');
+  console.log('   Host:', uri.split('@')[1] ? uri.split('@')[1].split('/')[0] : 'MongoDB Atlas');
 
   try {
     const conn = await mongoose.connect(uri, options);

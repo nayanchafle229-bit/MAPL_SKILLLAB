@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, EmptyState, ConfirmDialog, Alert } from '../../components/UI'
+import { LEVELS } from '../../utils/levels'
 
 export default function AdminQuizzes() {
   const [quizzes, setQuizzes]   = useState([])
@@ -13,6 +14,9 @@ export default function AdminQuizzes() {
   const [saving,  setSaving]    = useState(false)
   const [success, setSuccess]   = useState('')
   const [error,   setError]     = useState('')
+  const [search, setSearch]     = useState('')
+  const [catFilter, setCatFilter] = useState('')
+  const [diffFilter, setDiffFilter] = useState('')
 
   const load = () => {
     setLoading(true)
@@ -86,6 +90,14 @@ export default function AdminQuizzes() {
     </span>
   )
 
+  const cats = [...new Set(quizzes.map(q => q.category).filter(Boolean))].sort()
+  const filtered = quizzes.filter(q => {
+    const matchSearch = !search || q.title.toLowerCase().includes(search.toLowerCase()) || q.category?.toLowerCase().includes(search.toLowerCase())
+    const matchCat    = !catFilter  || q.category === catFilter
+    const matchDiff   = !diffFilter || q.level === diffFilter
+    return matchSearch && matchCat && matchDiff
+  })
+
   if (loading) return <Layout title="Manage Quizzes"><PageLoader /></Layout>
 
   return (
@@ -105,34 +117,34 @@ export default function AdminQuizzes() {
               <div>
                 <label className="block text-sm font-bold text-slate-300 mb-1">Title</label>
                 <input value={editForm.title || ''} onChange={e => setEditForm(f => ({ ...f, title: e.target.value }))}
-                  className="w-full border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" required />
+                  className="input-field" required />
               </div>
               <div>
                 <label className="block text-sm font-bold text-slate-300 mb-1">Description</label>
                 <textarea value={editForm.description || ''} onChange={e => setEditForm(f => ({ ...f, description: e.target.value }))}
-                  rows={2} className="w-full border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 resize-none" />
+                  rows={2} className="input-field resize-none" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-1">Pass Marks</label>
                   <input type="number" value={editForm.passMarks || 0} onChange={e => setEditForm(f => ({ ...f, passMarks: +e.target.value }))}
-                    className="w-full border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                    className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-1">Duration (min)</label>
                   <input type="number" value={editForm.duration || 0} onChange={e => setEditForm(f => ({ ...f, duration: +e.target.value }))}
-                    className="w-full border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                    className="input-field" />
                 </div>
                 <div>
                   <label className="block text-sm font-bold text-slate-300 mb-1">Max Attempts</label>
                   <input type="number" min={1} max={10} value={editForm.attemptsAllowed || 1} onChange={e => setEditForm(f => ({ ...f, attemptsAllowed: +e.target.value }))}
-                    className="w-full border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                    className="input-field" />
                 </div>
                 {editForm.negativeMarking && (
                   <div>
                     <label className="block text-sm font-bold text-slate-300 mb-1">Neg Marks/Q</label>
                     <input type="number" step={0.25} value={editForm.negativeMarksPerQ || 0.25} onChange={e => setEditForm(f => ({ ...f, negativeMarksPerQ: +e.target.value }))}
-                      className="w-full border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500" />
+                      className="input-field" />
                   </div>
                 )}
               </div>
@@ -152,17 +164,54 @@ export default function AdminQuizzes() {
       )}
 
       {/* Header */}
-      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
-        <div>
-          <h2 className="text-2xl font-black text-white">🧠 Quizzes</h2>
-          <p className="text-slate-400 text-sm">
-            {quizzes.filter(q => q.status === 'published').length} published ·{' '}
-            {quizzes.filter(q => q.status === 'draft').length} drafts
-          </p>
+      <div className="flex flex-col mb-6 gap-4">
+        <div className="flex items-center justify-between flex-wrap gap-3">
+          <div>
+            <h2 className="text-2xl font-black text-white">🧠 Quizzes</h2>
+            <p className="text-slate-400 text-sm">
+              {quizzes.filter(q => q.status === 'published').length} published ·{' '}
+              {quizzes.filter(q => q.status === 'draft').length} drafts
+            </p>
+          </div>
+          <Link to="/admin/quizzes/create" className="bg-primary-600 hover:bg-primary-500 text-white font-black px-5 py-2.5 rounded-xl text-sm shadow-sm transition-colors">
+            + Create Quiz
+          </Link>
         </div>
-        <Link to="/admin/quizzes/create" className="bg-primary-600 hover:bg-primary-500 text-white font-black px-5 py-2.5 rounded-xl text-sm shadow-sm transition-colors">
-          + Create Quiz
-        </Link>
+
+        <div className="flex flex-col sm:flex-row gap-3 w-full">
+          <input
+            type="text"
+            placeholder="🔍 Search…"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="input-field flex-1 sm:max-w-[200px]"
+          />
+          {cats.length > 1 && (
+            <select
+              value={catFilter}
+              onChange={e => setCatFilter(e.target.value)}
+              className="input-field flex-1 sm:max-w-[250px]"
+            >
+              <option value="">All Topics</option>
+              {cats.map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          )}
+          <select
+            value={diffFilter}
+            onChange={e => setDiffFilter(e.target.value)}
+            className="input-field flex-1 sm:max-w-[160px]"
+          >
+            <option value="">All Levels</option>
+            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+          </select>
+          <button
+            onClick={load}
+            className="btn-secondary flex-shrink-0"
+            title="Refresh"
+          >
+            ↻
+          </button>
+        </div>
       </div>
 
       {success && <div className="mb-4 p-3 bg-accent-500/10 border border-accent-500/30 text-accent-400 rounded-xl text-sm font-semibold">{success}</div>}
@@ -172,9 +221,11 @@ export default function AdminQuizzes() {
         <EmptyState icon="🧠" title="No quizzes yet"
           description="Create your first quiz. It starts as a draft — publish when ready for students."
           action={<Link to="/admin/quizzes/create" className="bg-primary-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Create Quiz</Link>} />
+      ) : filtered.length === 0 ? (
+        <EmptyState icon="🔍" title="No matching quizzes" description="Try adjusting your search or filters." />
       ) : (
         <div className="space-y-4">
-          {quizzes.map(q => (
+          {filtered.map(q => (
             <div key={q._id} className={`bg-surface-card rounded-2xl border shadow-sm p-5 hover:shadow-md transition-shadow ${
               q.status === 'published' ? 'border-accent-500/20' : 'border-white/10'
             }`}>

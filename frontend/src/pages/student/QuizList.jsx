@@ -8,7 +8,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, PassBadge } from '../../components/UI'
-import { LEVEL_MAP } from '../../utils/levels'
+import { LEVELS, LEVEL_MAP } from '../../utils/levels'
 
 function fmtDuration(mins) {
   if (!mins) return '—'
@@ -160,10 +160,11 @@ export default function QuizList() {
     const filtered = quizzes.filter(q => {
       const matchSearch = !search || q.title.toLowerCase().includes(search.toLowerCase()) || q.category?.toLowerCase().includes(search.toLowerCase())
       const matchCat    = !catFilter  || q.category === catFilter
-      return matchSearch && matchCat
+      const matchDiff   = !diffFilter || q.level === diffFilter
+      return matchSearch && matchCat && matchDiff
     })
     return { filtered, cats }
-  }, [quizzes, search, catFilter])
+  }, [quizzes, search, catFilter, diffFilter])
 
   if (loading) return <Layout title="Quizzes"><PageLoader text="Loading quizzes…" /></Layout>
 
@@ -196,6 +197,14 @@ export default function QuizList() {
               {cats.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           )}
+          <select
+            value={diffFilter}
+            onChange={e => setDiffFilter(e.target.value)}
+            className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+          >
+            <option value="">All Levels</option>
+            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+          </select>
           <button
             onClick={load}
             className="border border-white/10 rounded-xl px-4 py-2.5 text-sm bg-white/5 hover:bg-white/5 text-slate-400 font-semibold transition-colors"
@@ -225,9 +234,9 @@ export default function QuizList() {
               ? 'The admin hasn\'t published any quizzes yet. Check back soon!'
               : 'Try clearing the search or category filter.'}
           </p>
-          {search || catFilter ? (
+          {search || catFilter || diffFilter ? (
             <button
-              onClick={() => { setSearch(''); setCatFilter('') }}
+              onClick={() => { setSearch(''); setCatFilter(''); setDiffFilter('') }}
               className="mt-5 text-sm text-primary-400 hover:underline font-semibold"
             >
               Clear filters

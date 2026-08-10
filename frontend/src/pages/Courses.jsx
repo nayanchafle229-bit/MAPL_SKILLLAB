@@ -14,6 +14,29 @@ function CourseCard({ c }) {
   const ytId = getYouTubeId(c.videoUrl)
   const thumb = ytId ? `https://img.youtube.com/vi/${ytId}/hqdefault.jpg` : null
   const level = getLevel(c.level)
+
+  if (c.locked) {
+    return (
+      <div className="card group p-0 overflow-hidden flex-shrink-0 flex flex-col opacity-60 grayscale cursor-not-allowed border-dashed">
+        <div className="relative aspect-video bg-slate-800 overflow-hidden flex items-center justify-center">
+          <svg className="w-12 h-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z" />
+          </svg>
+        </div>
+        <div className="p-4 flex-1 flex flex-col">
+          <h3 className="font-bold text-slate-400 mb-1 line-clamp-1">{c.title}</h3>
+          <p className="text-sm text-slate-500 line-clamp-2 mb-4">{c.description}</p>
+          <div className="mt-auto flex items-center justify-between">
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-slate-700/50 text-slate-400`}>
+              {level.icon} {level.label}
+            </span>
+            <span className="text-xs font-bold text-slate-500">Locked</span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="card group hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-0 overflow-hidden flex-shrink-0 flex flex-col">
       <Link to={`/courses/${c._id}`} className="block relative aspect-video bg-gradient-to-br from-slate-700 to-surface-base overflow-hidden">
@@ -70,10 +93,16 @@ export default function Courses() {
   const [search, setSearch]   = useState('')
   const [activeCategory, setActiveCategory] = useState('All')
   const [activeLevel, setActiveLevel] = useState('All')
+  const [pendingQuiz, setPendingQuiz] = useState(null)
+  const [pendingLevel, setPendingLevel] = useState(null)
 
   useEffect(() => {
     api.get('/course')
-      .then(({ data }) => setCourses(data.courses || []))
+      .then(({ data }) => {
+        setCourses(data.courses || [])
+        setPendingQuiz(data.pendingLevelQuiz || null)
+        setPendingLevel(data.pendingLevel || null)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -108,6 +137,23 @@ export default function Courses() {
 
   return (
     <Layout title="Courses">
+      {pendingQuiz && pendingLevel && (
+        <div className="mb-8 p-6 bg-primary-900/40 border border-primary-500/30 rounded-xl flex items-center justify-between gap-6 shadow-lg">
+          <div>
+            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
+              <span className="text-2xl">🏆</span> Level {getLevel(pendingLevel).label} Complete!
+            </h3>
+            <p className="text-slate-300">
+              You have completed all courses in the {getLevel(pendingLevel).label} level. 
+              Take the level quiz to unlock the next level.
+            </p>
+          </div>
+          <Link to={`/quizzes/${pendingQuiz._id}`} className="btn-primary flex-shrink-0 whitespace-nowrap shadow-primary-600/20 shadow-lg px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform">
+            Take Level Quiz
+          </Link>
+        </div>
+      )}
+
       <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-white">📚 All Courses</h2>
