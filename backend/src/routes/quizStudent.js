@@ -34,6 +34,8 @@ router.get('/', protect, async (req, res) => {
     // Mark which ones this user already attempted
     const userId = req.user._id;
     let attemptMap = {};
+    const { isQuizLocked } = require('../services/levelProgression');
+    const enriched = [];
 
     if (userId && userId !== 'admin') {
       const attempts = await QuizResult.find({ userId })
@@ -43,14 +45,22 @@ router.get('/', protect, async (req, res) => {
       );
     }
 
-    const enriched = quizzes.map(q => ({
-      ...q.toObject(),
-      attempted:    !!attemptMap[q._id.toString()],
-      myScore:      attemptMap[q._id.toString()]?.score       ?? null,
-      myPct:        attemptMap[q._id.toString()]?.percentage  ?? null,
-      myStatus:     attemptMap[q._id.toString()]?.passStatus  ?? null,
-      myRank:       attemptMap[q._id.toString()]?.rank        ?? null,
-    }));
+    for (const q of quizzes) {
+      let locked = false;
+      if (userId && userId !== 'admin') {
+        locked = await isQuizLocked(userId, q);
+      }
+      
+      enriched.push({
+        ...q.toObject(),
+        locked,
+        attempted:    !!attemptMap[q._id.toString()],
+        myScore:      attemptMap[q._id.toString()]?.score       ?? null,
+        myPct:        attemptMap[q._id.toString()]?.percentage  ?? null,
+        myStatus:     attemptMap[q._id.toString()]?.passStatus  ?? null,
+        myRank:       attemptMap[q._id.toString()]?.rank        ?? null,
+      });
+    }
 
     res.json({ quizzes: enriched });
   } catch (err) {
@@ -74,6 +84,12 @@ router.get('/:id/start', protect, async (req, res) => {
     if (!quiz)                         return res.status(404).json({ message: 'Quiz not found' });
     if (quiz.status !== 'published')   return res.status(400).json({ message: 'This quiz is not published yet' });
     if (!quiz.questions?.length)       return res.status(400).json({ message: 'This quiz has no questions configured' });
+
+    const { isQuizLocked } = require('../services/levelProgression');
+    const locked = await isQuizLocked(req.user._id, quiz);
+    if (locked) {
+      return res.status(403).json({ message: 'This quiz is locked based on your current level progress.' });
+    }
 
     // Check attempt limit
     const attemptsDone = await QuizResult.countDocuments({ userId: req.user._id, quizId: quiz._id });

@@ -20,6 +20,32 @@ function QuizCard({ q }) {
   const pct = q.myPct !== null && q.myPct !== undefined
   const lvl = LEVEL_MAP[q.level] || LEVEL_MAP['apprentice'] // Default fallback if missing
 
+  if (q.locked) {
+    return (
+      <div className="bg-surface-card rounded-2xl border border-white/5 shadow-sm overflow-hidden flex flex-col opacity-50 grayscale select-none relative group cursor-not-allowed">
+        <div className="bg-gradient-to-br from-slate-900 to-surface-base p-5">
+          <div className="flex items-start justify-between gap-2 mb-3">
+            <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+              🔒
+            </div>
+          </div>
+          <h3 className="font-black text-slate-300 text-base leading-tight mb-1 break-words">{q.title}</h3>
+          {q.description && (
+            <p className="text-slate-500 text-xs line-clamp-2 leading-snug">{q.description}</p>
+          )}
+        </div>
+        <div className="p-4 flex flex-col flex-1 gap-3 items-center justify-center">
+          <div className="text-center">
+            <p className="text-sm font-bold text-slate-400 mb-1">Locked</p>
+            <p className="text-xs text-slate-500">
+              Complete all {lvl.label} content first
+            </p>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
       {/* Coloured top strip */}

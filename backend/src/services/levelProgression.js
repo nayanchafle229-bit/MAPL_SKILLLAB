@@ -128,5 +128,29 @@ module.exports = {
   isLevelQuizPassed,
   getHighestUnlockedLevelIndex,
   isLevelLocked,
-  getPendingLevelQuiz
+  getPendingLevelQuiz,
+  isQuizLocked
 };
+
+/**
+ * Determines if a specific quiz is locked for a user.
+ */
+async function isQuizLocked(userId, quiz) {
+  if (!quiz.level) return false; // Not tied to a level, no progression lock
+
+  // 1. If the level itself is locked globally, the quiz is definitely locked.
+  const levelLocked = await isLevelLocked(userId, quiz.level);
+  if (levelLocked) return true;
+
+  // 2. If the level is UNLOCKED, but this is the "Level Quiz" (capstone), 
+  // it requires ALL content in that level to be completed first.
+  const isLevelQuiz = quiz.quizKey && quiz.quizKey.startsWith('level-');
+  if (isLevelQuiz) {
+    const contentCompleted = await isContentCompletedForLevel(userId, quiz.level);
+    if (!contentCompleted) {
+      return true; // Lock the level quiz until content is completed
+    }
+  }
+
+  return false;
+}
