@@ -22,24 +22,39 @@ function QuizCard({ q }) {
 
   if (q.locked) {
     return (
-      <div className="bg-surface-card rounded-2xl border border-white/5 shadow-sm overflow-hidden flex flex-col opacity-50 grayscale select-none relative group cursor-not-allowed">
-        <div className="bg-gradient-to-br from-slate-900 to-surface-base p-5">
-          <div className="flex items-start justify-between gap-2 mb-3">
-            <div className="w-10 h-10 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+      <div className="glass-panel rounded-2xl overflow-hidden flex flex-col opacity-50 grayscale select-none relative group cursor-not-allowed">
+        <div className="absolute inset-0 bg-black/40 z-10 flex flex-col items-center justify-center backdrop-blur-[2px]">
+          <div className="w-14 h-14 bg-slate-800/80 rounded-full flex items-center justify-center mb-3 shadow-lg border border-slate-700/50">
+            <span className="text-2xl">🔒</span>
+          </div>
+          <span className="font-black text-white tracking-widest uppercase text-sm drop-shadow-md">Locked</span>
+          <p className="text-xs text-slate-300 mt-2 font-medium">Complete all {lvl.label} content first</p>
+        </div>
+        
+        <div className="bg-gradient-to-br from-slate-900 to-surface-card p-6 relative z-0">
+          <div className="flex items-start justify-between gap-2 mb-4">
+            <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
               🔒
             </div>
           </div>
-          <h3 className="font-black text-slate-300 text-base leading-tight mb-1 break-words">{q.title}</h3>
+          <h3 className="font-black text-slate-300 text-lg leading-tight mb-2 break-words">{q.title}</h3>
           {q.description && (
-            <p className="text-slate-500 text-xs line-clamp-2 leading-snug">{q.description}</p>
+            <p className="text-slate-500 text-sm line-clamp-2 leading-relaxed">{q.description}</p>
           )}
         </div>
-        <div className="p-4 flex flex-col flex-1 gap-3 items-center justify-center">
-          <div className="text-center">
-            <p className="text-sm font-bold text-slate-400 mb-1">Locked</p>
-            <p className="text-xs text-slate-500">
-              Complete all {lvl.label} content first
-            </p>
+        <div className="p-6 flex flex-col flex-1 gap-4 bg-surface-card/50 relative z-0">
+          {/* Stats grid */}
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              ['❓', q.totalQuestions, 'Questions'],
+              ['🏆', q.totalMarks,     'Marks'],
+              ['⏱️', fmtDuration(q.duration), 'Time'],
+            ].map(([ic, v, l]) => (
+              <div key={l} className="bg-white/5 rounded-xl p-3 text-center border border-white/5">
+                <span className="text-lg leading-none">{ic}</span>
+                <p className="text-sm font-black text-slate-400 mt-1">{v}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -47,90 +62,99 @@ function QuizCard({ q }) {
   }
 
   return (
-    <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm hover:shadow-md transition-all duration-200 overflow-hidden flex flex-col">
+    <div className="glass-panel group rounded-2xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 overflow-hidden flex flex-col relative hover:border-white/20">
+      {/* Decorative animated glow */}
+      <div className="absolute top-0 right-0 w-64 h-64 bg-primary-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary-500/20 transition-all duration-500 z-0"></div>
+      
       {/* Coloured top strip */}
-      <div className="bg-gradient-to-br from-slate-800 to-surface-base p-5">
-        <div className="flex items-start justify-between gap-2 mb-3">
-          <div className="w-10 h-10 bg-primary-500/20 border border-primary-400/30 rounded-xl flex items-center justify-center text-xl flex-shrink-0">
+      <div className="bg-gradient-to-br from-slate-800/80 to-surface-card/80 p-6 relative z-10 border-b border-white/5">
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <div className="w-14 h-14 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-400/30 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
             🧠
           </div>
           {q.attempted
             ? <PassBadge status={q.myStatus} />
-            : <span className="bg-emerald-500/20 text-accent-300 text-xs font-bold px-2.5 py-1 rounded-full border border-emerald-400/30">
+            : <span className="bg-emerald-500/20 text-emerald-400 text-[10px] uppercase tracking-widest font-black px-3 py-1.5 rounded-full border border-emerald-500/30 shadow-[0_0_10px_rgba(16,185,129,0.2)]">
                 New
               </span>
           }
         </div>
-        <h3 className="font-black text-white text-base leading-tight mb-1 break-words">{q.title}</h3>
+        <h3 className="font-black text-white text-xl leading-tight mb-2 break-words group-hover:text-primary-300 transition-colors">{q.title}</h3>
         {q.description && (
-          <p className="text-slate-400 text-xs line-clamp-2 leading-snug">{q.description}</p>
+          <p className="text-slate-400 text-sm line-clamp-2 leading-relaxed font-medium">{q.description}</p>
         )}
       </div>
 
       {/* Body */}
-      <div className="p-4 flex flex-col flex-1 gap-3">
+      <div className="p-6 flex flex-col flex-1 gap-5 relative z-10">
         {/* Stats grid */}
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-3 gap-3">
           {[
             ['❓', q.totalQuestions, 'Questions'],
             ['🏆', q.totalMarks,     'Marks'],
             ['⏱️', fmtDuration(q.duration), 'Time'],
           ].map(([ic, v, l]) => (
-            <div key={l} className="bg-white/5 rounded-xl p-2 text-center">
-              <span className="text-base leading-none">{ic}</span>
-              <p className="text-sm font-black text-white mt-0.5 leading-tight">{v}</p>
-              <p className="text-xs text-slate-500 leading-tight">{l}</p>
+            <div key={l} className="bg-white/5 hover:bg-white/10 transition-colors rounded-xl p-3 text-center border border-white/5 shadow-inner">
+              <span className="text-xl leading-none drop-shadow-sm">{ic}</span>
+              <p className="text-base font-black text-white mt-1.5 leading-tight">{v}</p>
+              <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mt-1">{l}</p>
             </div>
           ))}
         </div>
 
-        {/* Pass info */}
-        <div className="flex items-center justify-between text-xs text-slate-400 px-0.5">
-          <span>
-            Pass: <strong className="text-slate-300">{q.passMarks}/{q.totalMarks}</strong>
+        {/* Pass info & Category */}
+        <div className="flex items-center justify-between text-xs font-bold text-slate-400 px-1">
+          <span className="flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            Pass: <span className="text-slate-200">{q.passMarks}/{q.totalMarks}</span>
             {q.passPercentage !== undefined && (
-              <span className="text-slate-500"> ({q.passPercentage}%)</span>
+              <span className="text-slate-500">({q.passPercentage}%)</span>
             )}
           </span>
           {q.category && (
-            <span className="bg-primary-500/10 text-primary-400 px-2 py-0.5 rounded-full font-semibold border border-primary-500/20">
+            <span className="bg-white/10 text-slate-300 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-widest border border-white/10 shadow-inner">
               {q.category}
             </span>
           )}
         </div>
 
         {/* Level badge */}
-        <div className="flex justify-center mt-2">
-          <span className={`px-3 py-1 rounded-full text-xs font-bold border ${lvl.badge}`}>
+        <div className="flex justify-center mt-1">
+          <span className={`px-4 py-1.5 rounded-full text-[10px] uppercase tracking-widest font-black shadow-lg border backdrop-blur-md ${lvl.badge}`}>
             {lvl.icon} {lvl.label}
           </span>
         </div>
 
         {/* Attempts badge */}
         {q.attemptsAllowed > 1 && (
-          <p className="text-xs text-center text-slate-500 font-medium">
-            🔄 {q.attemptsAllowed} attempt{q.attemptsAllowed > 1 ? 's' : ''} allowed
+          <p className="text-xs text-center text-primary-300/70 font-bold tracking-wide">
+            <span className="inline-block w-2 h-2 rounded-full bg-primary-400/50 mr-1.5"></span>
+            {q.attemptsAllowed} attempt{q.attemptsAllowed > 1 ? 's' : ''} allowed
           </p>
         )}
 
-        {/* CTA — pushed to bottom */}
-        <div className="mt-auto pt-1">
+        {/* CTA */}
+        <div className="mt-auto pt-4 border-t border-white/5">
           {q.attempted ? (
-            <div className="space-y-2">
-              <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 flex items-center justify-between">
-                <span className="text-xs text-slate-400 font-medium">Your Score</span>
-                <span className="font-black text-white text-sm">
-                  {q.myScore} / {q.totalMarks}
-                  {pct && <span className="text-slate-500 font-normal"> ({q.myPct?.toFixed(1)}%)</span>}
+            <div className="space-y-3">
+              <div className="bg-gradient-to-r from-white/5 to-transparent border border-white/10 rounded-xl px-5 py-3 flex items-center justify-between shadow-inner">
+                <span className="text-xs text-slate-400 font-bold uppercase tracking-wider">Your Score</span>
+                <span className="font-black text-white text-lg">
+                  {q.myScore} <span className="text-sm text-slate-500 font-bold">/ {q.totalMarks}</span>
+                  {pct && <span className="text-slate-400 text-sm ml-1">({q.myPct?.toFixed(1)}%)</span>}
                 </span>
               </div>
+              
               {q.myRank && (
-                <p className="text-xs text-center text-indigo-600 font-bold">🏅 Your Rank: #{q.myRank}</p>
+                <div className="flex items-center justify-center gap-2 text-sm text-amber-400 font-black bg-amber-500/10 py-2 rounded-lg border border-amber-500/20">
+                  <span>🏅</span> Rank #{q.myRank}
+                </div>
               )}
-              <div className="grid grid-cols-2 gap-2">
+              
+              <div className="grid grid-cols-2 gap-3">
                 <Link
                   to={`/leaderboard/${q._id}`}
-                  className="text-center text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-2.5 rounded-xl transition-colors"
+                  className="text-center text-xs bg-white text-primary-900 font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                 >
                   🏆 Leaderboard
                 </Link>
@@ -138,9 +162,9 @@ function QuizCard({ q }) {
                 {(q.attemptsAllowed || 1) > 1 && (
                   <Link
                     to={`/quiz/${q._id}`}
-                    className="text-center text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-bold py-2.5 rounded-xl transition-colors border border-primary-500/20"
+                    className="text-center text-xs bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 font-black py-3 rounded-xl transition-all border border-primary-500/30 hover:-translate-y-0.5"
                   >
-                    🔄 Retry
+                    🔄 Retry Quiz
                   </Link>
                 )}
               </div>
@@ -148,7 +172,7 @@ function QuizCard({ q }) {
           ) : (
             <Link
               to={`/quiz/${q._id}`}
-              className="block text-center bg-primary-600 hover:bg-primary-500 text-white font-black py-3 rounded-xl transition-all shadow-sm hover:shadow-md text-sm"
+              className="block text-center bg-primary-600 hover:bg-primary-500 text-white font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:-translate-y-0.5 text-sm uppercase tracking-wider"
             >
               🚀 Start Quiz
             </Link>

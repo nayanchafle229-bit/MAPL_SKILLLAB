@@ -84,27 +84,30 @@ export default function StudentPortfolio() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Score trend chart */}
-        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-5">
-          <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-4">Score Trend</h3>
+        <div className="glass-panel p-6 rounded-2xl">
+          <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest mb-4">Score Trend</h3>
           {trend.length === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-sm">Take quizzes to see your trend</div>
+            <div className="text-center py-12">
+              <span className="text-3xl opacity-50 mb-2 block">📈</span>
+              <p className="text-slate-400 text-sm font-bold">Take quizzes to see your trend</p>
+            </div>
           ) : (
             <div>
-              <div className="flex items-end gap-2 h-32 mb-2">
+              <div className="flex items-end gap-3 h-32 mb-3">
                 {trend.map((r, i) => {
                   const h = Math.max(4, (r.percentage/100)*100)
-                  const color = r.percentage>=75?'bg-accent-500':r.percentage>=50?'bg-amber-500':'bg-red-400'
+                  const color = r.percentage>=75?'bg-emerald-500':r.percentage>=50?'bg-amber-500':'bg-red-500'
                   return (
-                    <div key={i} className="flex-1 flex flex-col items-center gap-1" title={`${r.percentage?.toFixed(1)}%`}>
-                      <span className="text-xs font-bold text-slate-400">{r.percentage?.toFixed(0)}%</span>
-                      <div className={`w-full ${color} rounded-t-lg transition-all`} style={{height:`${h}%`}}/>
+                    <div key={i} className="flex-1 flex flex-col items-center gap-2 group" title={`${r.percentage?.toFixed(1)}%`}>
+                      <span className="text-[10px] font-black text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity">{r.percentage?.toFixed(0)}%</span>
+                      <div className={`w-full ${color} rounded-t-xl transition-all shadow-inner group-hover:brightness-110`} style={{height:`${h}%`}}/>
                     </div>
                   )
                 })}
               </div>
-              <div className="flex gap-2 flex-wrap text-xs text-slate-500 justify-center mt-1">
+              <div className="flex gap-2 flex-wrap text-[10px] uppercase tracking-widest font-bold text-slate-500 justify-center mt-2">
                 {trend.map((r, i) => (
-                  <span key={i}>{new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>
+                  <span key={i} className="bg-white/5 px-2 py-1 rounded-md">{new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short'})}</span>
                 ))}
               </div>
             </div>
@@ -112,42 +115,46 @@ export default function StudentPortfolio() {
         </div>
 
         {/* Pass/Fail pie visual */}
-        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-5">
-          <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-4">Quiz Performance</h3>
+        <div className="glass-panel p-6 rounded-2xl">
+          <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest mb-4">Quiz Performance</h3>
           {total === 0 ? (
-            <div className="text-center py-8 text-slate-500 text-sm">No quiz data yet</div>
+            <div className="text-center py-12">
+              <span className="text-3xl opacity-50 mb-2 block">📊</span>
+              <p className="text-slate-400 text-sm font-bold">No quiz data yet</p>
+            </div>
           ) : (
             <div>
-              <div className="flex items-center gap-6 mb-4">
-                <div className="relative w-28 h-28 flex-shrink-0">
+              <div className="flex items-center gap-8 mb-6">
+                <div className="relative w-32 h-32 flex-shrink-0 drop-shadow-xl">
                   <svg viewBox="0 0 36 36" className="w-full h-full -rotate-90">
-                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="#e5e7eb" strokeWidth="3.8"/>
+                    <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="3.8"/>
                     <circle cx="18" cy="18" r="15.9" fill="none" stroke="#10b981" strokeWidth="3.8"
                       strokeDasharray={`${passRate} ${100-passRate}`} strokeDashoffset="0" strokeLinecap="round"/>
                   </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <p className="text-lg font-black text-white">{passRate}%</p>
+                  <div className="absolute inset-0 flex items-center justify-center flex-col">
+                    <p className="text-2xl font-black text-white leading-none">{passRate}%</p>
+                    <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Pass Rate</p>
                   </div>
                 </div>
-                <div className="space-y-3 flex-1">
+                <div className="space-y-4 flex-1">
                   <div>
-                    <div className="flex justify-between text-xs font-semibold text-slate-400 mb-1"><span>Passed</span><span>{passed}</span></div>
-                    <div className="w-full h-2 bg-white/5 rounded-full"><div className="h-full bg-accent-500 rounded-full" style={{width:`${total?((passed/total)*100):0}%`}}/></div>
+                    <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest mb-2"><span>Passed</span><span className="text-emerald-400">{passed}</span></div>
+                    <div className="w-full h-2 bg-white/10 rounded-full shadow-inner overflow-hidden"><div className="h-full bg-emerald-500 rounded-full" style={{width:`${total?((passed/total)*100):0}%`}}/></div>
                   </div>
                   <div>
-                    <div className="flex justify-between text-xs font-semibold text-slate-400 mb-1"><span>Failed</span><span>{failed}</span></div>
-                    <div className="w-full h-2 bg-white/5 rounded-full"><div className="h-full bg-red-400 rounded-full" style={{width:`${total?((failed/total)*100):0}%`}}/></div>
+                    <div className="flex justify-between text-xs font-black text-slate-400 uppercase tracking-widest mb-2"><span>Failed</span><span className="text-red-400">{failed}</span></div>
+                    <div className="w-full h-2 bg-white/10 rounded-full shadow-inner overflow-hidden"><div className="h-full bg-red-500 rounded-full" style={{width:`${total?((failed/total)*100):0}%`}}/></div>
                   </div>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-white/5 rounded-xl p-3 text-center">
-                  <p className="text-xl font-black text-white">{avg}%</p>
-                  <p className="text-xs text-slate-400">Average Score</p>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-white/5 border border-white/10 rounded-2xl p-4 text-center shadow-inner">
+                  <p className="text-2xl font-black text-white mb-1">{avg}%</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Average Score</p>
                 </div>
-                <div className="bg-white/5 rounded-xl p-3 text-center">
-                  <p className="text-xl font-black text-white">{best||'—'}%</p>
-                  <p className="text-xs text-slate-400">Best Score</p>
+                <div className="bg-gradient-to-br from-primary-500/10 to-accent-500/10 border border-primary-500/20 rounded-2xl p-4 text-center shadow-inner">
+                  <p className="text-2xl font-black text-primary-300 mb-1">{best||'—'}%</p>
+                  <p className="text-[10px] font-bold text-primary-400 uppercase tracking-widest">Best Score</p>
                 </div>
               </div>
             </div>
@@ -157,23 +164,23 @@ export default function StudentPortfolio() {
 
       {/* Skill progress */}
       {skills.length > 0 && (
-        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-5 mb-6">
-          <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-4">Skill Progress by Topic</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div className="glass-panel p-6 rounded-2xl mb-6">
+          <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest mb-5">Skill Progress by Topic</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {skills.map(sk => (
-              <div key={sk.topic} className="flex items-center gap-3 p-3 bg-white/5 rounded-xl">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0">
+              <div key={sk.topic} className="flex items-center gap-4 p-4 bg-white/5 border border-white/10 rounded-2xl hover:bg-white/10 transition-colors group">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-primary-600/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-primary-400 font-black text-lg flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                   {sk.topic[0]}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-center mb-1">
-                    <p className="text-sm font-bold text-slate-100 truncate">{sk.topic}</p>
-                    <span className={`text-xs font-black px-2 py-0.5 rounded-full ml-2 ${getLevelColor(sk.avg)}`}>{getLevel(sk.avg)}</span>
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm font-black text-white truncate group-hover:text-primary-300 transition-colors">{sk.topic}</p>
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md ml-2 border ${getLevelColor(sk.avg)}`}>{getLevel(sk.avg)}</span>
                   </div>
-                  <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div className={`h-full rounded-full ${sk.avg>=75?'bg-accent-500':sk.avg>=50?'bg-amber-500':'bg-red-400'}`} style={{width:`${sk.avg}%`}}/>
+                  <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden shadow-inner mb-1.5">
+                    <div className={`h-full rounded-full ${sk.avg>=75?'bg-emerald-500':sk.avg>=50?'bg-amber-500':'bg-red-500'}`} style={{width:`${sk.avg}%`}}/>
                   </div>
-                  <p className="text-xs text-slate-500 mt-0.5">{sk.avg.toFixed(1)}% · {sk.attempts} attempt{sk.attempts>1?'s':''}</p>
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{sk.avg.toFixed(1)}% <span className="opacity-50 mx-1">•</span> {sk.attempts} attempt{sk.attempts>1?'s':''}</p>
                 </div>
               </div>
             ))}
@@ -182,35 +189,36 @@ export default function StudentPortfolio() {
       )}
 
       {/* Quiz history table */}
-      <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
-        <div className="p-5 border-b border-white/10 flex items-center justify-between">
-          <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider">Quiz History</h3>
-          <Link to="/history" className="text-xs text-primary-400 font-bold hover:underline">View detailed →</Link>
+      <div className="glass-panel overflow-hidden p-0 rounded-2xl">
+        <div className="p-6 border-b border-white/10 flex items-center justify-between bg-white/5">
+          <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest">Quiz History</h3>
+          <Link to="/history" className="text-xs text-primary-400 font-bold hover:text-primary-300 transition-colors uppercase tracking-widest">View detailed →</Link>
         </div>
         {results.length === 0 ? (
-          <div className="text-center py-10">
-            <p className="text-slate-400 text-sm">No quiz attempts yet.</p>
-            <Link to="/quizzes" className="mt-3 inline-block bg-primary-600 text-white text-sm font-bold px-5 py-2.5 rounded-xl">Take a Quiz</Link>
+          <div className="text-center py-12">
+            <span className="text-3xl opacity-50 mb-3 block">📝</span>
+            <p className="text-slate-400 text-sm font-bold mb-4">No quiz attempts yet.</p>
+            <Link to="/quizzes" className="btn-primary inline-flex">Take a Quiz</Link>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-white/5 border-b border-white/10">
                 <tr>{['Quiz','Score','%','Status','Rank','Date'].map(h=>(
-                  <th key={h} className="text-left text-xs font-black text-slate-500 uppercase tracking-wider px-4 py-3">{h}</th>
+                  <th key={h} className="text-left text-xs font-black text-slate-400 uppercase tracking-widest px-6 py-4">{h}</th>
                 ))}</tr>
               </thead>
               <tbody className="divide-y divide-white/5">
                 {results.map(r=>(
-                  <tr key={r._id} className="hover:bg-white/5 transition-colors">
-                    <td className="px-4 py-3 font-semibold text-slate-100">{r.quizId?.title||'Quiz'}</td>
-                    <td className="px-4 py-3 font-black">{r.score}/{r.totalMarks}</td>
-                    <td className="px-4 py-3">
-                      <span className={`font-bold ${r.percentage>=75?'text-accent-400':r.percentage>=50?'text-amber-600':'text-red-400'}`}>{r.percentage?.toFixed(1)}%</span>
+                  <tr key={r._id} className="hover:bg-white/[0.05] transition-colors group">
+                    <td className="px-6 py-4 font-bold text-white group-hover:text-primary-300 transition-colors">{r.quizId?.title||'Quiz'}</td>
+                    <td className="px-6 py-4 font-black text-white">{r.score}<span className="text-slate-500 text-xs font-bold">/{r.totalMarks}</span></td>
+                    <td className="px-6 py-4">
+                      <span className={`font-black ${r.percentage>=75?'text-emerald-400':r.percentage>=50?'text-amber-400':'text-red-400'}`}>{r.percentage?.toFixed(1)}%</span>
                     </td>
-                    <td className="px-4 py-3"><PassBadge status={r.passStatus}/></td>
-                    <td className="px-4 py-3">{r.rank?`#${r.rank}`:'—'}</td>
-                    <td className="px-4 py-3 text-slate-500 text-xs">{new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
+                    <td className="px-6 py-4"><PassBadge status={r.passStatus}/></td>
+                    <td className="px-6 py-4 font-black text-primary-300 drop-shadow-sm">{r.rank?`#${r.rank}`:'—'}</td>
+                    <td className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest whitespace-nowrap">{new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})}</td>
                   </tr>
                 ))}
               </tbody>

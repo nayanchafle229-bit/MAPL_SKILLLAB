@@ -182,7 +182,7 @@ export default function AdminLeaderboard() {
       )}
 
       {/* ── Table with filters + sort ─────────────────────────────────────── */}
-      <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
+      <div className="glass-panel overflow-hidden p-0 rounded-2xl">
 
         {/* Filter bar */}
         <div className="p-4 border-b border-white/10 flex flex-wrap gap-3 items-center">
@@ -191,7 +191,7 @@ export default function AdminLeaderboard() {
             placeholder="🔍 Search students…"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 w-48"
+            className="input-field max-w-xs text-sm"
           />
           <div className="flex rounded-xl border border-white/10 overflow-hidden">
             {[['all','All'],['pass','Pass'],['fail','Fail']].map(([v, l]) => (
@@ -213,7 +213,7 @@ export default function AdminLeaderboard() {
             <select
               value={sortBy}
               onChange={e => { setSortBy(e.target.value); setSortDir('asc') }}
-              className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="input-field text-sm !px-3 !py-2.5 !rounded-xl"
             >
               <option value="rank">Rank</option>
               <option value="name">Name</option>
@@ -223,7 +223,7 @@ export default function AdminLeaderboard() {
             </select>
             <button
               onClick={() => setSortDir(d => d === 'asc' ? 'desc' : 'asc')}
-              className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 hover:bg-white/5 font-bold text-slate-400"
+              className="input-field text-sm !px-3 !py-2.5 !rounded-xl font-bold text-slate-400 hover:text-white"
               title="Toggle sort direction"
             >
               {sortDir === 'asc' ? '↑' : '↓'}
@@ -237,8 +237,11 @@ export default function AdminLeaderboard() {
 
         {/* Table */}
         {filtered.length === 0 ? (
-          <div className="text-center py-12 text-slate-500 text-sm">
-            {leaderboard.length === 0 ? 'No submissions yet.' : 'No results match your filter.'}
+          <div className="text-center py-12">
+            <span className="text-3xl opacity-50 mb-2 block">📋</span>
+            <p className="text-slate-400 text-sm font-bold">
+              {leaderboard.length === 0 ? 'No submissions yet.' : 'No results match your filter.'}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -259,7 +262,7 @@ export default function AdminLeaderboard() {
                     <th
                       key={label}
                       onClick={col ? () => handleSort(col) : undefined}
-                      className={`text-left text-xs font-black text-slate-400 uppercase tracking-wider px-4 py-3 whitespace-nowrap ${
+                      className={`text-left text-xs font-black text-slate-400 uppercase tracking-widest px-6 py-4 whitespace-nowrap ${
                         col ? 'cursor-pointer hover:text-primary-400 select-none' : ''
                       }`}
                     >
@@ -272,45 +275,45 @@ export default function AdminLeaderboard() {
                 {filtered.map((e, i) => {
                   const rankEmoji = e.rank === 1 ? '🥇' : e.rank === 2 ? '🥈' : e.rank === 3 ? '🥉' : null
                   return (
-                    <tr key={i} className="hover:bg-white/5 transition-colors">
-                      <td className="px-4 py-3">
+                    <tr key={i} className="hover:bg-white/[0.05] transition-colors group">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           {rankEmoji
-                            ? <span className="text-xl leading-none">{rankEmoji}</span>
-                            : <span className="w-7 h-7 rounded-full bg-white/5 text-slate-400 text-xs font-black flex items-center justify-center">
+                            ? <span className="text-2xl leading-none drop-shadow-sm group-hover:scale-110 transition-transform">{rankEmoji}</span>
+                            : <span className="w-8 h-8 rounded-full bg-white/5 text-slate-400 text-xs font-black flex items-center justify-center border border-white/10 shadow-inner group-hover:border-primary-500/30 group-hover:text-primary-400 transition-colors">
                                 #{e.rank}
                               </span>
                           }
                         </div>
                       </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-primary-500/20 to-primary-600/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-primary-300 font-black text-sm flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                             {(e.name || '?')[0].toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-bold text-white text-sm">{e.name}</p>
-                            <p className="text-xs text-slate-500">{e.email}</p>
+                            <p className="font-bold text-white text-sm group-hover:text-primary-300 transition-colors">{e.name}</p>
+                            <p className="text-[10px] font-medium text-slate-400 mt-0.5">{e.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 font-black">{e.score}/{quiz?.totalMarks}</td>
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4 font-black text-white">{e.score}<span className="text-slate-500 text-xs">/{quiz?.totalMarks}</span></td>
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <div className="w-14 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                          <div className="w-14 h-1.5 bg-white/10 rounded-full overflow-hidden shadow-inner">
                             <div
-                              className={`h-full rounded-full ${e.percentage >= 75 ? 'bg-accent-500' : e.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                              className={`h-full rounded-full ${e.percentage >= 75 ? 'bg-emerald-500' : e.percentage >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                               style={{ width: `${e.percentage}%` }}
                             />
                           </div>
-                          <span className="font-bold text-sm">{e.percentage?.toFixed(1)}%</span>
+                          <span className="font-black text-xs text-slate-300">{e.percentage?.toFixed(1)}%</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3"><PassBadge status={e.passStatus} /></td>
-                      <td className="px-4 py-3 text-accent-400 font-bold">{e.correctAnswers ?? '—'}</td>
-                      <td className="px-4 py-3 text-red-400 font-bold">{e.wrongAnswers ?? '—'}</td>
-                      <td className="px-4 py-3 font-mono text-slate-400 text-xs">{fmtTime(e.timeTaken)}</td>
-                      <td className="px-4 py-3 text-xs text-slate-500 whitespace-nowrap">
+                      <td className="px-6 py-4"><PassBadge status={e.passStatus} /></td>
+                      <td className="px-6 py-4 text-emerald-400 font-black drop-shadow-sm">{e.correctAnswers ?? '—'}</td>
+                      <td className="px-6 py-4 text-red-400 font-black drop-shadow-sm">{e.wrongAnswers ?? '—'}</td>
+                      <td className="px-6 py-4 font-mono text-slate-400 text-xs font-medium">{fmtTime(e.timeTaken)}</td>
+                      <td className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 whitespace-nowrap">
                         {new Date(e.submittedAt).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' })}
                       </td>
                     </tr>

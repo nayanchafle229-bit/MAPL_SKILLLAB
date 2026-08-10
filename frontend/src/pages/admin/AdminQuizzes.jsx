@@ -226,38 +226,49 @@ export default function AdminQuizzes() {
       ) : (
         <div className="space-y-4">
           {filtered.map(q => (
-            <div key={q._id} className={`bg-surface-card rounded-2xl border shadow-sm p-5 hover:shadow-md transition-shadow ${
-              q.status === 'published' ? 'border-accent-500/20' : 'border-white/10'
+            <div key={q._id} className={`glass-panel rounded-2xl group transition-all duration-300 relative overflow-hidden ${
+              q.status === 'published' ? 'hover:border-accent-500/30' : 'hover:border-white/20'
             }`}>
-              <div className="flex flex-col lg:flex-row lg:items-start gap-4">
+              {/* Decorative glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary-500/20 transition-all duration-500 z-0"></div>
+
+              <div className="flex flex-col lg:flex-row lg:items-start gap-5 p-6 relative z-10">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <h3 className="font-black text-white text-lg leading-tight">{q.title}</h3>
+                    <h3 className="font-black text-white text-xl leading-tight group-hover:text-primary-300 transition-colors">{q.title}</h3>
                     <StatusBadge status={q.status} />
-                    {q.category && <span className="text-xs bg-primary-500/10 text-primary-400 px-2.5 py-1 rounded-full font-semibold border border-primary-500/20">{q.category}</span>}
+                    {q.category && <span className="text-[10px] bg-primary-500/10 text-primary-400 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-primary-500/20 shadow-inner">{q.category}</span>}
                   </div>
-                  {q.description && <p className="text-slate-400 text-sm mb-3 line-clamp-1">{q.description}</p>}
+                  {q.description && <p className="text-slate-400 text-sm mb-4 line-clamp-1 font-medium">{q.description}</p>}
 
-                  {/* Stats row */}
-                  <div className="flex flex-wrap gap-x-5 gap-y-1.5 text-sm text-slate-400 mb-3">
-                    <span>❓ <strong>{q.totalQuestions}</strong> questions</span>
-                    <span>🏆 <strong>{q.totalMarks}</strong> marks</span>
-                    <span>🎯 Pass: <strong>{q.passMarks} ({q.passPercentage}%)</strong></span>
-                    <span>⏱️ <strong>{q.duration}m</strong></span>
-                    <span>🔄 <strong>{q.attemptsAllowed || 1}</strong> attempt{(q.attemptsAllowed||1)>1?'s':''}</span>
-                    <span>👥 <strong>{q.attemptCount || 0}</strong> submitted</span>
-                    {q.avgScore > 0 && <span>📈 Avg: <strong>{q.avgScore}%</strong></span>}
+                  {/* Stats grid */}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4">
+                    {[
+                      ['❓', q.totalQuestions, 'Qs'],
+                      ['🏆', q.totalMarks, 'Marks'],
+                      ['🎯', `${q.passMarks} (${q.passPercentage}%)`, 'Pass'],
+                      ['⏱️', `${q.duration}m`, 'Time'],
+                      ['🔄', q.attemptsAllowed || 1, 'Attempts'],
+                      ['👥', q.attemptCount || 0, 'Taken'],
+                      ...(q.avgScore > 0 ? [['📈', `${q.avgScore}%`, 'Avg']] : [])
+                    ].map(([ic, v, l]) => (
+                      <div key={l} className="bg-white/5 rounded-xl p-2 text-center border border-white/5 shadow-inner">
+                        <span className="text-base">{ic}</span>
+                        <p className="text-sm font-black text-white mt-0.5">{v}</p>
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500">{l}</p>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Level & Blueprint badges */}
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-3">
                     {q.level && (
-                      <span className="text-xs bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-lg font-black border border-indigo-500/20 uppercase tracking-wider">
+                      <span className="text-[10px] bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-full font-black border border-indigo-500/20 uppercase tracking-widest shadow-inner">
                         {q.level}
                       </span>
                     )}
                     {q.level === 'legend' && (
-                      <span className="text-xs bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-lg font-black border border-amber-500/20">
+                      <span className="text-[10px] bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-full font-black border border-amber-500/20 shadow-inner tracking-widest">
                         📄 Includes Case Study
                       </span>
                     )}
@@ -265,26 +276,26 @@ export default function AdminQuizzes() {
                 </div>
 
                 {/* Action buttons */}
-                <div className="flex flex-row lg:flex-col gap-2 flex-shrink-0 flex-wrap">
+                <div className="flex flex-row lg:flex-col gap-3 flex-shrink-0 flex-wrap">
                   {/* ISSUE 4 FIX: Publish/Unpublish button */}
                   <button onClick={() => togglePublish(q)}
-                    className={`text-xs font-bold px-4 py-2.5 rounded-xl transition-all border ${
+                    className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all border shadow-inner ${
                       q.status === 'published'
-                        ? 'bg-amber-500/10 hover:bg-amber-500/15 text-amber-300 border-amber-500/20'
-                        : 'bg-accent-500/10 hover:bg-accent-500/15 text-accent-400 border-accent-500/30'
+                        ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/20'
+                        : 'bg-accent-500/10 hover:bg-accent-500/20 text-accent-400 border-accent-500/30'
                     }`}>
                     {q.status === 'published' ? '📝 Unpublish' : '🚀 Publish'}
                   </button>
                   <Link to={`/admin/quizzes/${q._id}/leaderboard`}
-                    className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-bold px-4 py-2.5 rounded-xl border border-primary-500/20 text-center transition-colors">
+                    className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-primary-500/20 text-center transition-colors shadow-inner">
                     🏆 Leaderboard
                   </Link>
                   <button onClick={() => openEdit(q)}
-                    className="text-xs bg-white/5 hover:bg-white/5 text-slate-300 font-bold px-4 py-2.5 rounded-xl border border-white/10 transition-colors">
+                    className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-white/10 transition-colors shadow-inner">
                     ✏️ Edit
                   </button>
                   <button onClick={() => setDelId(q._id)}
-                    className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-bold px-4 py-2.5 rounded-xl border border-red-500/20 transition-colors">
+                    className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-red-500/20 transition-colors shadow-inner">
                     🗑 Delete
                   </button>
                 </div>

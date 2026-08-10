@@ -173,7 +173,7 @@ export default function AdminResults() {
             <table className="w-full text-sm">
               <thead className="bg-white/5 border-b border-white/10">
                 <tr>
-                  <th className="text-left text-xs font-black text-slate-400 uppercase tracking-wider px-4 py-3">#</th>
+                  <th className="text-left text-xs font-black text-slate-400 uppercase tracking-widest px-6 py-4">#</th>
 
                   {/* Clickable sort headers */}
                   {[
@@ -189,7 +189,7 @@ export default function AdminResults() {
                     <th
                       key={label}
                       onClick={col ? () => handleSort(col) : undefined}
-                      className={`text-left text-xs font-black text-slate-400 uppercase tracking-wider px-4 py-3 whitespace-nowrap ${
+                      className={`text-left text-xs font-black text-slate-400 uppercase tracking-widest px-6 py-4 whitespace-nowrap ${
                         col ? 'cursor-pointer hover:text-primary-400 select-none' : ''
                       }`}
                     >
@@ -203,42 +203,42 @@ export default function AdminResults() {
                 {filtered.map((r, i) => {
                   const pct = r.percentage
                   return (
-                    <tr key={r._id} className="hover:bg-white/5 transition-colors">
-                      <td className="px-4 py-3.5 text-xs text-slate-500 font-bold">{i + 1}</td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-full flex items-center justify-center text-white font-black text-xs flex-shrink-0">
+                    <tr key={r._id} className="hover:bg-white/[0.05] transition-colors group">
+                      <td className="px-6 py-4 text-xs text-slate-500 font-bold group-hover:text-primary-400 transition-colors">{i + 1}</td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 bg-gradient-to-br from-primary-500/20 to-primary-600/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-primary-300 font-black text-sm flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
                             {(r.userId?.profile?.name || r.userId?.email || 'U')[0].toUpperCase()}
                           </div>
                           <div>
-                            <p className="font-bold text-white">{r.userId?.profile?.name || 'Student'}</p>
-                            <p className="text-xs text-slate-500">{r.userId?.email}</p>
+                            <p className="font-bold text-white group-hover:text-primary-300 transition-colors">{r.userId?.profile?.name || 'Student'}</p>
+                            <p className="text-[10px] font-medium text-slate-400 mt-0.5">{r.userId?.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5">
-                        <p className="font-semibold text-slate-100 text-xs max-w-[160px] truncate" title={r.quizId?.title}>
+                      <td className="px-6 py-4">
+                        <p className="font-bold text-slate-300 text-sm max-w-[160px] truncate" title={r.quizId?.title}>
                           {r.quizId?.title || '—'}
                         </p>
                       </td>
-                      <td className="px-4 py-3.5 font-black">{r.score}/{r.totalMarks}</td>
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-1.5">
-                          <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden">
+                      <td className="px-6 py-4 font-black text-white">{r.score}<span className="text-slate-500 text-xs">/{r.totalMarks}</span></td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-2">
+                          <div className="w-12 h-1.5 bg-white/10 rounded-full overflow-hidden shadow-inner">
                             <div
-                              className={`h-full rounded-full ${pct >= 75 ? 'bg-accent-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
+                              className={`h-full rounded-full ${pct >= 75 ? 'bg-emerald-500' : pct >= 50 ? 'bg-amber-500' : 'bg-red-500'}`}
                               style={{ width: `${pct}%` }}
                             />
                           </div>
-                          <span className="font-bold text-xs">{pct.toFixed(1)}%</span>
+                          <span className="font-black text-xs text-slate-300">{pct.toFixed(1)}%</span>
                         </div>
                       </td>
-                      <td className="px-4 py-3.5"><PassBadge status={r.passStatus} /></td>
-                      <td className="px-4 py-3.5 font-bold text-slate-300 text-sm">
+                      <td className="px-6 py-4"><PassBadge status={r.passStatus} /></td>
+                      <td className="px-6 py-4 font-black text-primary-300 text-sm drop-shadow-sm">
                         {r.rank ? `#${r.rank}` : '—'}
                       </td>
-                      <td className="px-4 py-3.5 font-mono text-xs text-slate-400">{fmtTime(r.timeTaken)}</td>
-                      <td className="px-4 py-3.5 text-xs text-slate-500 whitespace-nowrap">
+                      <td className="px-6 py-4 font-mono text-xs text-slate-400 font-medium">{fmtTime(r.timeTaken)}</td>
+                      <td className="px-6 py-4 text-[10px] uppercase tracking-widest font-bold text-slate-400 whitespace-nowrap">
                         {new Date(r.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </td>
                     </tr>
@@ -247,7 +247,10 @@ export default function AdminResults() {
               </tbody>
             </table>
             {filtered.length === 0 && (
-              <div className="text-center py-10 text-slate-500 text-sm">No results match your filter.</div>
+              <div className="text-center py-12">
+                <span className="text-3xl opacity-50 mb-2 block">🔍</span>
+                <p className="text-slate-400 text-sm font-bold">No results match your filter.</p>
+              </div>
             )}
           </div>
         )}

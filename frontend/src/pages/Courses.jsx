@@ -17,20 +17,25 @@ function CourseCard({ c }) {
 
   if (c.locked) {
     return (
-      <div className="card group p-0 overflow-hidden flex-shrink-0 flex flex-col opacity-60 grayscale cursor-not-allowed border-dashed">
-        <div className="relative aspect-video bg-slate-800 overflow-hidden flex items-center justify-center">
-          <svg className="w-12 h-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z" />
-          </svg>
+      <div className="glass-panel p-0 overflow-hidden flex-shrink-0 flex flex-col opacity-60 grayscale cursor-not-allowed border-dashed relative">
+        <div className="absolute inset-0 bg-black/40 z-10 flex flex-col items-center justify-center backdrop-blur-[2px]">
+          <div className="w-14 h-14 bg-slate-800/80 rounded-full flex items-center justify-center mb-3 shadow-lg border border-slate-700/50">
+            <svg className="w-6 h-6 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8V7z" />
+            </svg>
+          </div>
+          <span className="font-black text-white tracking-widest uppercase text-sm drop-shadow-md">Locked</span>
         </div>
-        <div className="p-4 flex-1 flex flex-col">
-          <h3 className="font-bold text-slate-400 mb-1 line-clamp-1">{c.title}</h3>
+        <div className="relative aspect-video bg-slate-800 overflow-hidden flex items-center justify-center">
+          {thumb && <img src={thumb} alt={c.title} className="w-full h-full object-cover opacity-50" />}
+        </div>
+        <div className="p-5 flex-1 flex flex-col relative z-0">
+          <h3 className="font-bold text-slate-400 mb-1 line-clamp-1 text-lg">{c.title}</h3>
           <p className="text-sm text-slate-500 line-clamp-2 mb-4">{c.description}</p>
           <div className="mt-auto flex items-center justify-between">
-            <span className={`text-xs font-bold px-2.5 py-1 rounded-full bg-slate-700/50 text-slate-400`}>
+            <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
               {level.icon} {level.label}
             </span>
-            <span className="text-xs font-bold text-slate-500">Locked</span>
           </div>
         </div>
       </div>
@@ -38,47 +43,52 @@ function CourseCard({ c }) {
   }
 
   return (
-    <div className="card group hover:shadow-md hover:-translate-y-1 transition-all duration-200 p-0 overflow-hidden flex-shrink-0 flex flex-col">
-      <Link to={`/courses/${c._id}`} className="block relative aspect-video bg-gradient-to-br from-slate-700 to-surface-base overflow-hidden">
+    <div className="glass-panel group hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 p-0 overflow-hidden flex-shrink-0 flex flex-col hover:border-white/20">
+      <Link to={`/courses/${c._id}`} className="block relative aspect-video bg-gradient-to-br from-slate-800 to-surface-card overflow-hidden">
         {thumb
-          ? <img src={thumb} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-          : <div className="w-full h-full flex items-center justify-center text-5xl">🎬</div>
+          ? <img src={thumb} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
+          : <div className="w-full h-full flex items-center justify-center text-5xl opacity-50 group-hover:scale-110 transition-transform duration-700">🎬</div>
         }
-        <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-all flex items-center justify-center">
-          <div className="w-12 h-12 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
-            <svg className="w-5 h-5 text-primary-400 ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
+        <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <div className="w-14 h-14 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.3)] border border-white/40 scale-90 group-hover:scale-100 transition-transform duration-300">
+            <svg className="w-6 h-6 text-white ml-1 drop-shadow-md" fill="currentColor" viewBox="0 0 24 24">
               <path d="M8 5v14l11-7z"/>
             </svg>
           </div>
         </div>
         {c.category && (
-          <span className="absolute top-3 left-3 bg-primary-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-md">
+          <span className="absolute top-4 left-4 bg-primary-600/90 backdrop-blur-md text-white text-[10px] uppercase tracking-widest font-black px-3 py-1.5 rounded-full shadow-lg border border-primary-500/50">
             {c.category}
           </span>
         )}
       </Link>
-      <div className="p-4 flex-1 flex flex-col">
-        <Link to={`/courses/${c._id}`} className="block">
-          <h3 className="font-bold text-white mb-1 line-clamp-1 hover:text-primary-400 transition-colors">{c.title}</h3>
-          <p className="text-sm text-slate-400 line-clamp-2 mb-4">{c.description}</p>
-        </Link>
-        <div className="mt-auto flex items-center justify-between">
-          <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${level.chip}`}>
+      <div className="p-5 flex-1 flex flex-col relative">
+        <div className="absolute top-0 right-5 -translate-y-1/2">
+          <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg backdrop-blur-md border border-white/10 ${level.chip}`}>
             {level.icon} {level.label}
           </span>
-          <div className="flex items-center gap-1.5">
-            <Link to={`/courses/${c._id}`} className="text-primary-400 text-sm font-semibold hover:underline mr-1">
-              ▶ Watch Now
-            </Link>
+        </div>
+        
+        <Link to={`/courses/${c._id}`} className="block mt-2">
+          <h3 className="font-bold text-white mb-2 line-clamp-1 group-hover:text-primary-400 transition-colors text-lg">{c.title}</h3>
+          <p className="text-sm text-slate-400 line-clamp-2 mb-4 leading-relaxed font-medium">{c.description}</p>
+        </Link>
+        <div className="mt-auto flex items-center justify-between pt-4 border-t border-white/5">
+          <Link to={`/courses/${c._id}`} className="text-primary-400 text-sm font-bold hover:text-primary-300 flex items-center gap-1.5 transition-colors group/link">
+            <span>Watch Now</span>
+            <span className="group-hover/link:translate-x-1 transition-transform">→</span>
+          </Link>
+          <div className="flex items-center gap-2">
             {/* Open in New Tab */}
             <a href={`/courses/${c._id}`} target="_blank" rel="noopener noreferrer" 
-               className="p-1.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-md transition-colors" title="Open in new tab">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
+               className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white bg-white/5 hover:bg-white/15 rounded-full transition-colors border border-white/5 hover:border-white/20" title="Open in new tab">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" /></svg>
             </a>
             {/* Full Screen mode via query param */}
             <Link to={`/courses/${c._id}?fullscreen=true`}
-               className="p-1.5 text-slate-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-md transition-colors" title="Watch Full Screen">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
+               className="w-8 h-8 flex items-center justify-center text-slate-400 hover:text-white bg-white/5 hover:bg-white/15 rounded-full transition-colors border border-white/5 hover:border-white/20" title="Watch Full Screen">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" /></svg>
             </Link>
           </div>
         </div>

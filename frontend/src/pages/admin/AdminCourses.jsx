@@ -183,30 +183,44 @@ export default function AdminCourses() {
       ) : filteredCourses.length === 0 ? (
         <EmptyState icon="🔍" title="No matching courses" description="Try adjusting your search or filters." />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
           {filteredCourses.map(c => (
-            <div key={c._id} className="card hover:shadow-md transition-shadow">
-              <div className="flex items-start justify-between gap-2 mb-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0">
-                  {c.title[0]}
+            <div key={c._id} className="glass-panel group p-6 rounded-2xl hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden flex flex-col hover:border-white/20">
+              {/* Decorative glow */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary-500/20 transition-all duration-500 z-0"></div>
+              
+              <div className="relative z-10 flex flex-col flex-1">
+                <div className="flex items-start justify-between gap-3 mb-4">
+                  <div className="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-primary-300 font-black text-lg flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform">
+                    {c.title[0]}
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <button onClick={() => openEdit(c)} className="w-8 h-8 flex items-center justify-center bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 rounded-lg transition-colors border border-primary-500/20" title="Edit">✏️</button>
+                    <button onClick={() => setDelId(c._id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20" title="Delete">🗑️</button>
+                  </div>
                 </div>
-                <div className="flex gap-2 flex-shrink-0">
-                  <button onClick={() => openEdit(c)} className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 px-3 py-1.5 rounded-lg font-semibold transition-colors">Edit</button>
-                  <button onClick={() => setDelId(c._id)} className="text-xs bg-red-500/10 text-red-400 hover:bg-red-500/20 px-3 py-1.5 rounded-lg font-semibold transition-colors">Delete</button>
+                
+                <h3 className="font-black text-white text-lg mb-2 line-clamp-1 group-hover:text-primary-300 transition-colors">{c.title}</h3>
+                <p className="text-sm text-slate-400 line-clamp-2 mb-4 font-medium leading-relaxed flex-1">{c.description}</p>
+                
+                <div className="flex items-center gap-2 mb-4 flex-wrap">
+                  {c.category && (
+                    <span className="bg-white/10 text-slate-300 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-widest border border-white/10 shadow-inner">
+                      {c.category.split(' ')[0]} {/* Shortened for display */}
+                    </span>
+                  )}
+                  <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black shadow-inner border ${getLevel(c.level).badge}`}>
+                    {getLevel(c.level).icon} {getLevel(c.level).label}
+                  </span>
+                  {c.notes && <span className="text-[10px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full font-bold shadow-inner">📝 Notes</span>}
                 </div>
-              </div>
-              <h3 className="font-bold text-white mb-1 line-clamp-1">{c.title}</h3>
-              <p className="text-sm text-slate-400 line-clamp-2 mb-3">{c.description}</p>
-              <div className="flex items-center gap-2 mb-3 flex-wrap">
-                {c.category && <span className="badge-blue">{c.category}</span>}
-                <span className={`inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full border ${getLevel(c.level).badge}`}>
-                  {getLevel(c.level).icon} {getLevel(c.level).label}
-                </span>
-                {c.notes && <span className="text-xs text-slate-500">📝 has notes</span>}
-              </div>
-              <div className="flex items-center justify-between">
-                <a href={c.videoUrl} target="_blank" rel="noreferrer"
-                  className="text-xs text-primary-400 hover:underline">🔗 Open Link</a>
+                
+                <div className="pt-4 border-t border-white/5 flex items-center justify-between">
+                  <a href={c.videoUrl} target="_blank" rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 font-bold bg-primary-500/10 px-3 py-1.5 rounded-lg hover:bg-primary-500/20 transition-colors border border-primary-500/20">
+                    <span>🔗</span> Open Video
+                  </a>
+                </div>
               </div>
             </div>
           ))}

@@ -130,31 +130,31 @@ function CaseReviewModal({ id, onClose, onReviewed }) {
       {error && <Alert type="error" message={error} />}
 
       {submission && (
-        <div className="space-y-5">
-          <div className="flex items-center justify-between flex-wrap gap-2">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between flex-wrap gap-4 glass-panel p-4 rounded-xl border border-white/10">
             <div>
-              <p className="font-bold text-white">{submission.userId?.profile?.name || submission.userId?.email}</p>
-              <p className="text-sm text-slate-400">{submission.moduleId?.title}</p>
+              <p className="font-black text-white text-lg">{submission.userId?.profile?.name || submission.userId?.email}</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{submission.moduleId?.title}</p>
             </div>
             {submission.quizResultId && (
-              <span className="text-sm font-semibold text-slate-300">
-                Auto-graded: {submission.quizResultId.percentage}% ({submission.quizResultId.passStatus})
+              <span className="text-xs font-black uppercase tracking-widest bg-white/5 border border-white/10 px-3 py-1.5 rounded-full shadow-inner text-slate-300">
+                Auto-graded: <span className="text-white">{submission.quizResultId.percentage}%</span> ({submission.quizResultId.passStatus})
               </span>
             )}
           </div>
 
           {submission.quizId?.caseStudyPrompt && (
-            <div>
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Prompt</p>
-              <p className="text-sm text-slate-300 whitespace-pre-line bg-white/5 rounded-xl p-4 border border-white/10">
+            <div className="glass-panel p-5 rounded-xl border border-white/10">
+              <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Prompt</p>
+              <p className="text-sm text-slate-300 whitespace-pre-line bg-white/5 rounded-xl p-4 border border-white/10 font-medium leading-relaxed">
                 {submission.quizId.caseStudyPrompt}
               </p>
             </div>
           )}
 
-          <div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Response</p>
-            <p className="text-sm text-slate-200 whitespace-pre-line bg-white/5 rounded-xl p-4 border border-white/10 max-h-72 overflow-y-auto">
+          <div className="glass-panel p-5 rounded-xl border border-white/10">
+            <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-3">Response</p>
+            <p className="text-sm text-slate-200 whitespace-pre-line bg-white/5 rounded-xl p-4 border border-white/10 max-h-72 overflow-y-auto font-medium leading-relaxed shadow-inner">
               {submission.response}
             </p>
           </div>
@@ -162,14 +162,16 @@ function CaseReviewModal({ id, onClose, onReviewed }) {
           {submission.status === 'passed' ? (
             <Alert type="success" message="This submission was already marked passed — no further action needed." />
           ) : (
-            <div className="space-y-3 pt-2 border-t border-white/10">
-              <div className="flex gap-2">
+            <div className="space-y-4 pt-4 border-t border-white/10">
+              <div className="flex gap-3">
                 {['passed', 'needs_revision', 'failed'].map((s) => (
                   <button key={s} onClick={() => setStatus(s)}
-                    className={`px-3.5 py-2 rounded-xl text-sm font-semibold border transition-colors ${
-                      status === s ? 'bg-primary-600 border-primary-500 text-white' : 'bg-white/5 border-white/10 text-slate-300 hover:bg-white/10'
+                    className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest border transition-all shadow-sm ${
+                      status === s 
+                      ? 'bg-primary-500/20 border-primary-500/50 text-primary-300 scale-105' 
+                      : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:scale-105 hover:text-slate-200'
                     }`}>
-                    {s === 'passed' ? '✅ Pass' : s === 'needs_revision' ? '✏️ Needs Revision' : '❌ Fail'}
+                    {s === 'passed' ? '✅ Pass' : s === 'needs_revision' ? '✏️ Revise' : '❌ Fail'}
                   </button>
                 ))}
               </div>
@@ -178,9 +180,9 @@ function CaseReviewModal({ id, onClose, onReviewed }) {
                 onChange={(e) => setNotes(e.target.value)}
                 rows={4}
                 placeholder="Notes for the student (shown to them, especially important for 'needs revision')"
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-primary-500/50 resize-y"
+                className="input-field w-full resize-y"
               />
-              <button onClick={handleReview} disabled={submitting} className="btn-primary disabled:opacity-50">
+              <button onClick={handleReview} disabled={submitting} className="btn-primary w-full disabled:opacity-50 justify-center">
                 {submitting ? 'Saving…' : 'Submit Review'}
               </button>
             </div>

@@ -33,142 +33,204 @@ export default function Dashboard() {
 
   return (
     <Layout title="Dashboard">
-      {/* Welcome hero */}
-      <div className="bg-gradient-to-r from-primary-600 via-primary-700 to-accent-600 rounded-3xl p-6 mb-6 text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-32 translate-x-32"/>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-24 -translate-x-24"/>
-        </div>
-        <div className="relative flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-black mb-1">Hey {p.name?.split(' ')[0] || 'Learner'}! 👋</h2>
-            <p className="text-blue-100 text-sm">
-              {p.branch && `${p.branch} · `}{p.year || 'Keep learning every day'}
+      {/* Premium Welcome Hero */}
+      <div className="relative rounded-3xl p-8 mb-8 text-white overflow-hidden shadow-2xl animate-fade-in group">
+        {/* Animated Background Mesh */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-accent-600 to-indigo-900 z-0"></div>
+        <div className="absolute inset-0 opacity-30 mix-blend-overlay z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
+        
+        {/* Glass Orbs */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl z-0 group-hover:bg-white/20 transition-all duration-1000"></div>
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-primary-400/20 rounded-full blur-3xl z-0 group-hover:bg-primary-400/30 transition-all duration-1000"></div>
+
+        <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+          <div className="flex-1">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-4 shadow-inner">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span className="text-[10px] font-bold tracking-widest uppercase text-white/90">Student Portal</span>
+            </div>
+            
+            <h2 className="text-4xl md:text-5xl font-black mb-2 tracking-tight drop-shadow-md">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-200">{p.name?.split(' ')[0] || 'Learner'}</span> 👋
+            </h2>
+            
+            <p className="text-primary-100/80 text-sm md:text-base font-medium max-w-xl">
+              {p.branch && `${p.branch} · `}{p.year || 'Your journey to mastery continues today. Keep pushing your limits!'}
             </p>
+            
             {pending > 0 && (
-              <p className="text-blue-200 text-xs mt-2 font-semibold">
-                📌 {pending} quiz{pending>1?'zes':''} available to attempt
-              </p>
+              <div className="mt-6 flex items-center gap-3">
+                <div className="flex -space-x-2">
+                  {[1,2,3].slice(0, pending).map(i => (
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 border-2 border-primary-600 shadow-sm z-10 flex items-center justify-center text-[10px]">🧠</div>
+                  ))}
+                  {pending > 3 && <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 z-0 flex items-center justify-center text-[10px] font-bold">+{pending-3}</div>}
+                </div>
+                <p className="text-white text-sm font-semibold drop-shadow-sm">
+                  {pending} new quiz{pending>1?'zes':''} waiting for you!
+                </p>
+              </div>
             )}
           </div>
-          <div className="flex gap-3 flex-wrap">
-            <Link to="/quizzes" className="bg-white text-primary-700 font-black px-5 py-3 rounded-xl hover:bg-primary-50 transition-all shadow-lg text-sm">
-              🧠 Take Quiz
+          
+          <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto">
+            <Link to="/quizzes" className="flex-1 md:flex-none text-center bg-white text-primary-700 font-black px-6 py-3.5 rounded-xl hover:bg-primary-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
+              🚀 Explore Quizzes
             </Link>
-            <Link to="/portfolio" className="bg-white/20 border border-white/30 text-white font-bold px-5 py-3 rounded-xl hover:bg-white/30 transition-all text-sm backdrop-blur-sm">
-              📊 Portfolio
+            <Link to="/portfolio" className="flex-1 md:flex-none text-center bg-white/10 border border-white/20 text-white font-bold px-6 py-3.5 rounded-xl hover:bg-white/20 transition-all backdrop-blur-md hover:-translate-y-1">
+              📊 View Portfolio
             </Link>
           </div>
         </div>
-        {p.interests && (
-          <div className="relative mt-4 flex flex-wrap gap-2">
-            {p.interests.split(',').map(i=>i.trim()).filter(Boolean).map(t=>(
-              <span key={t} className="bg-white/15 text-white text-xs px-3 py-1 rounded-full border border-white/20">{t}</span>
-            ))}
-          </div>
-        )}
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <StatCard icon="🎯" label="Quizzes Attempted" value={total}                           color="blue"   />
         <StatCard icon="✅" label="Passed"              value={passed}                          color="green"  />
         <StatCard icon="🏆" label="Best Score"          value={best ? `${best.toFixed(1)}%` : '—'} color="orange" />
         <StatCard icon="🏅" label="Best Rank"           value={bestRank ? `#${bestRank}` : '—'}    color="purple" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Available Quizzes */}
-        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-            <h3 className="font-black text-white text-sm">🧠 Available Quizzes</h3>
-            <Link to="/quizzes" className="text-xs text-primary-400 hover:underline font-bold">View all →</Link>
+        <div className="glass-panel overflow-hidden flex flex-col h-[400px]">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
+            <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
+              <span className="text-xl">🧠</span> Available Quizzes
+            </h3>
+            <Link to="/quizzes" className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 hover:text-primary-300 font-bold px-3 py-1.5 rounded-lg transition-colors border border-primary-500/20">View all</Link>
           </div>
-          {quizzes.length === 0 ? (
-            <div className="text-center py-10">
-              <p className="text-slate-500 text-sm">No quizzes available yet.</p>
-            </div>
-          ) : (
-            <div className="divide-y divide-white/5">
-              {quizzes.map(q => (
-                <div key={q._id} className="flex items-center gap-4 px-5 py-3.5 hover:bg-white/5 transition-colors">
-                  <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center text-white font-black text-sm flex-shrink-0">
-                    {q.title[0]}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-white text-sm truncate">{q.title}</p>
-                    <p className="text-xs text-slate-500">{q.totalQuestions}Q · {q.totalMarks}M · {q.duration}min</p>
-                  </div>
-                  <div className="flex-shrink-0">
-                    {q.attempted ? (
-                      <div className="text-right">
-                        <PassBadge status={q.myStatus} />
-                        <p className="text-xs text-slate-500 mt-0.5">{q.myPct?.toFixed(0)}%</p>
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+            {quizzes.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
+                <span className="text-4xl mb-2">🍃</span>
+                <p className="text-slate-400 text-sm font-medium">No new quizzes available right now.</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {quizzes.map(q => (
+                  <div key={q._id} className="group relative flex items-center gap-4 px-4 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/20 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary-500/0 via-primary-500/0 to-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300 z-10">
+                      {q.title[0]}
+                    </div>
+                    
+                    <div className="flex-1 min-w-0 z-10">
+                      <p className="font-bold text-white text-sm truncate group-hover:text-primary-200 transition-colors">{q.title}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500">{q.totalQuestions}Q</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500">{q.totalMarks}M</span>
+                        <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                        <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500">{q.duration}m</span>
                       </div>
-                    ) : (
-                      <Link to={`/quiz/${q._id}`} className="text-xs bg-primary-600 hover:bg-primary-500 text-white font-black px-3 py-2 rounded-xl transition-colors">Start →</Link>
-                    )}
+                    </div>
+                    
+                    <div className="flex-shrink-0 z-10">
+                      {q.attempted ? (
+                        <div className="text-right">
+                          <PassBadge status={q.myStatus} />
+                          <p className="text-xs font-black text-slate-400 mt-1">{q.myPct?.toFixed(0)}%</p>
+                        </div>
+                      ) : (
+                        <Link to={`/quiz/${q._id}`} className="text-xs bg-white text-primary-900 font-black px-4 py-2 rounded-xl transition-all shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 inline-block">
+                          Start
+                        </Link>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                ))}
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Recent Results */}
-        <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
-            <h3 className="font-black text-white text-sm">📊 Recent Results</h3>
-            <Link to="/history" className="text-xs text-primary-400 hover:underline font-bold">View all →</Link>
+        <div className="glass-panel overflow-hidden flex flex-col h-[400px]">
+          <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
+            <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
+              <span className="text-xl">📊</span> Recent Results
+            </h3>
+            <Link to="/history" className="text-xs bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 hover:text-accent-300 font-bold px-3 py-1.5 rounded-lg transition-colors border border-accent-500/20">View all</Link>
           </div>
-          {results.length === 0 ? (
-            <div className="text-center py-10">
-              <div className="text-4xl mb-3">🎯</div>
-              <p className="text-slate-400 text-sm">No quiz attempts yet.</p>
-              <Link to="/quizzes" className="mt-3 inline-block bg-primary-600 text-white text-xs font-bold px-4 py-2.5 rounded-xl">Take your first quiz</Link>
-            </div>
-          ) : (
-            <div className="divide-y divide-white/5">
-              {results.slice(0, 5).map(r => {
-                const pct = r.percentage
-                return (
-                  <Link to={`/result/${r._id}`} key={r._id}
-                    className="flex items-center justify-between px-5 py-3.5 hover:bg-white/5 transition-colors group">
-                    <div className="min-w-0">
-                      <p className="font-bold text-white text-sm truncate">{r.quizId?.title||'Quiz'}</p>
-                      <p className="text-xs text-slate-500">{new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})} {r.rank&&`· Rank #${r.rank}`}</p>
-                    </div>
-                    <div className="flex items-center gap-2 ml-3 flex-shrink-0">
-                      <div className="text-right">
-                        <p className="font-black text-sm text-white">{r.score}/{r.totalMarks}</p>
-                        <PassBadge status={r.passStatus} />
+          <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
+            {results.length === 0 ? (
+              <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
+                <span className="text-4xl mb-2">🎯</span>
+                <p className="text-slate-400 text-sm font-medium">No quiz attempts yet.</p>
+                <Link to="/quizzes" className="mt-4 inline-block bg-primary-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-lg">Take a quiz</Link>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {results.slice(0, 5).map(r => {
+                  const pct = r.percentage
+                  return (
+                    <Link to={`/result/${r._id}`} key={r._id}
+                      className="group relative flex items-center justify-between px-4 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/20 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-r from-accent-500/0 via-accent-500/0 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                      
+                      <div className="min-w-0 flex-1 z-10">
+                        <p className="font-bold text-white text-sm truncate group-hover:text-accent-200 transition-colors">{r.quizId?.title||'Quiz'}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[10px] uppercase tracking-wider font-bold text-slate-500">
+                            {new Date(r.createdAt).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'2-digit'})}
+                          </span>
+                          {r.rank && (
+                            <>
+                              <span className="w-1 h-1 rounded-full bg-slate-600"></span>
+                              <span className="text-[10px] uppercase tracking-wider font-black text-amber-400">Rank #{r.rank}</span>
+                            </>
+                          )}
+                        </div>
                       </div>
-                      <span className={`text-sm font-black px-2.5 py-1.5 rounded-xl ${pct>=75?'bg-accent-500/15 text-accent-400':pct>=50?'bg-amber-500/15 text-amber-300':'bg-red-500/15 text-red-400'}`}>
-                        {pct.toFixed(0)}%
-                      </span>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
+                      
+                      <div className="flex items-center gap-3 ml-3 flex-shrink-0 z-10">
+                        <div className="text-right">
+                          <p className="font-black text-sm text-white">{r.score}<span className="text-[10px] text-slate-500">/{r.totalMarks}</span></p>
+                          <PassBadge status={r.passStatus} />
+                        </div>
+                        <div className="relative w-12 h-12 flex items-center justify-center">
+                          <svg width="48" height="48" className="-rotate-90 drop-shadow-md">
+                            <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.05)" strokeWidth="4" fill="none"/>
+                            <circle cx="24" cy="24" r="20" stroke={pct>=75?'#10b981':pct>=50?'#f59e0b':'#ef4444'} strokeWidth="4" fill="none"
+                              strokeDasharray="125.6" strokeDashoffset={125.6 - (pct/100)*125.6} strokeLinecap="round"/>
+                          </svg>
+                          <span className="absolute text-[10px] font-black text-white">{pct.toFixed(0)}%</span>
+                        </div>
+                      </div>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Bottom CTA row */}
       {total > 0 && (
-        <div className="mt-6 bg-gradient-to-r from-slate-800 to-surface-base rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 text-white">
-          <div>
-            <p className="font-black text-base">
-              {best >= 75 ? '🌟 Great performance!' : best >= 50 ? '📚 Keep improving!' : '💪 You can do better!'}
-            </p>
-            <p className="text-slate-400 text-sm mt-0.5">
-              {total} attempt{total>1?'s':''} · Avg {avg||0}% · Best {best?.toFixed(1)||0}%
-            </p>
+        <div className="mt-8 glass-panel relative overflow-hidden p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-white group">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-600/20 to-accent-600/20 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+          
+          <div className="relative z-10 flex items-center gap-5">
+            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-3xl shadow-inner backdrop-blur-sm border border-white/20">
+              {best >= 75 ? '🌟' : best >= 50 ? '📚' : '💪'}
+            </div>
+            <div>
+              <p className="font-black text-xl tracking-wide">
+                {best >= 75 ? 'Outstanding performance!' : best >= 50 ? 'Keep climbing higher!' : 'Ready for a comeback!'}
+              </p>
+              <p className="text-slate-400 text-sm mt-1 font-medium">
+                {total} attempt{total>1?'s':''} · <span className="text-slate-300 font-bold">Avg {avg||0}%</span> · <span className="text-slate-300 font-bold">Best {best?.toFixed(1)||0}%</span>
+              </p>
+            </div>
           </div>
-          <div className="flex gap-3">
-            <Link to="/quizzes"   className="text-sm bg-primary-600 hover:bg-primary-500 text-white font-bold px-5 py-2.5 rounded-xl transition-colors">🧠 New Quiz</Link>
-            <Link to="/portfolio" className="text-sm bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-2.5 rounded-xl border border-white/20 transition-colors">📊 Portfolio</Link>
+          
+          <div className="relative z-10 flex gap-3 w-full sm:w-auto">
+            <Link to="/quizzes"   className="flex-1 sm:flex-none text-center text-sm bg-primary-600 hover:bg-primary-500 text-white font-black px-6 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:-translate-y-0.5">🧠 New Quiz</Link>
+            <Link to="/portfolio" className="flex-1 sm:flex-none text-center text-sm bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3 rounded-xl border border-white/20 transition-all hover:-translate-y-0.5">📊 Portfolio</Link>
           </div>
         </div>
       )}
