@@ -68,10 +68,32 @@ function PublicRoute({ children }) {
 
 function Splash() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-700 to-indigo-800">
-      <div className="text-center text-white">
-        <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4" />
-        <p className="text-lg font-semibold opacity-80">Loading Smart Quiz...</p>
+    <div className="min-h-screen flex items-center justify-center bg-surface-base relative overflow-hidden">
+      {/* Animated mesh background */}
+      <div className="absolute inset-0" style={{
+        background: 'radial-gradient(circle at 30% 40%, rgba(139,92,246,0.1), transparent 50%), radial-gradient(circle at 70% 60%, rgba(6,182,212,0.08), transparent 50%)',
+        animation: 'blob 10s infinite alternate'
+      }} />
+      
+      <div className="text-center relative z-10">
+        {/* Triple orbiting rings */}
+        <div className="relative w-24 h-24 mx-auto mb-8">
+          <div className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary-500/80 animate-spin" style={{ filter: 'drop-shadow(0 0 6px rgba(139,92,246,0.5))' }} />
+          <div className="absolute inset-2 rounded-full border-2 border-transparent border-r-secondary-400/80 animate-spin" style={{ animationDuration: '1.5s', animationDirection: 'reverse', filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.5))' }} />
+          <div className="absolute inset-4 rounded-full border-2 border-transparent border-b-accent-400/80 animate-spin" style={{ animationDuration: '2s', filter: 'drop-shadow(0 0 6px rgba(236,72,153,0.5))' }} />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="text-2xl animate-pulse">🎓</span>
+          </div>
+        </div>
+        
+        <p className="text-lg font-bold gradient-text tracking-wide">Loading Smart Quiz...</p>
+        
+        {/* Animated dots */}
+        <div className="flex items-center justify-center gap-1.5 mt-4">
+          {[0, 1, 2].map(i => (
+            <div key={i} className="w-1.5 h-1.5 rounded-full bg-primary-400 animate-pulse" style={{ animationDelay: `${i * 200}ms` }} />
+          ))}
+        </div>
       </div>
     </div>
   )

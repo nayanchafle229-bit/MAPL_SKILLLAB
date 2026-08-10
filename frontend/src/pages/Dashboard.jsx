@@ -33,21 +33,32 @@ export default function Dashboard() {
 
   return (
     <Layout title="Dashboard">
-      {/* Premium Welcome Hero */}
+      {/* ═══ Premium Welcome Hero ═══ */}
       <div className="relative rounded-3xl p-8 mb-8 text-white overflow-hidden shadow-2xl animate-fade-in group">
-        {/* Animated Background Mesh */}
+        {/* Multi-layer animated background */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-accent-600 to-indigo-900 z-0"></div>
         <div className="absolute inset-0 opacity-30 mix-blend-overlay z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
         
-        {/* Glass Orbs */}
+        {/* Grid pattern overlay */}
+        <div className="absolute inset-0 z-0 opacity-10" style={{
+          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
+          backgroundSize: '30px 30px'
+        }} />
+        
+        {/* Animated glass orbs */}
         <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl z-0 group-hover:bg-white/20 transition-all duration-1000"></div>
         <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-primary-400/20 rounded-full blur-3xl z-0 group-hover:bg-primary-400/30 transition-all duration-1000"></div>
+        
+        {/* Floating decorative particles */}
+        <div className="absolute top-10 right-40 w-2 h-2 bg-white/30 rounded-full animate-float" style={{ animationDelay: '0s' }} />
+        <div className="absolute top-20 right-20 w-1 h-1 bg-white/20 rounded-full animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-20 left-40 w-1.5 h-1.5 bg-white/25 rounded-full animate-float" style={{ animationDelay: '2s' }} />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex-1">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-4 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-              <span className="text-[10px] font-bold tracking-widest uppercase text-white/90">Student Portal</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+              <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/90">Student Portal</span>
             </div>
             
             <h2 className="text-4xl md:text-5xl font-black mb-2 tracking-tight drop-shadow-md">
@@ -59,10 +70,10 @@ export default function Dashboard() {
             </p>
             
             {pending > 0 && (
-              <div className="mt-6 flex items-center gap-3">
+              <div className="mt-6 flex items-center gap-3 animate-slide-up" style={{ animationDelay: '200ms' }}>
                 <div className="flex -space-x-2">
                   {[1,2,3].slice(0, pending).map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 border-2 border-primary-600 shadow-sm z-10 flex items-center justify-center text-[10px]">🧠</div>
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 border-2 border-primary-600 shadow-sm z-10 flex items-center justify-center text-[10px] animate-float" style={{ animationDelay: `${i * 300}ms` }}>🧠</div>
                   ))}
                   {pending > 3 && <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 z-0 flex items-center justify-center text-[10px] font-bold">+{pending-3}</div>}
                 </div>
@@ -74,8 +85,9 @@ export default function Dashboard() {
           </div>
           
           <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto">
-            <Link to="/quizzes" className="flex-1 md:flex-none text-center bg-white text-primary-700 font-black px-6 py-3.5 rounded-xl hover:bg-primary-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)]">
-              🚀 Explore Quizzes
+            <Link to="/quizzes" className="flex-1 md:flex-none text-center bg-white text-primary-700 font-black px-6 py-3.5 rounded-xl hover:bg-primary-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] relative overflow-hidden group/btn">
+              <span className="relative z-10">🚀 Explore Quizzes</span>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity" style={{ backgroundSize: '200% 100%', animation: 'shimmer 2s linear infinite' }} />
             </Link>
             <Link to="/portfolio" className="flex-1 md:flex-none text-center bg-white/10 border border-white/20 text-white font-bold px-6 py-3.5 rounded-xl hover:bg-white/20 transition-all backdrop-blur-md hover:-translate-y-1">
               📊 View Portfolio
@@ -84,36 +96,38 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Stats */}
+      {/* ═══ Stats Grid ═══ */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <StatCard icon="🎯" label="Quizzes Attempted" value={total}                           color="blue"   />
-        <StatCard icon="✅" label="Passed"              value={passed}                          color="green"  />
-        <StatCard icon="🏆" label="Best Score"          value={best ? `${best.toFixed(1)}%` : '—'} color="orange" />
-        <StatCard icon="🏅" label="Best Rank"           value={bestRank ? `#${bestRank}` : '—'}    color="purple" />
+        <div className="animate-slide-up stagger-1"><StatCard icon="🎯" label="Quizzes Attempted" value={total}                           color="blue"   /></div>
+        <div className="animate-slide-up stagger-2"><StatCard icon="✅" label="Passed"              value={passed}                          color="green"  /></div>
+        <div className="animate-slide-up stagger-3"><StatCard icon="🏆" label="Best Score"          value={best ? `${best.toFixed(1)}%` : '—'} color="orange" /></div>
+        <div className="animate-slide-up stagger-4"><StatCard icon="🏅" label="Best Rank"           value={bestRank ? `#${bestRank}` : '—'}    color="purple" /></div>
       </div>
 
+      {/* ═══ Two Column Content ═══ */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
         {/* Available Quizzes */}
-        <div className="glass-panel overflow-hidden flex flex-col h-[400px]">
+        <div className="glass-panel overflow-hidden flex flex-col h-[400px] animate-slide-up stagger-5">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
             <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
               <span className="text-xl">🧠</span> Available Quizzes
             </h3>
-            <Link to="/quizzes" className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 hover:text-primary-300 font-bold px-3 py-1.5 rounded-lg transition-colors border border-primary-500/20">View all</Link>
+            <Link to="/quizzes" className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 hover:text-primary-300 font-bold px-3 py-1.5 rounded-lg transition-all border border-primary-500/20 hover:-translate-y-0.5">View all</Link>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {quizzes.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
-                <span className="text-4xl mb-2">🍃</span>
+                <span className="text-4xl mb-2 animate-float">🍃</span>
                 <p className="text-slate-400 text-sm font-medium">No new quizzes available right now.</p>
               </div>
             ) : (
               <div className="space-y-2">
-                {quizzes.map(q => (
-                  <div key={q._id} className="group relative flex items-center gap-4 px-4 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/20 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden">
+                {quizzes.map((q, idx) => (
+                  <div key={q._id} className="group relative flex items-center gap-4 px-4 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-primary-500/20 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden animate-slide-left" style={{ animationDelay: `${idx * 80}ms` }}>
+                    {/* Hover gradient reveal */}
                     <div className="absolute inset-0 bg-gradient-to-r from-primary-500/0 via-primary-500/0 to-primary-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     
-                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300 z-10">
+                    <div className="w-12 h-12 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-500/30 rounded-xl flex items-center justify-center text-white font-black text-lg flex-shrink-0 shadow-inner group-hover:scale-110 group-hover:shadow-[0_0_15px_rgba(139,92,246,0.3)] transition-all duration-300 z-10">
                       {q.title[0]}
                     </div>
                     
@@ -135,8 +149,8 @@ export default function Dashboard() {
                           <p className="text-xs font-black text-slate-400 mt-1">{q.myPct?.toFixed(0)}%</p>
                         </div>
                       ) : (
-                        <Link to={`/quiz/${q._id}`} className="text-xs bg-white text-primary-900 font-black px-4 py-2 rounded-xl transition-all shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 inline-block">
-                          Start
+                        <Link to={`/quiz/${q._id}`} className="text-xs bg-white text-primary-900 font-black px-4 py-2 rounded-xl transition-all shadow-[0_0_10px_rgba(255,255,255,0.2)] hover:shadow-[0_0_15px_rgba(255,255,255,0.4)] hover:-translate-y-0.5 inline-block relative overflow-hidden group/start">
+                          <span className="relative z-10">Start</span>
                         </Link>
                       )}
                     </div>
@@ -148,27 +162,27 @@ export default function Dashboard() {
         </div>
 
         {/* Recent Results */}
-        <div className="glass-panel overflow-hidden flex flex-col h-[400px]">
+        <div className="glass-panel overflow-hidden flex flex-col h-[400px] animate-slide-up stagger-6">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
             <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
               <span className="text-xl">📊</span> Recent Results
             </h3>
-            <Link to="/history" className="text-xs bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 hover:text-accent-300 font-bold px-3 py-1.5 rounded-lg transition-colors border border-accent-500/20">View all</Link>
+            <Link to="/history" className="text-xs bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 hover:text-accent-300 font-bold px-3 py-1.5 rounded-lg transition-all border border-accent-500/20 hover:-translate-y-0.5">View all</Link>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {results.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
-                <span className="text-4xl mb-2">🎯</span>
+                <span className="text-4xl mb-2 animate-float">🎯</span>
                 <p className="text-slate-400 text-sm font-medium">No quiz attempts yet.</p>
-                <Link to="/quizzes" className="mt-4 inline-block bg-primary-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-lg">Take a quiz</Link>
+                <Link to="/quizzes" className="mt-4 inline-block bg-primary-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all">Take a quiz</Link>
               </div>
             ) : (
               <div className="space-y-2">
-                {results.slice(0, 5).map(r => {
+                {results.slice(0, 5).map((r, idx) => {
                   const pct = r.percentage
                   return (
                     <Link to={`/result/${r._id}`} key={r._id}
-                      className="group relative flex items-center justify-between px-4 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-white/20 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden">
+                      className="group relative flex items-center justify-between px-4 py-3 bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 hover:border-accent-500/20 rounded-xl transition-all duration-300 hover:shadow-lg overflow-hidden animate-slide-left" style={{ animationDelay: `${idx * 80}ms` }}>
                       <div className="absolute inset-0 bg-gradient-to-r from-accent-500/0 via-accent-500/0 to-accent-500/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
                       
                       <div className="min-w-0 flex-1 z-10">
@@ -195,7 +209,8 @@ export default function Dashboard() {
                           <svg width="48" height="48" className="-rotate-90 drop-shadow-md">
                             <circle cx="24" cy="24" r="20" stroke="rgba(255,255,255,0.05)" strokeWidth="4" fill="none"/>
                             <circle cx="24" cy="24" r="20" stroke={pct>=75?'#10b981':pct>=50?'#f59e0b':'#ef4444'} strokeWidth="4" fill="none"
-                              strokeDasharray="125.6" strokeDashoffset={125.6 - (pct/100)*125.6} strokeLinecap="round"/>
+                              strokeDasharray="125.6" strokeDashoffset={125.6 - (pct/100)*125.6} strokeLinecap="round"
+                              style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)', filter: `drop-shadow(0 0 4px ${pct>=75?'rgba(16,185,129,0.5)':pct>=50?'rgba(245,158,11,0.5)':'rgba(239,68,68,0.5)'})` }}/>
                           </svg>
                           <span className="absolute text-[10px] font-black text-white">{pct.toFixed(0)}%</span>
                         </div>
@@ -209,13 +224,17 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Bottom CTA row */}
+      {/* ═══ Bottom CTA Bar ═══ */}
       {total > 0 && (
-        <div className="mt-8 glass-panel relative overflow-hidden p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-white group">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-600/20 to-accent-600/20 opacity-50 group-hover:opacity-100 transition-opacity"></div>
+        <div className="mt-8 glass-panel relative overflow-hidden p-6 flex flex-col sm:flex-row items-center justify-between gap-6 text-white group animate-slide-up stagger-7 gradient-border">
+          <div className="absolute inset-0 bg-gradient-to-r from-primary-600/10 to-accent-600/10 opacity-50 group-hover:opacity-100 transition-opacity duration-700"></div>
+          
+          {/* Animated particle dots */}
+          <div className="absolute top-4 right-20 w-1 h-1 bg-primary-400/40 rounded-full animate-float" />
+          <div className="absolute bottom-4 left-40 w-1.5 h-1.5 bg-secondary-400/30 rounded-full animate-float" style={{ animationDelay: '1s' }} />
           
           <div className="relative z-10 flex items-center gap-5">
-            <div className="w-14 h-14 rounded-full bg-white/10 flex items-center justify-center text-3xl shadow-inner backdrop-blur-sm border border-white/20">
+            <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shadow-inner backdrop-blur-sm border border-white/20 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-shadow duration-500 animate-float">
               {best >= 75 ? '🌟' : best >= 50 ? '📚' : '💪'}
             </div>
             <div>
@@ -229,8 +248,8 @@ export default function Dashboard() {
           </div>
           
           <div className="relative z-10 flex gap-3 w-full sm:w-auto">
-            <Link to="/quizzes"   className="flex-1 sm:flex-none text-center text-sm bg-primary-600 hover:bg-primary-500 text-white font-black px-6 py-3 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:-translate-y-0.5">🧠 New Quiz</Link>
-            <Link to="/portfolio" className="flex-1 sm:flex-none text-center text-sm bg-white/10 hover:bg-white/20 text-white font-bold px-6 py-3 rounded-xl border border-white/20 transition-all hover:-translate-y-0.5">📊 Portfolio</Link>
+            <Link to="/quizzes"   className="flex-1 sm:flex-none text-center text-sm btn-primary">🧠 New Quiz</Link>
+            <Link to="/portfolio" className="flex-1 sm:flex-none text-center text-sm btn-secondary">📊 Portfolio</Link>
           </div>
         </div>
       )}
