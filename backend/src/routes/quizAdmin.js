@@ -178,7 +178,11 @@ router.put('/:id', protect, adminOnly, async (req, res) => {
     if (req.body.passMarks !== undefined) {
       const quiz = await Quiz.findById(req.params.id);
       if (quiz) {
-        update.passPercentage = parseFloat(((req.body.passMarks / quiz.totalMarks) * 100).toFixed(2));
+        if (quiz.totalMarks && quiz.totalMarks > 0) {
+          update.passPercentage = parseFloat(((req.body.passMarks / quiz.totalMarks) * 100).toFixed(2));
+        } else {
+          update.passPercentage = 0;
+        }
       }
     }
 
