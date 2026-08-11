@@ -102,7 +102,7 @@ function QuizCard({ q }) {
           ))}
         </div>
 
-        {/* Pass info & Category */}
+        {/* Pass info */}
         <div className="flex items-center justify-between text-xs font-bold text-slate-400 px-1">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
@@ -111,11 +111,6 @@ function QuizCard({ q }) {
               <span className="text-slate-500">({q.passPercentage}%)</span>
             )}
           </span>
-          {q.category && (
-            <span className="bg-white/10 text-slate-300 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-widest border border-white/10 shadow-inner">
-              {q.category}
-            </span>
-          )}
         </div>
 
         {/* Level badge */}
