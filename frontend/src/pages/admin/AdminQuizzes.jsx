@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
@@ -18,22 +19,22 @@ export default function AdminQuizzes() {
   const [catFilter, setCatFilter] = useState('')
   const [diffFilter, setDiffFilter] = useState('')
 
-  const load = () => {
+  const load = useCallback(() => {
     setLoading(true)
     api.get('/admin/quiz')
       .then(({ data }) => setQuizzes(data.quizzes || []))
       .catch(err => setError(err.response?.data?.message || 'Failed to load quizzes'))
       .finally(() => setLoading(false))
-  }
-  useEffect(load, [])
+  }, [])
+  useEffect(() => { load() }, [load])
 
-  const toast = (msg, isErr = false) => {
+  const toast = useCallback((msg, isErr = false) => {
     if (isErr) setError(msg); else setSuccess(msg)
     setTimeout(() => { setSuccess(''); setError('') }, 3500)
-  }
+  }, [])
 
   // ISSUE 4 FIX: publish/unpublish toggle
-  const togglePublish = async (q) => {
+  const togglePublish = useCallback(async (q) => {
     try {
       const { data } = await api.patch(`/admin/quiz/${q._id}/publish`)
       toast(data.message)
@@ -41,7 +42,7 @@ export default function AdminQuizzes() {
     } catch (err) {
       toast(err.response?.data?.message || 'Failed', true)
     }
-  }
+  }, [load, toast])
 
   const deleteQuiz = async () => {
     try {
@@ -54,7 +55,7 @@ export default function AdminQuizzes() {
     }
   }
 
-  const openEdit = (q) => {
+  const openEdit = useCallback((q) => {
     setEditForm({
       title:             q.title,
       description:       q.description || '',
@@ -65,7 +66,7 @@ export default function AdminQuizzes() {
       negativeMarksPerQ: q.negativeMarksPerQ || 0.25,
     })
     setEditModal(q)
-  }
+  }, [])
 
   const saveEdit = async (e) => {
     e.preventDefault()
@@ -98,6 +99,87 @@ export default function AdminQuizzes() {
     return matchSearch && matchCat && matchDiff
   })
 
+  const quizzesGrid = useMemo(() => (
+    <div className="space-y-4">
+      {filtered.map(q => (
+        <div key={q._id} className={`glass-panel rounded-2xl group transition-all duration-300 relative overflow-hidden ${
+          q.status === 'published' ? 'hover:border-accent-500/30' : 'hover:border-white/20'
+        }`}>
+          {/* Decorative glow */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary-500/20 transition-all duration-500 z-0"></div>
+
+          <div className="flex flex-col lg:flex-row lg:items-start gap-5 p-6 relative z-10">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-3 mb-2 flex-wrap">
+                <h3 className="font-black text-white text-xl leading-tight group-hover:text-primary-300 transition-colors">{q.title}</h3>
+                <StatusBadge status={q.status} />
+                {q.category && <span className="text-[10px] bg-primary-500/10 text-primary-400 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-primary-500/20 shadow-inner">{q.category}</span>}
+              </div>
+              {q.description && <p className="text-slate-400 text-sm mb-4 line-clamp-1 font-medium">{q.description}</p>}
+
+              {/* Stats grid */}
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4">
+                {[
+                  ['❓', q.totalQuestions, 'Qs'],
+                  ['🏆', q.totalMarks, 'Marks'],
+                  ['🎯', `${q.passMarks} (${q.passPercentage}%)`, 'Pass'],
+                  ['⏱️', `${q.duration}m`, 'Time'],
+                  ['🔄', q.attemptsAllowed || 1, 'Attempts'],
+                  ['👥', q.attemptCount || 0, 'Taken'],
+                  ...(q.avgScore > 0 ? [['📈', `${q.avgScore}%`, 'Avg']] : [])
+                ].map(([ic, v, l]) => (
+                  <div key={l} className="bg-white/5 rounded-xl p-2 text-center border border-white/5 shadow-inner">
+                    <span className="text-base">{ic}</span>
+                    <p className="text-sm font-black text-white mt-0.5">{v}</p>
+                    <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500">{l}</p>
+                  </div>
+                ))}
+              </div>
+
+              {/* Level & Blueprint badges */}
+              <div className="flex items-center gap-3">
+                {q.level && (
+                  <span className="text-[10px] bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-full font-black border border-indigo-500/20 uppercase tracking-widest shadow-inner">
+                    {q.level}
+                  </span>
+                )}
+                {q.level === 'legend' && (
+                  <span className="text-[10px] bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-full font-black border border-amber-500/20 shadow-inner tracking-widest">
+                    📄 Includes Case Study
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="flex flex-row lg:flex-col gap-3 flex-shrink-0 flex-wrap">
+              <button onClick={() => togglePublish(q)}
+                className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all border shadow-inner ${
+                  q.status === 'published'
+                    ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/20'
+                    : 'bg-accent-500/10 hover:bg-accent-500/20 text-accent-400 border-accent-500/30'
+                }`}>
+                {q.status === 'published' ? '📝 Unpublish' : '🚀 Publish'}
+              </button>
+              <Link to={`/admin/quizzes/${q._id}/leaderboard`}
+                className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-primary-500/20 text-center transition-colors shadow-inner">
+                🏆 Leaderboard
+              </Link>
+              <button onClick={() => openEdit(q)}
+                className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-white/10 transition-colors shadow-inner">
+                ✏️ Edit
+              </button>
+              <button onClick={() => setDelId(q._id)}
+                className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-red-500/20 transition-colors shadow-inner">
+                🗑 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  ), [filtered, togglePublish, openEdit])
+
   if (loading) return <Layout title="Manage Quizzes"><PageLoader /></Layout>
 
   return (
@@ -106,7 +188,7 @@ export default function AdminQuizzes() {
         title="Delete Quiz?" message="This removes the quiz and ALL student results permanently." confirmLabel="Delete" danger />
 
       {/* Edit Modal */}
-      {editModal && (
+      {editModal && createPortal(
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
           <div className="bg-surface-card rounded-2xl shadow-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-5">
@@ -160,7 +242,7 @@ export default function AdminQuizzes() {
               </div>
             </form>
           </div>
-        </div>
+        </div>, document.body
       )}
 
       {/* Header */}
@@ -224,85 +306,7 @@ export default function AdminQuizzes() {
       ) : filtered.length === 0 ? (
         <EmptyState icon="🔍" title="No matching quizzes" description="Try adjusting your search or filters." />
       ) : (
-        <div className="space-y-4">
-          {filtered.map(q => (
-            <div key={q._id} className={`glass-panel rounded-2xl group transition-all duration-300 relative overflow-hidden ${
-              q.status === 'published' ? 'hover:border-accent-500/30' : 'hover:border-white/20'
-            }`}>
-              {/* Decorative glow */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-primary-500/10 rounded-full blur-2xl -translate-y-1/2 translate-x-1/3 group-hover:bg-primary-500/20 transition-all duration-500 z-0"></div>
-
-              <div className="flex flex-col lg:flex-row lg:items-start gap-5 p-6 relative z-10">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-2 flex-wrap">
-                    <h3 className="font-black text-white text-xl leading-tight group-hover:text-primary-300 transition-colors">{q.title}</h3>
-                    <StatusBadge status={q.status} />
-                    {q.category && <span className="text-[10px] bg-primary-500/10 text-primary-400 px-2.5 py-1 rounded-full font-black uppercase tracking-widest border border-primary-500/20 shadow-inner">{q.category}</span>}
-                  </div>
-                  {q.description && <p className="text-slate-400 text-sm mb-4 line-clamp-1 font-medium">{q.description}</p>}
-
-                  {/* Stats grid */}
-                  <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4">
-                    {[
-                      ['❓', q.totalQuestions, 'Qs'],
-                      ['🏆', q.totalMarks, 'Marks'],
-                      ['🎯', `${q.passMarks} (${q.passPercentage}%)`, 'Pass'],
-                      ['⏱️', `${q.duration}m`, 'Time'],
-                      ['🔄', q.attemptsAllowed || 1, 'Attempts'],
-                      ['👥', q.attemptCount || 0, 'Taken'],
-                      ...(q.avgScore > 0 ? [['📈', `${q.avgScore}%`, 'Avg']] : [])
-                    ].map(([ic, v, l]) => (
-                      <div key={l} className="bg-white/5 rounded-xl p-2 text-center border border-white/5 shadow-inner">
-                        <span className="text-base">{ic}</span>
-                        <p className="text-sm font-black text-white mt-0.5">{v}</p>
-                        <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500">{l}</p>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Level & Blueprint badges */}
-                  <div className="flex items-center gap-3">
-                    {q.level && (
-                      <span className="text-[10px] bg-indigo-500/10 text-indigo-300 px-3 py-1.5 rounded-full font-black border border-indigo-500/20 uppercase tracking-widest shadow-inner">
-                        {q.level}
-                      </span>
-                    )}
-                    {q.level === 'legend' && (
-                      <span className="text-[10px] bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-full font-black border border-amber-500/20 shadow-inner tracking-widest">
-                        📄 Includes Case Study
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Action buttons */}
-                <div className="flex flex-row lg:flex-col gap-3 flex-shrink-0 flex-wrap">
-                  {/* ISSUE 4 FIX: Publish/Unpublish button */}
-                  <button onClick={() => togglePublish(q)}
-                    className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all border shadow-inner ${
-                      q.status === 'published'
-                        ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/20'
-                        : 'bg-accent-500/10 hover:bg-accent-500/20 text-accent-400 border-accent-500/30'
-                    }`}>
-                    {q.status === 'published' ? '📝 Unpublish' : '🚀 Publish'}
-                  </button>
-                  <Link to={`/admin/quizzes/${q._id}/leaderboard`}
-                    className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-primary-500/20 text-center transition-colors shadow-inner">
-                    🏆 Leaderboard
-                  </Link>
-                  <button onClick={() => openEdit(q)}
-                    className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-white/10 transition-colors shadow-inner">
-                    ✏️ Edit
-                  </button>
-                  <button onClick={() => setDelId(q._id)}
-                    className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-red-500/20 transition-colors shadow-inner">
-                    🗑 Delete
-                  </button>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        quizzesGrid
       )}
     </Layout>
   )

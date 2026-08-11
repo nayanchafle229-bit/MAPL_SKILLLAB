@@ -685,23 +685,23 @@ export default function AdminQuestions() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-3 mb-5">
+      <div className="flex flex-col sm:flex-row gap-3 w-full mb-5">
         <input
           type="text"
           placeholder="🔍 Search questions…"
           value={search}
           onChange={handleSearch}
-          className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 flex-1 min-w-[180px] max-w-xs"
+          className="input-field flex-1 sm:max-w-[200px]"
         />
-        <select value={filterCat}  onChange={handleCatFilter}  className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select value={filterCat}  onChange={handleCatFilter}  className="input-field flex-1 sm:max-w-[250px]">
           <option value="">All Categories</option>
           {CATS.map(c => <option key={c} value={c}>{c}</option>)}
         </select>
-        <select value={filterLevel} onChange={handleLevelFilter} className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select value={filterLevel} onChange={handleLevelFilter} className="input-field flex-1 sm:max-w-[200px]">
           <option value="">All Levels</option>
           {LEVELS.map(l => <option key={l} value={l}>{l.charAt(0).toUpperCase() + l.slice(1)}</option>)}
         </select>
-        <span className="self-center text-sm text-slate-500 ml-auto">{filtered.length} questions</span>
+        <span className="self-center text-sm text-slate-500 ml-auto hidden sm:block">{filtered.length} questions</span>
       </div>
 
       {questions.length === 0 ? (

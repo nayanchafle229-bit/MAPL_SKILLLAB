@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 /* ═══════════════════════════════════════════
    Spinner — Animated loading ring
@@ -132,7 +133,7 @@ export function EmptyState({ icon='📭', title, description, action }) {
    ═══════════════════════════════════════════ */
 export function Modal({ open, onClose, title, children, wide=false }) {
   if (!open) return null
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}>
       <div 
         onClick={e => e.stopPropagation()}
@@ -146,7 +147,8 @@ export function Modal({ open, onClose, title, children, wide=false }) {
         </div>
         <div className="p-8 overflow-y-auto custom-scrollbar relative z-10">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
@@ -156,7 +158,7 @@ export function Modal({ open, onClose, title, children, wide=false }) {
    ═══════════════════════════════════════════ */
 export function ConfirmDialog({ open, onClose, onConfirm, title, message, confirmLabel='Confirm', danger=false }) {
   if (!open) return null
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fade-in" onClick={onClose}>
       <div onClick={e => e.stopPropagation()} className="bg-surface-card border border-white/10 rounded-3xl shadow-2xl w-full max-w-sm p-8 relative overflow-hidden animate-scale-in">
         <div className={`absolute top-0 inset-x-0 h-32 bg-gradient-to-b ${danger?'from-red-500/10':'from-primary-500/10'} to-transparent pointer-events-none`} />
@@ -174,7 +176,8 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   )
 }
 
