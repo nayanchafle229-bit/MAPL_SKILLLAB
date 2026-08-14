@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Lock, PlayCircle, CheckCircle2, Trophy, BookOpen } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import Layout from '../../components/Layout'
 import api from '../../api/axios'
@@ -9,11 +10,11 @@ import { LEVELS } from '../../utils/levels'
 // 5th status later (e.g. 'in_progress') is a one-line change here, not a
 // hunt through JSX.
 const STATUS_STYLE = {
-  locked:   { icon: '🔒', classes: 'bg-white/[0.02] border-white/5 text-slate-400 cursor-not-allowed',
+  locked:   { icon: <Lock size={16} />, classes: 'bg-white/[0.02] border-white/5 text-slate-400 cursor-not-allowed',
               ring: '' },
-  unlocked: { icon: '▶️', classes: 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:border-primary-500/40 cursor-pointer',
+  unlocked: { icon: <PlayCircle size={16} />, classes: 'bg-white/5 border-white/10 text-slate-200 hover:bg-white/10 hover:border-primary-500/40 cursor-pointer',
               ring: '' },
-  passed:   { icon: '✅', classes: 'bg-accent-500/10 border-accent-500/30 text-accent-300 hover:bg-accent-500/15 cursor-pointer',
+  passed:   { icon: <CheckCircle2 size={16} />, classes: 'bg-accent-500/10 border-accent-500/30 text-accent-300 hover:bg-accent-500/15 cursor-pointer',
               ring: 'ring-1 ring-accent-500/20' },
 }
 
@@ -101,7 +102,7 @@ export default function Curriculum() {
           <div className="mb-8 p-6 bg-primary-900/40 border border-primary-500/30 rounded-xl flex items-center justify-between gap-6 shadow-lg">
             <div>
               <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <span className="text-2xl">🏆</span> Level {LEVELS.find((l) => l.value === pendingLevel)?.label} Complete!
+                <Trophy size={28} /> Level {LEVELS.find((l) => l.value === pendingLevel)?.label} Complete!
               </h3>
               <p className="text-slate-300">
                 You have completed all courses in the {LEVELS.find((l) => l.value === pendingLevel)?.label} level. 
@@ -124,7 +125,7 @@ export default function Curriculum() {
         {!curriculum && !error && <PageLoader text="Loading curriculum..." />}
 
         {curriculum && curriculum.length === 0 && (
-          <EmptyState icon="📚" title="Nothing here yet" description="Content hasn't been published for this curriculum." />
+          <EmptyState icon={<BookOpen size={48} />} title="Nothing here yet" description="Content hasn't been published for this curriculum." />
         )}
 
         {curriculum && curriculum.map((cat) => (

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { BarChart3, Users, Target, TrendingUp, BookOpen } from 'lucide-react'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader, EmptyState, StatCard } from '../components/UI'
@@ -44,19 +45,19 @@ export default function ProgressTracking() {
     <Layout title="Progress Tracking">
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-white">📊 Student Progress</h2>
+          <h2 className="text-2xl font-black text-white"><BarChart3 size={24} className="inline-block mr-1 -mt-1" /> Student Progress</h2>
           <p className="text-slate-400 text-sm">Track quiz performance across all students</p>
         </div>
-        <input type="text" placeholder="🔍 Search students..."
+        <input type="text" placeholder="Search students..."
           value={search} onChange={e => setSearch(e.target.value)}
           className="input-field max-w-xs text-sm" />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon="👥" label="Total Students"  value={totalStudents}      color="blue" />
-        <StatCard icon="🎯" label="Active Students"  value={activeStudents}    color="green" />
-        <StatCard icon="📈" label="Overall Avg Score" value={`${overallAvg}%`} color="purple" />
-        <StatCard icon="📚" label="Courses Completed (All Students)" value={totalCoursesCompleted} color="orange" />
+        <StatCard icon={<Users size={24} />} label="Total Students"  value={totalStudents}      color="blue" />
+        <StatCard icon={<Target size={24} />} label="Active Students"  value={activeStudents}    color="green" />
+        <StatCard icon={<TrendingUp size={24} />} label="Overall Avg Score" value={`${overallAvg}%`} color="purple" />
+        <StatCard icon={<BookOpen size={24} />} label="Courses Completed (All Students)" value={totalCoursesCompleted} color="orange" />
       </div>
 
       <div className="flex items-center gap-2 mb-4">
@@ -74,7 +75,7 @@ export default function ProgressTracking() {
       </div>
 
       {students.length === 0 ? (
-        <EmptyState icon="👥" title="No students yet" description="Students will appear here after they register." />
+        <EmptyState icon={<Users size={48} />} title="No students yet" description="Students will appear here after they register." />
       ) : (
         <div className="card overflow-hidden p-0">
           <div className="overflow-x-auto">

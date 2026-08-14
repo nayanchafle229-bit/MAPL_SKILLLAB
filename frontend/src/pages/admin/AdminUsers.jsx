@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Users, Search } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, EmptyState, ConfirmDialog, Alert } from '../../components/UI'
@@ -48,10 +49,10 @@ export default function AdminUsers() {
 
       <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-white">👥 Users</h2>
+          <h2 className="text-2xl font-black text-white flex items-center gap-2"><Users size={28} /> Users</h2>
           <p className="text-slate-400 text-sm">{users.length} registered user{users.length !== 1 ? 's' : ''}</p>
         </div>
-        <input type="text" placeholder="🔍 Search users..."
+        <input type="text" placeholder="Search users..."
           value={search} onChange={e => setSearch(e.target.value)}
           className="input-field max-w-xs text-sm" />
       </div>
@@ -59,7 +60,7 @@ export default function AdminUsers() {
       {success && <div className="mb-4"><Alert type="success" message={success} /></div>}
 
       {users.length === 0 ? (
-        <EmptyState icon="👥" title="No users yet" description="Users will appear here after they register." />
+        <EmptyState icon={<Users size={48} />} title="No users yet" description="Users will appear here after they register." />
       ) : (
         <div className="glass-panel overflow-hidden p-0 rounded-2xl">
           <div className="overflow-x-auto">
@@ -129,7 +130,7 @@ export default function AdminUsers() {
           </div>
           {filtered.length === 0 && (
             <div className="text-center py-12">
-              <span className="text-3xl opacity-50 mb-2 block">🔍</span>
+              <span className="opacity-50 mb-2 flex justify-center"><Search size={36} /></span>
               <p className="text-slate-400 text-sm font-bold">No users match your search.</p>
             </div>
           )}

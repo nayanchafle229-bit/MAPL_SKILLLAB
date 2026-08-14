@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Key, Hourglass } from "lucide-react";
 import api from "../api/axios";
 import "../styles/Login.css";
 import logo from "../pages/maplskill.png";
@@ -48,6 +49,10 @@ export default function ResetPassword() {
 
       <div className="login-panel" style={{ position: "relative", zIndex: 5, width: "100%" }}>
         <div className="glass-card">
+          <div className="text-center mb-8 relative z-10">
+            <div className="w-14 h-14 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] animate-float"><Key size={28} className="text-white"/></div>
+            <h2 className="text-2xl font-black text-white">Reset password</h2>
+          </div>
           <img src={logo} alt="Smart Quiz" className="login-logo" />
 
           {done ? (
@@ -94,8 +99,8 @@ export default function ResetPassword() {
                   />
                 </div>
 
-                <button className="login-btn" disabled={loading}>
-                  {loading ? "Resetting..." : "Reset Password"}
+                <button type="submit" disabled={loading} className="login-btn">
+                  {loading ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Resetting...</span> : 'Reset Password →'}
                 </button>
               </form>
             </>

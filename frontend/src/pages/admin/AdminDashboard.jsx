@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { BrainCircuit, HelpCircle, BookOpen, Users, Target, Inbox, Trophy, TrendingDown } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { StatCard, PageLoader } from '../../components/UI'
@@ -25,10 +26,10 @@ export default function AdminDashboard() {
   if (loading) return <Layout title="Admin Dashboard"><PageLoader /></Layout>
 
   const quickLinks = [
-    { to:'/admin/quizzes/create', icon:'🧠', label:'Create Quiz',      desc:'New difficulty-based quiz', color:'bg-primary-600' },
-    { to:'/admin/questions',      icon:'❓', label:'Add Questions',     desc:'Manage question bank',      color:'bg-purple-600' },
-    { to:'/admin/courses',        icon:'📚', label:'Add Course',        desc:'Upload course + video',     color:'bg-emerald-600' },
-    { to:'/admin/users',          icon:'👥', label:'View Users',        desc:'All registered students',   color:'bg-orange-500' },
+    { to:'/admin/quizzes/create', icon:<BrainCircuit size={24} />, label:'Create Quiz',      desc:'New difficulty-based quiz', color:'bg-primary-600' },
+    { to:'/admin/questions',      icon:<HelpCircle size={24} />, label:'Add Questions',     desc:'Manage question bank',      color:'bg-purple-600' },
+    { to:'/admin/courses',        icon:<BookOpen size={24} />, label:'Add Course',        desc:'Upload course + video',     color:'bg-emerald-600' },
+    { to:'/admin/users',          icon:<Users size={24} />, label:'View Users',        desc:'All registered students',   color:'bg-orange-500' },
   ]
 
   return (
@@ -59,10 +60,10 @@ export default function AdminDashboard() {
           
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {[
-              ['👥', stats?.totalUsers||0, 'Students', 'from-blue-500/20 to-blue-600/5 border-blue-500/20 text-blue-400'],
-              ['❓', stats?.totalQuestions||0, 'Questions', 'from-purple-500/20 to-purple-600/5 border-purple-500/20 text-purple-400'],
-              ['🧠', stats?.totalQuizzes||stats?.totalCourses||0, 'Quizzes', 'from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'],
-              ['🎯', stats?.totalAttempts||0, 'Attempts', 'from-amber-500/20 to-amber-600/5 border-amber-500/20 text-amber-400']
+              [<Users size={28} />, stats?.totalUsers||0, 'Students', 'from-blue-500/20 to-blue-600/5 border-blue-500/20 text-blue-400'],
+              [<HelpCircle size={28} />, stats?.totalQuestions||0, 'Questions', 'from-purple-500/20 to-purple-600/5 border-purple-500/20 text-purple-400'],
+              [<BrainCircuit size={28} />, stats?.totalQuizzes||stats?.totalCourses||0, 'Quizzes', 'from-emerald-500/20 to-emerald-600/5 border-emerald-500/20 text-emerald-400'],
+              [<Target size={28} />, stats?.totalAttempts||0, 'Attempts', 'from-amber-500/20 to-amber-600/5 border-amber-500/20 text-amber-400']
             ].map(([ic,v,l,colorClass])=>(
               <div key={l} className={`bg-gradient-to-b ${colorClass} border rounded-2xl p-5 text-center backdrop-blur-md shadow-inner transition-transform hover:-translate-y-1 duration-300`}>
                 <span className="text-3xl drop-shadow-sm">{ic}</span>
@@ -97,14 +98,14 @@ export default function AdminDashboard() {
         <div className="glass-panel overflow-hidden flex flex-col h-[400px]">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
             <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
-              <span className="text-xl">🧠</span> Recent Quizzes
+              <BrainCircuit size={20} /> Recent Quizzes
             </h3>
             <Link to="/admin/quizzes" className="text-[10px] uppercase tracking-widest bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 font-black px-3 py-1.5 rounded-lg transition-colors border border-primary-500/20">View all</Link>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {quizzes.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
-                <span className="text-4xl mb-3">📭</span>
+                <Inbox size={36} className="mb-3 mx-auto" />
                 <p className="text-slate-400 text-sm font-medium">No quizzes created yet.</p>
                 <Link to="/admin/quizzes/create" className="mt-4 inline-block text-xs bg-primary-600 text-white px-5 py-2.5 rounded-xl font-bold shadow-lg">+ Create Quiz</Link>
               </div>
@@ -127,7 +128,7 @@ export default function AdminDashboard() {
                         {q.isActive?'Active':'Off'}
                       </span>
                       <Link to={`/admin/quizzes/${q._id}/leaderboard`} className="w-8 h-8 flex items-center justify-center bg-primary-500/10 text-primary-400 rounded-lg hover:bg-primary-500/20 transition-colors border border-primary-500/20" title="Leaderboard">
-                        🏆
+                        <Trophy size={16} />
                       </Link>
                     </div>
                   </div>
@@ -141,14 +142,14 @@ export default function AdminDashboard() {
         <div className="glass-panel overflow-hidden flex flex-col h-[400px]">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
             <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
-              <span className="text-xl">🏆</span> Recent Results
+              <Trophy size={20} /> Recent Results
             </h3>
             <Link to="/admin/results" className="text-[10px] uppercase tracking-widest bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 font-black px-3 py-1.5 rounded-lg transition-colors border border-accent-500/20">View all</Link>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {results.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
-                <span className="text-4xl mb-3">📉</span>
+                <TrendingDown size={36} className="mb-3 mx-auto" />
                 <p className="text-slate-400 text-sm font-medium">No results recorded yet.</p>
               </div>
             ) : (

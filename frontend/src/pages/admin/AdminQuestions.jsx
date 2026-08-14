@@ -13,6 +13,7 @@
 import React, {
   useState, useEffect, useCallback, useMemo, useRef, memo,
 } from 'react'
+import { XCircle, Hourglass, CheckCircle2, BrainCircuit, Inbox, ClipboardList, HelpCircle } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { Modal, ConfirmDialog, PageLoader, EmptyState } from '../../components/UI'
@@ -270,8 +271,8 @@ const QuestionForm = memo(function QuestionForm({
       </div>
 
       {error && (
-        <p className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">
-          ❌ {error}
+        <p className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5 flex items-center gap-1">
+          <XCircle size={16} /> {error}
         </p>
       )}
 
@@ -281,7 +282,7 @@ const QuestionForm = memo(function QuestionForm({
           disabled={saving}
           className="flex-1 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
         >
-          {saving ? '⏳ Saving…' : isEditing ? '✓ Update Question' : '+ Add Question'}
+          {saving ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Saving…</span> : isEditing ? '✓ Update Question' : '+ Add Question'}
         </button>
       </div>
     </form>
@@ -417,10 +418,10 @@ export default function AdminQuestions() {
     try {
       if (editing) {
         await api.put(`/question/${editing._id}`, form)
-        showToast('✅ Question updated')
+        showToast(<span className="flex items-center gap-2"><CheckCircle2 size={16} /> Question updated</span>)
       } else {
         await api.post('/question', form)
-        showToast('✅ Question added')
+        showToast(<span className="flex items-center gap-2"><CheckCircle2 size={16} /> Question added</span>)
       }
       setModal(false)
       load()
@@ -451,7 +452,7 @@ export default function AdminQuestions() {
       const { data } = await api.post('/question', finalParsed)
       setBulkModal(false)
       setBulkText('')
-      showToast(data.message || `✅ ${parsed.length} questions imported`)
+      showToast(data.message || <span className="flex items-center gap-2"><CheckCircle2 size={16} /> {parsed.length} questions imported</span>)
       load()
     } catch (err) {
       setFormError(
@@ -469,10 +470,10 @@ export default function AdminQuestions() {
     try {
       await api.delete(`/question/${delId}`)
       setDelId(null)
-      showToast('✅ Question deleted')
+      showToast(<span className="flex items-center gap-2"><CheckCircle2 size={16} /> Question deleted</span>)
       load()
     } catch (err) {
-      showToast('❌ Delete failed: ' + (err.response?.data?.message || err.message))
+      showToast(<span className="flex items-center gap-2"><XCircle size={16} /> Delete failed: {err.response?.data?.message || err.message}</span>)
     }
   }, [delId, load, showToast])
 
@@ -570,7 +571,7 @@ export default function AdminQuestions() {
             style={{ minHeight: '14rem' }}
           />
           {formError && (
-            <p className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5">❌ {formError}</p>
+            <p className="text-xs font-semibold text-red-400 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-2.5 flex items-center gap-1"><XCircle size={16} /> {formError}</p>
           )}
           <div className="flex gap-3">
             <button
@@ -578,7 +579,7 @@ export default function AdminQuestions() {
               disabled={saving || !bulkText.trim()}
               className="flex-1 bg-primary-600 hover:bg-primary-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-3 rounded-xl text-sm transition-colors"
             >
-              {saving ? '⏳ Importing…' : '📥 Import Questions'}
+              {saving ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Importing…</span> : <span className="flex items-center justify-center gap-2"><Inbox size={16} /> Import Questions</span>}
             </button>
             <button
               onClick={() => { setBulkModal(false); setFormError('') }}
@@ -591,7 +592,7 @@ export default function AdminQuestions() {
       </Modal>
 
       {/* AI Prompt Generator Modal */}
-      <Modal open={aiGenModal} onClose={() => setAiGenModal(false)} title="🤖 AI Content Generator">
+      <Modal open={aiGenModal} onClose={() => setAiGenModal(false)} title={<span className="flex items-center gap-2"><BrainCircuit size={20} /> AI Content Generator</span>}>
         <div className="space-y-4">
           <p className="text-sm text-slate-300">Generate perfectly formatted questions by instructing your preferred AI (ChatGPT/Claude) with the Microverse Curriculum Prompt.</p>
           
@@ -620,11 +621,11 @@ export default function AdminQuestions() {
               <button 
                 onClick={() => {
                   navigator.clipboard.writeText(MASTER_PROMPT_TEMPLATE.replace('{{COUNT}}', aiCount).replace('{{LEVEL}}', aiLevel.toUpperCase()).replace('{{CATEGORY}}', aiCat))
-                  showToast('✅ Copied to clipboard! Paste this in ChatGPT.')
+                  showToast(<span className="flex items-center gap-2"><CheckCircle2 size={16} /> Copied to clipboard! Paste this in ChatGPT.</span>)
                 }}
-                className="text-xs bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 font-bold px-3 py-1.5 rounded-lg transition-colors border border-accent-500/20"
+                className="text-xs bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 font-bold px-3 py-1.5 rounded-lg transition-colors border border-accent-500/20 flex items-center gap-1"
               >
-                📋 Copy Prompt
+                <ClipboardList size={16} /> Copy Prompt
               </button>
             </div>
             <div className="bg-black/40 border border-white/10 rounded-xl p-4 text-xs font-mono text-slate-400 whitespace-pre-wrap max-h-64 overflow-y-auto">
@@ -653,7 +654,7 @@ export default function AdminQuestions() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-white">❓ Question Bank</h2>
+          <h2 className="text-2xl font-black text-white flex items-center gap-2"><HelpCircle size={28} /> Question Bank</h2>
           <div className="flex gap-3 mt-1.5 flex-wrap text-xs font-semibold">
             <span className="bg-emerald-500/15 text-emerald-300 px-2.5 py-1 rounded-full">L1: {levelCount.apprentice}</span>
             <span className="bg-blue-500/15 text-blue-300 px-2.5 py-1 rounded-full">L2: {levelCount.adept}</span>
@@ -665,15 +666,15 @@ export default function AdminQuestions() {
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setAiGenModal(true)}
-            className="bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 text-indigo-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
+            className="bg-indigo-500/10 border border-indigo-500/20 hover:bg-indigo-500/20 text-indigo-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm flex items-center gap-2"
           >
-            🤖 AI Generator
+            <BrainCircuit size={18} /> AI Generator
           </button>
           <button
             onClick={() => { setFormError(''); setBulkModal(true) }}
-            className="bg-white/5 border border-white/10 hover:bg-white/5 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm"
+            className="bg-white/5 border border-white/10 hover:bg-white/5 text-slate-300 font-bold px-4 py-2.5 rounded-xl text-sm transition-colors shadow-sm flex items-center gap-2"
           >
-            📥 Bulk Import
+            <Inbox size={18} /> Bulk Import
           </button>
           <button
             onClick={openAdd}
@@ -688,7 +689,7 @@ export default function AdminQuestions() {
       <div className="flex flex-col sm:flex-row gap-3 w-full mb-5">
         <input
           type="text"
-          placeholder="🔍 Search questions…"
+          placeholder="Search questions…"
           value={search}
           onChange={handleSearch}
           className="input-field flex-1 sm:max-w-[200px]"
@@ -706,14 +707,14 @@ export default function AdminQuestions() {
 
       {questions.length === 0 ? (
         <EmptyState
-          icon="❓"
+          icon={<HelpCircle size={48} />}
           title="No questions yet"
           description="Add individual questions or use Bulk Import for large sets (e.g. the 200-question MySQL JSON)."
           action={
             <div className="flex gap-3 justify-center">
               <button onClick={openAdd} className="bg-primary-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Add Question</button>
-              <button onClick={() => setAiGenModal(true)} className="bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold px-5 py-2.5 rounded-xl text-sm">🤖 AI Gen</button>
-              <button onClick={() => setBulkModal(true)} className="bg-white/5 border border-white/10 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-sm">📥 Bulk Import</button>
+              <button onClick={() => setAiGenModal(true)} className="bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-1"><BrainCircuit size={16} /> AI Gen</button>
+              <button onClick={() => setBulkModal(true)} className="bg-white/5 border border-white/10 text-slate-300 font-bold px-5 py-2.5 rounded-xl text-sm flex items-center gap-1"><Inbox size={16} /> Bulk Import</button>
             </div>
           }
         />

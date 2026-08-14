@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { HelpCircle, Trophy, Target, Timer, RefreshCw, Users, TrendingUp, FileText, Rocket, Pencil, Trash2, BrainCircuit, Search } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import { Link } from 'react-router-dom'
 import api from '../../api/axios'
@@ -120,13 +121,13 @@ export default function AdminQuizzes() {
               {/* Stats grid */}
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-7 gap-2 mb-4">
                 {[
-                  ['❓', q.totalQuestions, 'Qs'],
-                  ['🏆', q.totalMarks, 'Marks'],
-                  ['🎯', `${q.passMarks} (${q.passPercentage}%)`, 'Pass'],
-                  ['⏱️', `${q.duration}m`, 'Time'],
-                  ['🔄', q.attemptsAllowed || 1, 'Attempts'],
-                  ['👥', q.attemptCount || 0, 'Taken'],
-                  ...(q.avgScore > 0 ? [['📈', `${q.avgScore}%`, 'Avg']] : [])
+                  [<HelpCircle size={20} />, q.totalQuestions, 'Qs'],
+                  [<Trophy size={20} />, q.totalMarks, 'Marks'],
+                  [<Target size={20} />, `${q.passMarks} (${q.passPercentage}%)`, 'Pass'],
+                  [<Timer size={20} />, `${q.duration}m`, 'Time'],
+                  [<RefreshCw size={20} />, q.attemptsAllowed || 1, 'Attempts'],
+                  [<Users size={20} />, q.attemptCount || 0, 'Taken'],
+                  ...(q.avgScore > 0 ? [[<TrendingUp size={20} />, `${q.avgScore}%`, 'Avg']] : [])
                 ].map(([ic, v, l]) => (
                   <div key={l} className="bg-white/5 rounded-xl p-2 text-center border border-white/5 shadow-inner">
                     <span className="text-base">{ic}</span>
@@ -144,8 +145,8 @@ export default function AdminQuizzes() {
                   </span>
                 )}
                 {q.level === 'legend' && (
-                  <span className="text-[10px] bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-full font-black border border-amber-500/20 shadow-inner tracking-widest">
-                    📄 Includes Case Study
+                  <span className="text-[10px] bg-amber-500/10 text-amber-300 px-3 py-1.5 rounded-full font-black border border-amber-500/20 shadow-inner tracking-widest flex items-center gap-1">
+                    <FileText size={12} /> Includes Case Study
                   </span>
                 )}
               </div>
@@ -154,24 +155,24 @@ export default function AdminQuizzes() {
             {/* Action buttons */}
             <div className="flex flex-row lg:flex-col gap-3 flex-shrink-0 flex-wrap">
               <button onClick={() => togglePublish(q)}
-                className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all border shadow-inner ${
+                className={`text-xs font-black uppercase tracking-wider px-4 py-2.5 rounded-xl transition-all border shadow-inner flex items-center justify-center gap-1.5 ${
                   q.status === 'published'
                     ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/20'
                     : 'bg-accent-500/10 hover:bg-accent-500/20 text-accent-400 border-accent-500/30'
                 }`}>
-                {q.status === 'published' ? '📝 Unpublish' : '🚀 Publish'}
+                {q.status === 'published' ? <><FileText size={14} /> Unpublish</> : <><Rocket size={14} /> Publish</>}
               </button>
               <Link to={`/admin/quizzes/${q._id}/leaderboard`}
-                className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-primary-500/20 text-center transition-colors shadow-inner">
-                🏆 Leaderboard
+                className="text-xs bg-primary-500/10 hover:bg-primary-500/20 text-primary-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-primary-500/20 text-center transition-colors shadow-inner flex items-center justify-center gap-1.5">
+                <Trophy size={14} /> Leaderboard
               </Link>
               <button onClick={() => openEdit(q)}
-                className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-white/10 transition-colors shadow-inner">
-                ✏️ Edit
+                className="text-xs bg-white/5 hover:bg-white/10 text-slate-300 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-white/10 transition-colors shadow-inner flex items-center justify-center gap-1.5">
+                <Pencil size={14} /> Edit
               </button>
               <button onClick={() => setDelId(q._id)}
-                className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-red-500/20 transition-colors shadow-inner">
-                🗑 Delete
+                className="text-xs bg-red-500/10 hover:bg-red-500/20 text-red-400 font-black uppercase tracking-wider px-4 py-2.5 rounded-xl border border-red-500/20 transition-colors shadow-inner flex items-center justify-center gap-1.5">
+                <Trash2 size={14} /> Delete
               </button>
             </div>
           </div>
@@ -249,7 +250,7 @@ export default function AdminQuizzes() {
       <div className="flex flex-col mb-6 gap-4">
         <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
-            <h2 className="text-2xl font-black text-white">🧠 Quizzes</h2>
+            <h2 className="text-2xl font-black text-white flex items-center gap-2"><BrainCircuit size={28} /> Quizzes</h2>
             <p className="text-slate-400 text-sm">
               {quizzes.filter(q => q.status === 'published').length} published ·{' '}
               {quizzes.filter(q => q.status === 'draft').length} drafts
@@ -263,7 +264,7 @@ export default function AdminQuizzes() {
         <div className="flex flex-col sm:flex-row gap-3 w-full">
           <input
             type="text"
-            placeholder="🔍 Search…"
+            placeholder="Search…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="input-field flex-1 sm:max-w-[200px]"
@@ -284,14 +285,14 @@ export default function AdminQuizzes() {
             className="input-field flex-1 sm:max-w-[160px]"
           >
             <option value="">All Levels</option>
-            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
           </select>
           <button
             onClick={load}
-            className="btn-secondary flex-shrink-0"
+            className="btn-secondary flex-shrink-0 flex items-center justify-center"
             title="Refresh"
           >
-            ↻
+            <RefreshCw size={16} />
           </button>
         </div>
       </div>
@@ -300,11 +301,11 @@ export default function AdminQuizzes() {
       {error   && <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl text-sm font-semibold">{error}</div>}
 
       {quizzes.length === 0 ? (
-        <EmptyState icon="🧠" title="No quizzes yet"
+        <EmptyState icon={<BrainCircuit size={48} />} title="No quizzes yet"
           description="Create your first quiz. It starts as a draft — publish when ready for students."
           action={<Link to="/admin/quizzes/create" className="bg-primary-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">+ Create Quiz</Link>} />
       ) : filtered.length === 0 ? (
-        <EmptyState icon="🔍" title="No matching quizzes" description="Try adjusting your search or filters." />
+        <EmptyState icon={<Search size={48} />} title="No matching quizzes" description="Try adjusting your search or filters." />
       ) : (
         quizzesGrid
       )}

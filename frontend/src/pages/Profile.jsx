@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Hand, Pencil, CheckCircle2, AlertTriangle, Hourglass } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 import Layout from '../components/Layout'
@@ -64,7 +65,7 @@ export default function Profile() {
       await api.put('/user/profile', form)
       await refreshUser()
 
-      setSuccess('Profile saved successfully! 🎉')
+      setSuccess(<span className="flex items-center gap-2">Profile saved successfully! <CheckCircle2 size={16} /></span>)
 
       setTimeout(() => navigate('/dashboard'), 1200)
     } catch (err) {
@@ -80,7 +81,7 @@ export default function Profile() {
     <div className="max-w-2xl mx-auto">
       <div className="mb-6">
         <h2 className="text-2xl font-black text-white">
-          {isNew ? '👋 Complete your profile' : '✏️ Edit Profile'}
+          {isNew ? <span className="flex items-center gap-2"><Hand size={28} /> Complete your profile</span> : <span className="flex items-center gap-2"><Pencil size={28} /> Edit Profile</span>}
         </h2>
 
         <p className="text-slate-400 mt-1">
@@ -92,8 +93,8 @@ export default function Profile() {
 
       {isNew && (
         <div className="mb-6 p-4 bg-primary-500/10 border border-primary-500/20 rounded-2xl">
-          <p className="text-primary-300 text-sm font-medium">
-            📌 Profile setup required before accessing the platform.
+          <p className="text-primary-300 text-sm font-medium flex items-center gap-2">
+            <AlertTriangle size={16} /> Profile setup required before accessing the platform.
           </p>
         </div>
       )}
@@ -215,7 +216,7 @@ export default function Profile() {
               className="btn-primary flex-1 py-3 text-base"
             >
               {loading
-                ? '⏳ Saving...'
+                ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Saving...</span>
                 : isNew
                 ? 'Save & Continue →'
                 : 'Update Profile'}

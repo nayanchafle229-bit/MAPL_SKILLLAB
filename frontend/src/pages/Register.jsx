@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import { Award, Hourglass } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { Alert } from '../components/UI'
 
@@ -49,7 +50,7 @@ export default function Register() {
           <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-primary-500/8 to-transparent pointer-events-none" />
           
           <div className="text-center mb-8 relative z-10">
-            <div className="w-14 h-14 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4 shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] animate-float">🎓</div>
+            <div className="w-14 h-14 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] animate-float"><Award size={28} className="text-white" /></div>
             <h2 className="text-2xl font-black text-white">Create account</h2>
             <p className="text-slate-400 text-sm mt-1">Join the Smart Learning Platform</p>
           </div>
@@ -74,7 +75,7 @@ export default function Register() {
             {error && <Alert type="error" message={error} />}
 
             <button type="submit" disabled={loading} className="btn-primary w-full text-base py-3">
-              {loading ? '⏳ Creating...' : 'Create Account →'}
+              {loading ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Creating...</span> : 'Create Account →'}
             </button>
           </form>
 

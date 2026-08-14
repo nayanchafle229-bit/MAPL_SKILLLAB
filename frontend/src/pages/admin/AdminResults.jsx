@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
+import { Trophy, Target, CheckCircle2, XCircle, TrendingUp, Search } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, EmptyState, StatCard, PassBadge } from '../../components/UI'
@@ -88,16 +89,16 @@ export default function AdminResults() {
   return (
     <Layout title="All Quiz Results">
       <div className="mb-6">
-        <h2 className="text-2xl font-black text-white">🏆 All Results</h2>
+        <h2 className="text-2xl font-black text-white flex items-center gap-2"><Trophy size={28} /> All Results</h2>
         <p className="text-slate-400 text-sm">{total} total submission{total !== 1 ? 's' : ''}</p>
       </div>
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon="🎯" label="Total Attempts" value={total}          color="blue"   />
-        <StatCard icon="✅" label="Passed"          value={passed}         color="green"  />
-        <StatCard icon="❌" label="Failed"           value={total - passed} color="red"    />
-        <StatCard icon="📈" label="Avg Score"       value={`${avgPct}%`}  color="purple" />
+        <StatCard icon={<Target size={24} />} label="Total Attempts" value={total}          color="blue"   />
+        <StatCard icon={<CheckCircle2 size={24} />} label="Passed"          value={passed}         color="green"  />
+        <StatCard icon={<XCircle size={24} />} label="Failed"           value={total - passed} color="red"    />
+        <StatCard icon={<TrendingUp size={24} />} label="Avg Score"       value={`${avgPct}%`}  color="purple" />
       </div>
 
       <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
@@ -107,7 +108,7 @@ export default function AdminResults() {
           {/* Search */}
           <input
             type="text"
-            placeholder="🔍 Search name or email…"
+            placeholder="Search name or email…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 w-52"
@@ -167,7 +168,7 @@ export default function AdminResults() {
 
         {/* ── Table ────────────────────────────────────────────────────── */}
         {results.length === 0 ? (
-          <EmptyState icon="🏆" title="No results yet" description="Results will appear once students complete quizzes." />
+          <EmptyState icon={<Trophy size={48} />} title="No results yet" description="Results will appear once students complete quizzes." />
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -248,7 +249,7 @@ export default function AdminResults() {
             </table>
             {filtered.length === 0 && (
               <div className="text-center py-12">
-                <span className="text-3xl opacity-50 mb-2 block">🔍</span>
+                <span className="opacity-50 mb-2 flex justify-center"><Search size={36} /></span>
                 <p className="text-slate-400 text-sm font-bold">No results match your filter.</p>
               </div>
             )}

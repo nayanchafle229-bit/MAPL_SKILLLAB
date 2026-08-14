@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react'
+import { Clapperboard, Trophy, BookOpen, Circle } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import api from '../api/axios'
 import Layout from '../components/Layout'
@@ -34,7 +35,7 @@ function CourseCard({ c }) {
           <p className="text-sm text-slate-500 line-clamp-2 mb-4">{c.description}</p>
           <div className="mt-auto flex items-center justify-between">
             <span className="text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full bg-slate-700/50 text-slate-400 border border-slate-600/30">
-              {level.icon} {level.label}
+              <Circle fill="currentColor" size={12} className={level.iconColor} /> {level.label}
             </span>
           </div>
         </div>
@@ -47,7 +48,7 @@ function CourseCard({ c }) {
       <Link to={`/courses/${c._id}`} className="block relative aspect-video bg-gradient-to-br from-slate-800 to-surface-card overflow-hidden">
         {thumb
           ? <img src={thumb} alt={c.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" />
-          : <div className="w-full h-full flex items-center justify-center text-5xl opacity-50 group-hover:scale-110 transition-transform duration-700">🎬</div>
+          : <div className="w-full h-full flex items-center justify-center opacity-50 group-hover:scale-110 transition-transform duration-700"><Clapperboard size={48} className="opacity-50" /></div>
         }
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-60 group-hover:opacity-40 transition-opacity"></div>
         <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -66,7 +67,7 @@ function CourseCard({ c }) {
       <div className="p-5 flex-1 flex flex-col relative">
         <div className="absolute top-0 right-5 -translate-y-1/2">
           <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full shadow-lg backdrop-blur-md border border-white/10 ${level.chip}`}>
-            {level.icon} {level.label}
+            <Circle fill="currentColor" size={12} className={level.iconColor} /> {level.label}
           </span>
         </div>
         
@@ -151,7 +152,7 @@ export default function Courses() {
         <div className="mb-8 p-6 bg-primary-900/40 border border-primary-500/30 rounded-xl flex items-center justify-between gap-6 shadow-lg">
           <div>
             <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-              <span className="text-2xl">🏆</span> Level {getLevel(pendingLevel).label} Complete!
+              <Trophy size={28} /> Level {getLevel(pendingLevel).label} Complete!
             </h3>
             <p className="text-slate-300">
               You have completed all courses in the {getLevel(pendingLevel).label} level. 
@@ -166,7 +167,7 @@ export default function Courses() {
 
       <div className="mb-8 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white">📚 All Courses</h2>
+          <h2 className="text-2xl font-black text-white"><BookOpen size={24} className="inline-block mr-1 -mt-1" /> All Courses</h2>
           <p className="text-slate-400 text-sm mt-1">{courses.length} course{courses.length !== 1 ? 's' : ''} available</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
@@ -182,7 +183,7 @@ export default function Courses() {
               <option key={l.value} value={l.value}>{l.icon} {l.label}</option>
             ))}
           </select>
-          <input type="text" placeholder="🔍 Search courses..."
+          <input type="text" placeholder="Search courses..."
             value={search} onChange={e => setSearch(e.target.value)}
             className="input-field flex-1 sm:max-w-xs" />
         </div>
@@ -221,7 +222,7 @@ export default function Courses() {
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState icon="📚" title="No courses found" description={search || activeCategory !== 'All' || activeLevel !== 'All' ? 'Try a different search, category or level.' : 'The admin hasn\'t added any courses yet.'} />
+        <EmptyState icon={<BookOpen size={48} />} title="No courses found" description={search || activeCategory !== 'All' || activeLevel !== 'All' ? 'Try a different search, category or level.' : 'The admin hasn\'t added any courses yet.'} />
       ) : activeLevel !== 'All' ? (
         // A specific level is selected — just show a flat grid
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { Trophy, Users, CheckCircle2, XCircle, TrendingUp, Medal, ClipboardList, Search } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, PassBadge, StatCard } from '../../components/UI'
@@ -15,9 +16,9 @@ function PodiumCard({ entry, position, totalMarks }) {
   if (!entry) return <div className="flex-1" />
 
   const cfg = {
-    1: { emoji: '🥇', bar: 'h-24', bg: 'bg-yellow-500/25 border-yellow-400/50', text: 'text-amber-300', label: '1st', ring: 'ring-2 ring-yellow-400/60' },
-    2: { emoji: '🥈', bar: 'h-16', bg: 'bg-slate-500/25 border-slate-400/50',   text: 'text-slate-300',  label: '2nd', ring: 'ring-2 ring-slate-400/40' },
-    3: { emoji: '🥉', bar: 'h-10', bg: 'bg-amber-700/25 border-amber-600/40',   text: 'text-amber-400',  label: '3rd', ring: 'ring-2 ring-amber-600/40' },
+    1: { emoji: <Medal size={24} className="text-yellow-400" />, bar: 'h-24', bg: 'bg-yellow-500/25 border-yellow-400/50', text: 'text-amber-300', label: '1st', ring: 'ring-2 ring-yellow-400/60' },
+    2: { emoji: <Medal size={24} className="text-slate-300" />, bar: 'h-16', bg: 'bg-slate-500/25 border-slate-400/50',   text: 'text-slate-300',  label: '2nd', ring: 'ring-2 ring-slate-400/40' },
+    3: { emoji: <Medal size={24} className="text-amber-600" />, bar: 'h-10', bg: 'bg-amber-700/25 border-amber-600/40',   text: 'text-amber-400',  label: '3rd', ring: 'ring-2 ring-amber-600/40' },
   }[position]
 
   return (
@@ -111,7 +112,7 @@ export default function AdminLeaderboard() {
       {/* Page header */}
       <div className="flex items-start justify-between mb-5 flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-black text-white">🏆 {quiz?.title}</h2>
+          <h2 className="text-2xl font-black text-white flex items-center gap-2"><Trophy size={28} /> {quiz?.title}</h2>
           <p className="text-slate-400 text-sm">
             Pass: <strong>{quiz?.passMarks}/{quiz?.totalMarks}</strong>
             &nbsp;·&nbsp; {leaderboard.length} submission{leaderboard.length !== 1 ? 's' : ''}
@@ -125,19 +126,19 @@ export default function AdminLeaderboard() {
       {/* Stats cards */}
       {stats && (
         <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 mb-5">
-          <StatCard icon="👥" label="Attempts"  value={stats.totalAttempts}     color="blue"   />
-          <StatCard icon="✅" label="Passed"     value={stats.passed}            color="green"  />
-          <StatCard icon="❌" label="Failed"      value={stats.failed}            color="red"    />
-          <StatCard icon="📈" label="Avg Score"  value={`${stats.avgScore}%`}   color="purple" />
-          <StatCard icon="🏆" label="Pass Rate"  value={`${stats.passRate}%`}   color="orange" />
+          <StatCard icon={<Users size={24} />} label="Attempts"  value={stats.totalAttempts}     color="blue"   />
+          <StatCard icon={<CheckCircle2 size={24} />} label="Passed"     value={stats.passed}            color="green"  />
+          <StatCard icon={<XCircle size={24} />} label="Failed"      value={stats.failed}            color="red"    />
+          <StatCard icon={<TrendingUp size={24} />} label="Avg Score"  value={`${stats.avgScore}%`}   color="purple" />
+          <StatCard icon={<Trophy size={24} />} label="Pass Rate"  value={`${stats.passRate}%`}   color="orange" />
         </div>
       )}
 
       {/* ── Podium — Top 3 ───────────────────────────────────────────────── */}
       {leaderboard.length >= 2 && (
         <div className="bg-gradient-to-br from-surface-card via-primary-900 to-primary-900 rounded-2xl p-6 mb-5">
-          <p className="text-xs font-black text-white/50 uppercase tracking-widest text-center mb-5">
-            🏅 Top Performers
+          <p className="text-xs font-black text-white/50 uppercase tracking-widest text-center mb-5 flex items-center justify-center gap-2">
+            <Medal size={16} /> Top Performers
           </p>
           <div className="flex items-end justify-center gap-3">
             {podiumOrder.map((entry, i) => (
@@ -188,7 +189,7 @@ export default function AdminLeaderboard() {
         <div className="p-4 border-b border-white/10 flex flex-wrap gap-3 items-center">
           <input
             type="text"
-            placeholder="🔍 Search students…"
+            placeholder="Search students…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="input-field max-w-xs text-sm"
@@ -238,7 +239,7 @@ export default function AdminLeaderboard() {
         {/* Table */}
         {filtered.length === 0 ? (
           <div className="text-center py-12">
-            <span className="text-3xl opacity-50 mb-2 block">📋</span>
+            <span className="opacity-50 mb-2 flex justify-center"><ClipboardList size={36} /></span>
             <p className="text-slate-400 text-sm font-bold">
               {leaderboard.length === 0 ? 'No submissions yet.' : 'No results match your filter.'}
             </p>
@@ -273,7 +274,7 @@ export default function AdminLeaderboard() {
               </thead>
               <tbody className="divide-y divide-white/5">
                 {filtered.map((e, i) => {
-                  const rankEmoji = e.rank === 1 ? '🥇' : e.rank === 2 ? '🥈' : e.rank === 3 ? '🥉' : null
+                  const rankEmoji = e.rank === 1 ? <Medal size={24} className="text-yellow-400" /> : e.rank === 2 ? <Medal size={24} className="text-slate-300" /> : e.rank === 3 ? <Medal size={24} className="text-amber-600" /> : null
                   return (
                     <tr key={i} className="hover:bg-white/[0.05] transition-colors group">
                       <td className="px-6 py-4">
