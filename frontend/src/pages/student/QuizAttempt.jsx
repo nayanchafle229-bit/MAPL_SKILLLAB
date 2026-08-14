@@ -11,6 +11,7 @@
 import React, {
   useState, useEffect, useCallback, useRef, useMemo, memo,
 } from 'react'
+import { Timer, AlertTriangle, BrainCircuit, HelpCircle, Trophy, Target, Info, Rocket, Upload, XCircle } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
 import { PageLoader, ConfirmDialog } from '../../components/UI'
@@ -35,7 +36,7 @@ const TimerDisplay = memo(function TimerDisplay({ seconds }) {
   const cls = seconds < 300 ? 'text-red-400' : seconds < 600 ? 'text-amber-500' : 'text-emerald-500'
   return (
     <div className={`flex items-center gap-1.5 font-mono font-black text-xl ${cls}`}>
-      <span>⏱️</span>
+      <Timer size={20} />
       <span>{String(m).padStart(2, '0')}:{String(s).padStart(2, '0')}</span>
     </div>
   )
@@ -269,7 +270,7 @@ export default function QuizAttempt() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-base p-6">
         <div className="bg-surface-card rounded-2xl shadow-xl border border-white/10 p-8 max-w-sm w-full text-center">
-          <div className="text-5xl mb-4">⚠️</div>
+          <div className="flex justify-center mb-4 text-amber-500"><AlertTriangle size={48} /></div>
           <h2 className="text-lg font-black text-white mb-2">Could Not Load Quiz</h2>
           <p className="text-sm text-red-400 font-medium mb-6 bg-red-500/10 border border-red-500/20 rounded-xl px-4 py-3">
             {errorMsg}
@@ -293,7 +294,7 @@ export default function QuizAttempt() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-surface-card to-primary-900 p-6">
         <div className="bg-surface-raised rounded-3xl shadow-2xl w-full max-w-lg p-8">
           <div className="text-center mb-6">
-            <div className="text-5xl mb-3">🧠</div>
+            <div className="flex justify-center mb-3 text-primary-400"><BrainCircuit size={48} /></div>
             <h1 className="text-2xl font-black text-white mb-1 break-words">{quiz?.title}</h1>
             {quiz?.description && (
               <p className="text-slate-400 text-sm leading-relaxed mt-1">{quiz.description}</p>
@@ -302,13 +303,13 @@ export default function QuizAttempt() {
 
           <div className="grid grid-cols-2 gap-3 mb-5">
             {[
-              ['❓', total,                         'Questions'],
-              ['🏆', quiz?.totalMarks,              'Total Marks'],
-              ['⏱️', `${quiz?.duration}m`,          'Time Limit'],
-              ['🎯', `${quiz?.passMarks} (${quiz?.passPercentage}%)`, 'Pass Marks'],
+              [<HelpCircle size={24} />, total, 'Questions'],
+              [<Trophy size={24} />, quiz?.totalMarks, 'Total Marks'],
+              [<Timer size={24} />, `${quiz?.duration}m`, 'Time Limit'],
+              [<Target size={24} />, `${quiz?.passMarks} (${quiz?.passPercentage}%)`, 'Pass Marks'],
             ].map(([ic, v, l]) => (
-              <div key={l} className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-3 text-center">
-                <span className="text-2xl leading-none">{ic}</span>
+              <div key={l} className="bg-primary-500/10 border border-primary-500/20 rounded-xl p-3 text-center flex flex-col items-center">
+                <span className="text-2xl leading-none text-primary-400">{ic}</span>
                 <p className="font-black text-white mt-1 text-sm leading-tight">{v}</p>
                 <p className="text-xs text-slate-500 leading-tight">{l}</p>
               </div>
@@ -322,15 +323,15 @@ export default function QuizAttempt() {
           )}
 
           <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 mb-6 text-left">
-            <p className="text-xs font-black text-amber-800 mb-2 uppercase tracking-wide">📌 Instructions</p>
+            <p className="text-xs font-black text-amber-800 mb-2 uppercase tracking-wide flex items-center gap-1.5"><Info size={16} /> Instructions</p>
             <ul className="text-xs text-amber-300 space-y-1.5 leading-snug">
               <li>• Questions are randomly shuffled every attempt</li>
               <li>• Navigate freely using Prev / Next or the question palette</li>
               <li>• Timer auto-submits when time runs out</li>
               <li>• Unanswered questions are marked as incorrect</li>
               {quiz?.negativeMarking && (
-                <li className="font-bold text-red-300">
-                  ⚠️ Negative marking: −{quiz.negativeMarksPerQ} mark per wrong answer
+                <li className="font-bold text-red-300 flex items-start gap-1">
+                  <AlertTriangle size={14} className="mt-0.5 shrink-0" /> Negative marking: −{quiz.negativeMarksPerQ} mark per wrong answer
                 </li>
               )}
             </ul>
@@ -338,9 +339,9 @@ export default function QuizAttempt() {
 
           <button
             onClick={startQuiz}
-            className="w-full bg-primary-600 hover:bg-primary-500 text-white font-black py-4 rounded-2xl text-lg transition-all shadow-lg hover:shadow-xl"
+            className="w-full flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white font-black py-4 rounded-2xl text-lg transition-all shadow-lg hover:shadow-xl"
           >
-            🚀 Begin Quiz
+            <Rocket size={20} /> Begin Quiz
           </button>
         </div>
       </div>
@@ -354,7 +355,7 @@ export default function QuizAttempt() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-surface-base">
         <div className="text-center">
-          <div className="text-5xl mb-4 animate-bounce">📤</div>
+          <div className="flex justify-center mb-4 animate-bounce text-primary-500"><Upload size={48} /></div>
           <p className="text-xl font-black text-white">Evaluating your answers…</p>
           <p className="text-slate-400 mt-2 text-sm">Calculating score, rank and result</p>
         </div>
@@ -421,8 +422,8 @@ export default function QuizAttempt() {
       {/* Error banner (submit retry) */}
       {errorMsg && (
         <div className="max-w-5xl mx-auto w-full px-4 pt-4">
-          <div className="bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm font-semibold">
-            ❌ {errorMsg}
+          <div className="bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm font-semibold flex items-center gap-2">
+            <XCircle size={16} /> {errorMsg}
           </div>
         </div>
       )}

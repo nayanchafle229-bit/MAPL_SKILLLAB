@@ -2,6 +2,7 @@ import React, {
   useState, useEffect, useCallback, useMemo, useRef, memo,
 } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { BrainCircuit, AlertTriangle, XCircle, Rocket, Hourglass } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 
@@ -309,7 +310,9 @@ export default function AdminQuizCreate() {
         {/* Page header */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <h2 className="text-2xl font-black text-white leading-tight">🧠 Create New Quiz</h2>
+            <h2 className="text-2xl font-black text-white leading-tight flex items-center gap-2">
+              <BrainCircuit size={28} /> Create New Quiz
+            </h2>
             <p className="text-slate-400 text-sm mt-1">
               Select category and level — the system auto-fills blueprint defaults.
             </p>
@@ -326,7 +329,7 @@ export default function AdminQuizCreate() {
         <form onSubmit={submit} className="space-y-5" noValidate>
 
           {/* ── 1. Basic Info ─────────────────────────────────────────────── */}
-          <SectionCard title="📝 Blueprint Config">
+          <SectionCard title="Blueprint Config">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               
               <div className="sm:col-span-2">
@@ -403,7 +406,7 @@ export default function AdminQuizCreate() {
           </SectionCard>
 
           {/* ── 2. Questions & Marks ──────────────────────────────────────── */}
-          <SectionCard title="📊 Questions & Marks">
+          <SectionCard title="Questions & Marks">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-5">
 
               <InputField
@@ -466,7 +469,7 @@ export default function AdminQuizCreate() {
           </SectionCard>
 
           {/* ── 4. Settings ───────────────────────────────────────────────── */}
-          <SectionCard title="⚙️ Settings">
+          <SectionCard title="Settings">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <CheckToggle
                 name="shuffleQuestions"
@@ -524,15 +527,17 @@ export default function AdminQuizCreate() {
           {validationErrors.length > 0 && (
             <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4 space-y-1.5">
               {validationErrors.map((e, i) => (
-                <p key={i} className="text-xs font-semibold text-amber-300">⚠️ {e}</p>
+                <p key={i} className="text-xs font-semibold text-amber-300 flex items-center gap-1.5">
+                  <AlertTriangle size={14} /> {e}
+                </p>
               ))}
             </div>
           )}
 
           {/* API error */}
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm font-semibold">
-              ❌ {error}
+            <div className="bg-red-500/10 border border-red-500/20 text-red-300 rounded-xl px-4 py-3 text-sm font-semibold flex items-center gap-2">
+              <XCircle size={16} /> {error}
             </div>
           )}
 
@@ -542,13 +547,13 @@ export default function AdminQuizCreate() {
               type="submit"
               disabled={loading || !canCreate}
               className={[
-                'flex-1 font-black py-4 rounded-2xl text-base transition-all shadow-sm',
+                'flex-1 font-black py-4 rounded-2xl text-base transition-all shadow-sm flex items-center justify-center gap-2',
                 loading || !canCreate
                   ? 'bg-white/10 text-slate-500 cursor-not-allowed'
                   : 'bg-primary-600 hover:bg-primary-500 text-white hover:shadow-md',
               ].join(' ')}
             >
-              {loading ? '⏳ Creating Quiz…' : '🚀 Create Quiz (Draft)'}
+              {loading ? <><Hourglass size={18} className="animate-spin" /> Creating Quiz…</> : <><Rocket size={18} /> Create Quiz (Draft)</>}
             </button>
             <button
               type="button"

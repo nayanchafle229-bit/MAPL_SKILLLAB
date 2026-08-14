@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { FileText, CheckCircle2, Pencil, XCircle, Circle } from 'lucide-react'
 import Layout from '../../components/Layout'
 import api from '../../api/axios'
 import { PageLoader, EmptyState, Alert, Modal } from '../../components/UI'
@@ -59,7 +60,7 @@ export default function AdminCaseReview() {
         {!submissions && !error && <PageLoader text="Loading submissions..." />}
 
         {submissions && submissions.length === 0 && (
-          <EmptyState icon="📝" title="Nothing here" description={`No submissions with status "${tab}".`} />
+          <EmptyState icon={<FileText size={48} />} title="Nothing here" description={`No submissions with status "${tab}".`} />
         )}
 
         {submissions && submissions.length > 0 && (
@@ -78,7 +79,7 @@ export default function AdminCaseReview() {
                     </p>
                   </div>
                   <div className="flex items-center gap-3 flex-shrink-0">
-                    {level && <span className={`text-xs font-bold px-2 py-1 rounded-full border ${level.badge}`}>{level.icon}</span>}
+                    {level && <span className={`text-xs font-bold px-2 py-1 rounded-full border ${level.badge}`}><span className={`w-2 h-2 rounded-full inline-block bg-current ${level.iconColor}`} /></span>}
                     <span className="text-xs text-slate-500">{timeAgo(s.submittedAt)}</span>
                   </div>
                 </button>
@@ -166,12 +167,12 @@ function CaseReviewModal({ id, onClose, onReviewed }) {
               <div className="flex gap-3">
                 {['passed', 'needs_revision', 'failed'].map((s) => (
                   <button key={s} onClick={() => setStatus(s)}
-                    className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest border transition-all shadow-sm ${
+                    className={`px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-widest border transition-all shadow-sm flex items-center justify-center gap-1.5 ${
                       status === s 
                       ? 'bg-primary-500/20 border-primary-500/50 text-primary-300 scale-105' 
                       : 'bg-white/5 border-white/10 text-slate-400 hover:bg-white/10 hover:scale-105 hover:text-slate-200'
                     }`}>
-                    {s === 'passed' ? '✅ Pass' : s === 'needs_revision' ? '✏️ Revise' : '❌ Fail'}
+                    {s === 'passed' ? <><CheckCircle2 size={14}/> Pass</> : s === 'needs_revision' ? <><Pencil size={14}/> Revise</> : <><XCircle size={14}/> Fail</>}
                   </button>
                 ))}
               </div>

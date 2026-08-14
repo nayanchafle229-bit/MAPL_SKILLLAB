@@ -5,6 +5,7 @@ import Markdown from '../../components/Markdown'
 import api from '../../api/axios'
 import { PageLoader, Alert } from '../../components/UI'
 import { getLevel } from '../../utils/levels'
+import { Circle } from 'lucide-react'
 
 // Turns a YouTube watch/share URL into an embeddable one. Videos are
 // curated as plain YouTube links in the source workbook, not embed URLs.
@@ -53,7 +54,7 @@ export default function ModuleDetail() {
           <Link to="/curriculum" className="text-sm text-slate-400 hover:text-white transition-colors">← Curriculum</Link>
           <div className="flex items-center gap-3 mt-2">
             <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold border ${level.badge}`}>
-              {level.icon} {level.label}
+              <span className={`w-2 h-2 rounded-full inline-block bg-current ${level.iconColor}`} /> {level.label}
             </span>
             <span className="text-xs font-semibold text-slate-500">{mod.category?.name}</span>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { Medal, Trophy, Users, CheckCircle2, TrendingUp } from 'lucide-react'
 import { useParams, Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../api/axios'
@@ -73,7 +74,7 @@ export default function Leaderboard() {
             {/* 2nd place */}
             {top3[1] && (
               <div className="text-center flex-1 max-w-[140px]">
-                <div className="w-12 h-12 bg-slate-500/30 border-2 border-slate-400/50 rounded-full flex items-center justify-center text-xl mx-auto mb-2">🥈</div>
+                <div className="w-12 h-12 bg-slate-500/30 border-2 border-slate-400/50 rounded-full flex items-center justify-center mx-auto mb-2"><Medal size={24} className="text-slate-400" /></div>
                 <p className="text-xs font-black text-white truncate">{top3[1].name}</p>
                 <p className="text-xs text-slate-400">{top3[1].score} pts</p>
                 <div className="bg-slate-600/50 rounded-t-xl mt-2 h-16 flex items-center justify-center text-slate-300 font-black text-sm">2nd</div>
@@ -82,7 +83,7 @@ export default function Leaderboard() {
             {/* 1st place */}
             {top3[0] && (
               <div className="text-center flex-1 max-w-[160px]">
-                <div className="w-14 h-14 bg-yellow-500/30 border-2 border-yellow-400/60 rounded-full flex items-center justify-center text-2xl mx-auto mb-2 shadow-lg shadow-yellow-500/20">🥇</div>
+                <div className="w-14 h-14 bg-yellow-500/30 border-2 border-yellow-400/60 rounded-full flex items-center justify-center mx-auto mb-2 shadow-lg shadow-yellow-500/20"><Trophy size={32} className="text-yellow-400" /></div>
                 <p className="text-sm font-black text-white truncate">{top3[0].name}</p>
                 <p className="text-xs text-amber-300">{top3[0].score} pts</p>
                 <div className="bg-yellow-600/30 border border-yellow-500/30 rounded-t-xl mt-2 h-24 flex items-center justify-center text-amber-300 font-black">1st</div>
@@ -91,7 +92,7 @@ export default function Leaderboard() {
             {/* 3rd place */}
             {top3[2] && (
               <div className="text-center flex-1 max-w-[140px]">
-                <div className="w-12 h-12 bg-amber-700/30 border-2 border-amber-600/50 rounded-full flex items-center justify-center text-xl mx-auto mb-2">🥉</div>
+                <div className="w-12 h-12 bg-amber-700/30 border-2 border-amber-600/50 rounded-full flex items-center justify-center mx-auto mb-2"><Medal size={24} className="text-amber-600" /></div>
                 <p className="text-xs font-black text-white truncate">{top3[2].name}</p>
                 <p className="text-xs text-slate-400">{top3[2].score} pts</p>
                 <div className="bg-amber-800/40 rounded-t-xl mt-2 h-10 flex items-center justify-center text-amber-400 font-black text-sm">3rd</div>
@@ -103,9 +104,9 @@ export default function Leaderboard() {
 
       {/* Summary stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-5">
-        {[['👥',leaderboard.length,'Total Attempts'],['✅',passed,'Passed'],['📈',`${avgPct}%`,'Avg Score'],['🏆',top3[0]?.score||'—','Top Score']].map(([ic,v,l])=>(
-          <div key={l} className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-4 text-center">
-            <span className="text-2xl">{ic}</span>
+        {[[<Users size={24} />,leaderboard.length,'Total Attempts'],[<CheckCircle2 size={24} />,passed,'Passed'],[<TrendingUp size={24} />,`${avgPct}%`,'Avg Score'],[<Trophy size={24} />,top3[0]?.score||'—','Top Score']].map(([ic,v,l], i)=>(
+          <div key={i} className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-4 text-center flex flex-col items-center">
+            <span className="text-slate-400">{ic}</span>
             <p className="text-xl font-black text-white mt-1">{v}</p>
             <p className="text-xs text-slate-400 font-medium mt-0.5">{l}</p>
           </div>
@@ -115,7 +116,7 @@ export default function Leaderboard() {
       {/* Filters */}
       <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
         <div className="p-4 border-b border-white/10 flex flex-wrap gap-3 items-center">
-          <input type="text" placeholder="🔍 Search students..." value={search} onChange={e=>setSearch(e.target.value)}
+          <input type="text" placeholder="Search students..." value={search} onChange={e=>setSearch(e.target.value)}
             className="border border-white/10 rounded-xl px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 flex-1 min-w-0 max-w-xs"/>
           <div className="flex rounded-xl border border-white/10 overflow-hidden bg-white/5">
             {[['all','All'],['pass','Pass'],['fail','Fail']].map(([v,l])=>(

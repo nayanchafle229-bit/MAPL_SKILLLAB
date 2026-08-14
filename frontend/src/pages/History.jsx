@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { BarChart3, BrainCircuit, Target, CheckCircle2, Trophy, TrendingUp } from 'lucide-react'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader, EmptyState, PassBadge, StatCard } from '../components/UI'
@@ -34,31 +35,31 @@ export default function History() {
     <Layout title="Result History">
       <div className="mb-6 flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white">📊 Result History</h2>
+          <h2 className="text-2xl font-black text-white"><BarChart3 size={24} className="inline-block mr-1 -mt-1" /> Result History</h2>
           <p className="text-slate-400 text-sm">{results.length} total attempt{results.length!==1?'s':''}</p>
         </div>
-        <Link to="/quizzes" className="bg-primary-600 hover:bg-primary-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm">🧠 New Quiz</Link>
+        <Link to="/quizzes" className="bg-primary-600 hover:bg-primary-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm transition-colors shadow-sm"><BrainCircuit size={16} className="inline-block mr-1" /> New Quiz</Link>
       </div>
 
       {/* Summary */}
       {results.length > 0 && (
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <StatCard icon="🎯" label="Total Attempts" value={results.length} color="blue" />
-          <StatCard icon="✅" label="Passed"          value={passed}         color="green" />
-          <StatCard icon="🏆" label="Best Score"      value={`${best}%`}     color="orange" />
-          <StatCard icon="📈" label="Average"         value={`${avg}%`}      color="purple" />
+          <StatCard icon={<Target size={24} />} label="Total Attempts" value={results.length} color="blue" />
+          <StatCard icon={<CheckCircle2 size={24} />} label="Passed"          value={passed}         color="green" />
+          <StatCard icon={<Trophy size={24} />} label="Best Score"      value={`${best}%`}     color="orange" />
+          <StatCard icon={<TrendingUp size={24} />} label="Average"         value={`${avg}%`}      color="purple" />
         </div>
       )}
 
       {results.length === 0 ? (
-        <EmptyState icon="🎯" title="No quiz attempts yet"
+        <EmptyState icon={<Target size={48} />} title="No quiz attempts yet"
           description="Take your first quiz to see your results here."
           action={<Link to="/quizzes" className="bg-primary-600 text-white font-bold px-5 py-2.5 rounded-xl text-sm">Start Quiz</Link>} />
       ) : (
         <>
           {/* Filters */}
           <div className="flex gap-3 mb-4 flex-wrap items-center">
-            <input type="text" placeholder="🔍 Search quizzes..."
+            <input type="text" placeholder="Search quizzes..."
               value={search} onChange={e=>setSearch(e.target.value)}
               className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 max-w-xs bg-white/5"/>
             <div className="flex rounded-xl border border-white/10 overflow-hidden bg-white/5">

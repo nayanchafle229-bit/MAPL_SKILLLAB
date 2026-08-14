@@ -4,6 +4,7 @@
  * Fixes: empty-state messaging, error handling, attempt badges, refresh.
  */
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import { Lock, HelpCircle, Trophy, Timer, BrainCircuit, Medal, RotateCcw, Rocket, XCircle } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
@@ -24,8 +25,8 @@ function QuizCard({ q }) {
     return (
       <div className="glass-panel rounded-2xl overflow-hidden flex flex-col opacity-50 grayscale select-none relative group cursor-not-allowed">
         <div className="absolute inset-0 bg-black/40 z-10 flex flex-col items-center justify-center backdrop-blur-[2px]">
-          <div className="w-14 h-14 bg-slate-800/80 rounded-full flex items-center justify-center mb-3 shadow-lg border border-slate-700/50">
-            <span className="text-2xl">🔒</span>
+          <div className="w-14 h-14 bg-slate-800/80 rounded-full flex items-center justify-center mb-3 shadow-lg border border-slate-700/50 text-slate-400">
+            <Lock size={24} />
           </div>
           <span className="font-black text-white tracking-widest uppercase text-sm drop-shadow-md">Locked</span>
           <p className="text-xs text-slate-300 mt-2 font-medium">Complete all {lvl.label} content first</p>
@@ -33,8 +34,8 @@ function QuizCard({ q }) {
         
         <div className="bg-gradient-to-br from-slate-900 to-surface-card p-6 relative z-0">
           <div className="flex items-start justify-between gap-2 mb-4">
-            <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-2xl flex-shrink-0">
-              🔒
+            <div className="w-12 h-12 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center text-slate-400 flex-shrink-0">
+              <Lock size={24} />
             </div>
           </div>
           <h3 className="font-black text-slate-300 text-lg leading-tight mb-2 break-words">{q.title}</h3>
@@ -46,9 +47,9 @@ function QuizCard({ q }) {
           {/* Stats grid */}
           <div className="grid grid-cols-3 gap-3">
             {[
-              ['❓', q.totalQuestions, 'Questions'],
-              ['🏆', q.totalMarks,     'Marks'],
-              ['⏱️', fmtDuration(q.duration), 'Time'],
+              [<HelpCircle size={18} />, q.totalQuestions, 'Questions'],
+              [<Trophy size={18} />, q.totalMarks,     'Marks'],
+              [<Timer size={18} />, fmtDuration(q.duration), 'Time'],
             ].map(([ic, v, l]) => (
               <div key={l} className="bg-white/5 rounded-xl p-3 text-center border border-white/5">
                 <span className="text-lg leading-none">{ic}</span>
@@ -69,8 +70,8 @@ function QuizCard({ q }) {
       {/* Coloured top strip */}
       <div className="bg-gradient-to-br from-slate-800/80 to-surface-card/80 p-6 relative z-10 border-b border-white/5">
         <div className="flex items-start justify-between gap-3 mb-4">
-          <div className="w-14 h-14 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-400/30 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
-            🧠
+          <div className="w-14 h-14 bg-gradient-to-br from-primary-500/20 to-accent-500/20 border border-primary-400/30 rounded-2xl flex items-center justify-center text-primary-400 flex-shrink-0 shadow-inner group-hover:scale-110 transition-transform duration-300">
+            <BrainCircuit size={28} />
           </div>
           {q.attempted
             ? <PassBadge status={q.myStatus} />
@@ -90,19 +91,19 @@ function QuizCard({ q }) {
         {/* Stats grid */}
         <div className="grid grid-cols-3 gap-3">
           {[
-            ['❓', q.totalQuestions, 'Questions'],
-            ['🏆', q.totalMarks,     'Marks'],
-            ['⏱️', fmtDuration(q.duration), 'Time'],
+            [<HelpCircle size={20} />, q.totalQuestions, 'Questions'],
+            [<Trophy size={20} />, q.totalMarks,     'Marks'],
+            [<Timer size={20} />, fmtDuration(q.duration), 'Time'],
           ].map(([ic, v, l]) => (
-            <div key={l} className="bg-white/5 hover:bg-white/10 transition-colors rounded-xl p-3 text-center border border-white/5 shadow-inner">
-              <span className="text-xl leading-none drop-shadow-sm">{ic}</span>
+            <div key={l} className="bg-white/5 hover:bg-white/10 transition-colors rounded-xl p-3 text-center border border-white/5 shadow-inner flex flex-col items-center">
+              <span className="text-xl leading-none drop-shadow-sm text-slate-300">{ic}</span>
               <p className="text-base font-black text-white mt-1.5 leading-tight">{v}</p>
               <p className="text-[10px] uppercase tracking-widest font-bold text-slate-500 mt-1">{l}</p>
             </div>
           ))}
         </div>
 
-        {/* Pass info & Category */}
+        {/* Pass info */}
         <div className="flex items-center justify-between text-xs font-bold text-slate-400 px-1">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
@@ -111,11 +112,6 @@ function QuizCard({ q }) {
               <span className="text-slate-500">({q.passPercentage}%)</span>
             )}
           </span>
-          {q.category && (
-            <span className="bg-white/10 text-slate-300 px-2.5 py-1 rounded-full text-[10px] uppercase tracking-widest border border-white/10 shadow-inner">
-              {q.category}
-            </span>
-          )}
         </div>
 
         {/* Level badge */}
@@ -147,24 +143,24 @@ function QuizCard({ q }) {
               
               {q.myRank && (
                 <div className="flex items-center justify-center gap-2 text-sm text-amber-400 font-black bg-amber-500/10 py-2 rounded-lg border border-amber-500/20">
-                  <span>🏅</span> Rank #{q.myRank}
+                  <Medal size={16} /> Rank #{q.myRank}
                 </div>
               )}
               
               <div className="grid grid-cols-2 gap-3">
                 <Link
                   to={`/leaderboard/${q._id}`}
-                  className="text-center text-xs bg-white text-primary-900 font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                  className="text-center flex items-center justify-center gap-1.5 text-xs bg-white text-primary-900 font-black py-3 rounded-xl transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                 >
-                  🏆 Leaderboard
+                  <Trophy size={16} /> Leaderboard
                 </Link>
                 {/* Allow reattempt if attemptsAllowed > 1 */}
                 {(q.attemptsAllowed || 1) > 1 && (
                   <Link
                     to={`/quiz/${q._id}`}
-                    className="text-center text-xs bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 font-black py-3 rounded-xl transition-all border border-primary-500/30 hover:-translate-y-0.5"
+                    className="text-center flex items-center justify-center gap-1.5 text-xs bg-primary-500/20 hover:bg-primary-500/30 text-primary-300 font-black py-3 rounded-xl transition-all border border-primary-500/30 hover:-translate-y-0.5"
                   >
-                    🔄 Retry Quiz
+                    <RotateCcw size={16} /> Retry Quiz
                   </Link>
                 )}
               </div>
@@ -172,9 +168,9 @@ function QuizCard({ q }) {
           ) : (
             <Link
               to={`/quiz/${q._id}`}
-              className="block text-center bg-primary-600 hover:bg-primary-500 text-white font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:-translate-y-0.5 text-sm uppercase tracking-wider"
+              className="block flex items-center justify-center gap-1.5 text-center bg-primary-600 hover:bg-primary-500 text-white font-black py-3.5 rounded-xl transition-all shadow-[0_0_15px_rgba(6,182,212,0.4)] hover:shadow-[0_0_20px_rgba(6,182,212,0.6)] hover:-translate-y-0.5 text-sm uppercase tracking-wider"
             >
-              🚀 Start Quiz
+              <Rocket size={16} /> Start Quiz
             </Link>
           )}
         </div>
@@ -224,7 +220,7 @@ export default function QuizList() {
       {/* Header */}
       <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white">🧠 Quizzes</h2>
+          <h2 className="text-2xl font-black text-white flex items-center gap-2"><BrainCircuit size={28} /> Quizzes</h2>
           <p className="text-slate-400 text-sm mt-1">
             {quizzes.length} published quiz{quizzes.length !== 1 ? 'zes' : ''} available
           </p>
@@ -232,7 +228,7 @@ export default function QuizList() {
         <div className="flex gap-2 flex-wrap">
           <input
             type="text"
-            placeholder="🔍 Search…"
+            placeholder="Search…"
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 w-44"
@@ -267,15 +263,15 @@ export default function QuizList() {
 
       {/* Error state */}
       {error && (
-        <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-300 rounded-2xl px-5 py-4 text-sm font-semibold">
-          ❌ {error}
+        <div className="mb-6 bg-red-500/10 border border-red-500/20 text-red-300 rounded-2xl px-5 py-4 text-sm font-semibold flex items-center gap-2">
+          <XCircle size={16} /> {error}
         </div>
       )}
 
       {/* Empty state */}
       {!error && filtered.length === 0 && (
         <div className="text-center py-20">
-          <div className="text-6xl mb-4">🧠</div>
+          <div className="flex justify-center mb-4 text-slate-500"><BrainCircuit size={64} /></div>
           <h3 className="text-xl font-bold text-slate-300 mb-2">
             {quizzes.length === 0 ? 'No published quizzes yet' : 'No quizzes match your search'}
           </h3>

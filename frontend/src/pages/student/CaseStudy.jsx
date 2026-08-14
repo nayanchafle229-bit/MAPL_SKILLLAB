@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
+import { Hourglass, CheckCircle2, Pencil, XCircle } from 'lucide-react'
 import { useParams, useNavigate } from 'react-router-dom'
 import Layout from '../../components/Layout'
 import api from '../../api/axios'
 import { PageLoader, Alert } from '../../components/UI'
 
 const STATUS_COPY = {
-  pending_review: { label: 'Awaiting review', tone: 'info',    icon: '⏳' },
-  passed:         { label: 'Passed',          tone: 'success', icon: '✅' },
-  needs_revision: { label: 'Needs revision',  tone: 'warning', icon: '✏️' },
-  failed:         { label: 'Not passed',      tone: 'error',   icon: '❌' },
+  pending_review: { label: 'Awaiting review', tone: 'info',    icon: <Hourglass size={18} /> },
+  passed:         { label: 'Passed',          tone: 'success', icon: <CheckCircle2 size={18} /> },
+  needs_revision: { label: 'Needs revision',  tone: 'warning', icon: <Pencil size={18} /> },
+  failed:         { label: 'Not passed',      tone: 'error',   icon: <XCircle size={18} /> },
 }
 
 export default function CaseStudy() {

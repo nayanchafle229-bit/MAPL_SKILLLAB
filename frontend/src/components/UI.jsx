@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { XCircle, CheckCircle2, Info, AlertTriangle, Inbox, Zap, Flame, Skull, HelpCircle, Medal } from 'lucide-react'
 
 /* ═══════════════════════════════════════════
    Spinner — Animated loading ring
@@ -48,10 +49,10 @@ export function Alert({ type='error', message }) {
     info:'bg-primary-500/10 border-primary-500/20 text-primary-300',
     warning:'bg-amber-500/10 border-amber-500/20 text-amber-300',
   }
-  const i = { error:'❌', success:'✅', info:'ℹ️', warning:'⚠️' }
+  const i = { error: <XCircle size={16} />, success: <CheckCircle2 size={16} />, info: <Info size={16} />, warning: <AlertTriangle size={16} /> }
   return (
     <div className={`flex items-start gap-2.5 px-4 py-3 rounded-xl border text-sm font-medium animate-slide-down ${s[type]}`}>
-      <span className="flex-shrink-0">{i[type]}</span><span>{message}</span>
+      <span className="flex-shrink-0 flex items-center mt-0.5">{i[type]}</span><span>{message}</span>
     </div>
   )
 }
@@ -115,11 +116,11 @@ export function StatCard({ icon, label, value, sub, color='blue', trend }) {
 /* ═══════════════════════════════════════════
    EmptyState — Beautiful empty illustrations
    ═══════════════════════════════════════════ */
-export function EmptyState({ icon='📭', title, description, action }) {
+export function EmptyState({ icon=<Inbox size={72} strokeWidth={1} />, title, description, action }) {
   return (
     <div className="glass-panel text-center py-20 px-8 relative overflow-hidden particles-bg">
       <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
-      <div className="text-7xl mb-6 opacity-80 drop-shadow-xl animate-float relative z-10">{icon}</div>
+      <div className="mb-6 opacity-80 drop-shadow-xl animate-float relative z-10 flex justify-center text-slate-300">{icon}</div>
       <h3 className="text-2xl font-black text-white mb-3 tracking-wide relative z-10">{title}</h3>
       {description && <p className="text-sm text-slate-400 mb-8 max-w-md mx-auto font-medium leading-relaxed relative z-10">{description}</p>}
       <div className="flex justify-center relative z-10">{action}</div>
@@ -165,8 +166,8 @@ export function ConfirmDialog({ open, onClose, onConfirm, title, message, confir
         
         <div className="relative z-10">
           {/* Animated icon */}
-          <div className={`w-14 h-14 rounded-2xl ${danger ? 'bg-red-500/10 border border-red-500/20' : 'bg-primary-500/10 border border-primary-500/20'} flex items-center justify-center text-2xl mx-auto mb-4 animate-scale-in`}>
-            {danger ? '⚠️' : '❓'}
+          <div className={`w-14 h-14 rounded-2xl ${danger ? 'bg-red-500/10 border border-red-500/20 text-red-500' : 'bg-primary-500/10 border border-primary-500/20 text-primary-500'} flex items-center justify-center mx-auto mb-4 animate-scale-in`}>
+            {danger ? <AlertTriangle size={28} /> : <HelpCircle size={28} />}
           </div>
           <h3 className="text-xl font-black text-white mb-3 text-center">{title}</h3>
           <p className="text-sm text-slate-400 mb-8 leading-relaxed font-medium text-center">{message}</p>
@@ -228,8 +229,8 @@ export function DifficultyBadge({ level }) {
   }
   const glow = { easy: 'emerald', medium: 'amber', hard: 'red' }
   return (
-    <span className={`inline-flex px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] hover:shadow-${glow[level]||'amber'}-500/20 transition-shadow ${s[level]||s.medium}`}>
-      {level === 'easy' && '⚡ '}{level === 'medium' && '🔥 '}{level === 'hard' && '💀 '}{level}
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] hover:shadow-${glow[level]||'amber'}-500/20 transition-shadow ${s[level]||s.medium}`}>
+      {level === 'easy' && <Zap size={12} />}{level === 'medium' && <Flame size={12} />}{level === 'hard' && <Skull size={12} />}{level}
     </span>
   )
 }
@@ -252,9 +253,9 @@ export function PassBadge({ status }) {
    RankBadge — Animated medal badges
    ═══════════════════════════════════════════ */
 export function RankBadge({ rank }) {
-  if (rank === 1) return <span className="text-3xl drop-shadow-[0_0_15px_rgba(250,204,21,0.6)] animate-float" title="Rank 1">🥇</span>
-  if (rank === 2) return <span className="text-3xl drop-shadow-[0_0_15px_rgba(156,163,175,0.6)] animate-float" style={{animationDelay:'0.5s'}} title="Rank 2">🥈</span>
-  if (rank === 3) return <span className="text-3xl drop-shadow-[0_0_15px_rgba(180,83,9,0.6)] animate-float" style={{animationDelay:'1s'}} title="Rank 3">🥉</span>
+  if (rank === 1) return <span className="drop-shadow-[0_0_15px_rgba(250,204,21,0.6)] animate-float text-amber-400 inline-block" title="Rank 1"><Medal size={32} /></span>
+  if (rank === 2) return <span className="drop-shadow-[0_0_15px_rgba(156,163,175,0.6)] animate-float text-slate-300 inline-block" style={{animationDelay:'0.5s'}} title="Rank 2"><Medal size={32} /></span>
+  if (rank === 3) return <span className="drop-shadow-[0_0_15px_rgba(180,83,9,0.6)] animate-float text-amber-600 inline-block" style={{animationDelay:'1s'}} title="Rank 3"><Medal size={32} /></span>
   return <span className="w-10 h-10 rounded-full bg-white/5 border border-white/10 text-slate-300 text-sm font-black flex items-center justify-center shadow-inner hover:bg-white/10 transition-colors">#{rank}</span>
 }
 

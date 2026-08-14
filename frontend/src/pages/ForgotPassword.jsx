@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { Lock, Hourglass } from "lucide-react";
 import api from "../api/axios";
 import "../styles/Login.css";
 import logo from "../pages/maplskill.png";
@@ -32,6 +33,10 @@ export default function ForgotPassword() {
 
       <div className="login-panel" style={{ position: "relative", zIndex: 5, width: "100%" }}>
         <div className="glass-card">
+          <div className="text-center mb-8 relative z-10">
+            <div className="w-14 h-14 bg-gradient-to-br from-primary-600 to-secondary-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-[0_0_20px_-5px_rgba(139,92,246,0.5)] animate-float"><Lock size={28} className="text-white"/></div>
+            <h2 className="text-2xl font-black text-white">Forgot password?</h2>
+          </div>
           <img src={logo} alt="Smart Quiz" className="login-logo" />
 
           {sent ? (
@@ -48,7 +53,6 @@ export default function ForgotPassword() {
             </>
           ) : (
             <>
-              <h2>Forgot Password?</h2>
               <p>No worries — enter your email and we'll send you a reset link.</p>
 
               {error && <div className="error-box">{error}</div>}
@@ -66,8 +70,8 @@ export default function ForgotPassword() {
                   />
                 </div>
 
-                <button className="login-btn" disabled={loading}>
-                  {loading ? "Sending..." : "Send Reset Link"}
+                <button type="submit" disabled={loading} className="btn-primary w-full text-base py-3">
+                  {loading ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Sending...</span> : 'Send Reset Link →'}
                 </button>
               </form>
             </>

@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, ScoreRing, PassBadge, RankBadge } from '../../components/UI'
+import { Trophy, Star, ThumbsUp, BookOpen, Dumbbell, Medal, CheckCircle2, XCircle, Square, Target, BarChart3, Timer, Award, ClipboardList } from 'lucide-react'
 
 function fmtTime(s) {
   const m = Math.floor(s/60); const sec = s%60
@@ -28,11 +29,11 @@ export default function QuizResult() {
   const pass = result.passStatus === 'PASS'
   const quiz = result.quizId
 
-  const grade = pct>=90?{l:'Outstanding 🏆',c:'from-emerald-500 to-green-600'}
-              : pct>=75?{l:'Excellent 🌟',  c:'from-primary-500 to-primary-600'}
-              : pct>=60?{l:'Good Job 👍',   c:'from-yellow-500 to-orange-500'}
-              : pct>=50?{l:'Average 📚',    c:'from-orange-400 to-red-500'}
-              :         {l:'Try Again 💪',  c:'from-red-500 to-rose-600'}
+  const grade = pct>=90?{l:'Outstanding', icon: <Trophy size={24} />, c:'from-emerald-500 to-green-600'}
+              : pct>=75?{l:'Excellent', icon: <Star size={24} />, c:'from-primary-500 to-primary-600'}
+              : pct>=60?{l:'Good Job', icon: <ThumbsUp size={24} />, c:'from-yellow-500 to-orange-500'}
+              : pct>=50?{l:'Average', icon: <BookOpen size={24} />, c:'from-orange-400 to-red-500'}
+              :         {l:'Try Again', icon: <Dumbbell size={24} />, c:'from-red-500 to-rose-600'}
 
 
   return (
@@ -44,18 +45,18 @@ export default function QuizResult() {
           <div className="flex flex-col sm:flex-row items-center gap-6">
             <ScoreRing score={result.score} total={result.totalMarks} size={160} />
             <div className="text-center sm:text-left flex-1">
-              <p className="text-2xl font-black mb-1">{grade.l}</p>
+              <p className="text-2xl font-black mb-1 flex items-center justify-center sm:justify-start gap-2">{grade.l} {grade.icon}</p>
               <p className="text-white/80 text-sm mb-3">{quiz?.title}</p>
               <div className="flex flex-wrap gap-3 justify-center sm:justify-start mb-4">
                 <PassBadge status={result.passStatus} />
                 {result.rank && (
                   <span className="bg-white/20 text-white text-xs font-black px-3 py-1 rounded-full border border-white/30">
-                    🏅 Rank #{result.rank}
+                    <Medal size={14} className="inline-block mr-1" /> Rank #{result.rank}
                   </span>
                 )}
               </div>
               <div className="grid grid-cols-3 gap-3">
-                {[['✅',result.correctAnswers,'Correct'],['❌',result.wrongAnswers,'Wrong'],['⬜',result.unattempted,'Skipped']].map(([ic,v,l])=>(
+                {[[<CheckCircle2 size={18} key="correct" />,result.correctAnswers,'Correct'],[<XCircle size={18} key="wrong" />,result.wrongAnswers,'Wrong'],[<Square size={18} key="skipped" />,result.unattempted,'Skipped']].map(([ic,v,l])=>(
                   <div key={l} className="bg-white/20 rounded-xl p-2.5 text-center backdrop-blur-sm">
                     <p className="text-lg font-black">{v}</p>
                     <p className="text-xs text-white/80">{l}</p>
@@ -69,12 +70,12 @@ export default function QuizResult() {
         {/* Quick stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
-            ['🎯','Score',`${result.score}/${result.totalMarks}`],
-            ['📊','Percentage',`${pct.toFixed(1)}%`],
-            ['⏱️','Time Taken', fmtTime(result.timeTaken||0)],
-            ['🎖️','Pass Mark',`${quiz?.passMarks} (${quiz?.passPercentage}%)`],
+            [<Target size={24} key="target" />,'Score',`${result.score}/${result.totalMarks}`],
+            [<BarChart3 size={24} key="barchart" />,'Percentage',`${pct.toFixed(1)}%`],
+            [<Timer size={24} key="timer" />,'Time Taken', fmtTime(result.timeTaken||0)],
+            [<Award size={24} key="award" />,'Pass Mark',`${quiz?.passMarks} (${quiz?.passPercentage}%)`],
           ].map(([ic,l,v])=>(
-            <div key={l} className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-4 text-center">
+            <div key={l} className="bg-surface-card rounded-2xl border border-white/10 shadow-sm p-4 text-center flex flex-col items-center">
               <span className="text-2xl">{ic}</span>
               <p className="text-lg font-black text-white mt-1">{v}</p>
               <p className="text-xs text-slate-400 font-medium">{l}</p>
@@ -85,7 +86,7 @@ export default function QuizResult() {
         {/* Tabs */}
         <div className="bg-surface-card rounded-2xl border border-white/10 shadow-sm overflow-hidden">
           <div className="flex border-b border-white/10">
-            {[['overview','📊 Overview'],['answers','📋 Answer Review']].map(([t,l])=>(
+            {[['overview',<span key="overview" className="inline-flex items-center gap-2"><BarChart3 size={16}/>Overview</span>],['answers',<span key="answers" className="inline-flex items-center gap-2"><ClipboardList size={16}/>Answer Review</span>]].map(([t,l])=>(
               <button key={t} onClick={()=>setTab(t)}
                 className={`flex-1 py-4 text-sm font-bold transition-all ${tab===t?'text-primary-400 border-b-2 border-primary-500 bg-primary-500/10':'text-slate-400 hover:text-slate-300 hover:bg-white/5'}`}>
                 {l}
@@ -190,8 +191,8 @@ export default function QuizResult() {
         {/* Actions */}
         <div className="flex gap-3 flex-wrap">
           <Link to="/quizzes"               className="flex-1 text-center bg-white/5 border border-white/10 text-slate-300 font-bold py-3.5 rounded-xl hover:bg-white/5 transition-all text-sm">← Back to Quizzes</Link>
-          <Link to={`/leaderboard/${quiz?._id||result.quizId}`} className="flex-1 text-center bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-all text-sm">🏆 Leaderboard</Link>
-          <Link to="/portfolio"             className="flex-1 text-center bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-500 transition-all text-sm">📊 Portfolio</Link>
+          <Link to={`/leaderboard/${quiz?._id||result.quizId}`} className="flex-1 text-center bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-all text-sm"><Trophy size={18} className="inline-block mr-2 -mt-1" />Leaderboard</Link>
+          <Link to="/portfolio"             className="flex-1 text-center bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-500 transition-all text-sm"><BarChart3 size={18} className="inline-block mr-2 -mt-1" />Portfolio</Link>
         </div>
       </div>
     </Layout>

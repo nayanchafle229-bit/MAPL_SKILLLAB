@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { BrainCircuit, BookOpen, FileText, ClipboardList, Clapperboard, Circle } from 'lucide-react'
+import ReactPlayer from 'react-player'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader } from '../components/UI'
@@ -11,11 +13,6 @@ function getYouTubeId(url) {
   return m ? m[1] : null
 }
 
-function getEmbedUrl(url) {
-  const ytId = getYouTubeId(url)
-  if (ytId) return `https://www.youtube.com/embed/${ytId}?rel=0&modestbranding=1`
-  return url
-}
 
 // (rich notes rendering now handled by the shared <Markdown> component)
 
@@ -57,9 +54,14 @@ export default function CourseWatch() {
   if (loading) return <Layout title="Course"><PageLoader /></Layout>
   if (!course) return <Layout title="Course"><p className="text-slate-400">Course not found.</p></Layout>
 
-  const embedUrl = getEmbedUrl(course.videoUrl) + (isFullscreen ? '&autoplay=1' : '')
   const level = getLevel(course.level)
   const hasNotes = !!course.notes?.trim()
+
+  const handleVideoEnded = () => {
+    if (progress?.status !== 'completed') {
+      markComplete()
+    }
+  }
 
   if (isFullscreen) {
     return (
@@ -69,9 +71,14 @@ export default function CourseWatch() {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </Link>
         </div>
-        <iframe src={embedUrl} title={course.title}
-          className="w-full h-full border-0" allowFullScreen
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+        <ReactPlayer 
+          url={course.videoUrl} 
+          width="100%" 
+          height="100%" 
+          playing={true} 
+          controls 
+          onEnded={handleVideoEnded} 
+        />
       </div>
     )
   }
@@ -82,9 +89,13 @@ export default function CourseWatch() {
         {/* Main video */}
         <div className="xl:col-span-2 space-y-4">
           <div className="bg-black rounded-2xl overflow-hidden aspect-video">
-            <iframe src={embedUrl} title={course.title}
-              className="w-full h-full" allowFullScreen
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" />
+            <ReactPlayer 
+              url={course.videoUrl} 
+              width="100%" 
+              height="100%" 
+              controls 
+              onEnded={handleVideoEnded} 
+            />
           </div>
 
           <div className="card">
@@ -94,7 +105,7 @@ export default function CourseWatch() {
                 <div className="flex items-center gap-2 flex-wrap">
                   {course.category && <span className="badge-blue">{course.category}</span>}
                   <span className={`inline-flex items-center gap-1 text-xs font-bold px-3 py-1 rounded-full border ${level.badge}`}>
-                    {level.icon} {level.label}
+                    <span className={`w-2 h-2 rounded-full inline-block bg-current ${level.iconColor}`} /> {level.label}
                   </span>
                   {progress?.status === 'completed' && (
                     <span className="inline-flex items-center gap-1 bg-accent-500/15 text-accent-400 text-xs font-black px-3 py-1 rounded-full">
@@ -104,25 +115,19 @@ export default function CourseWatch() {
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                {progress?.status !== 'completed' && (
-                  <button onClick={markComplete} disabled={marking}
-                    className="text-sm font-bold px-4 py-2.5 rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-60 transition-colors">
-                    {marking ? 'Saving...' : '✓ Mark as Completed'}
-                  </button>
-                )}
-                <Link to="/quiz" className="btn-primary text-sm">🧠 Take Quiz</Link>
+                <Link to="/quiz" className="btn-primary text-sm flex items-center justify-center gap-1.5"><BrainCircuit size={16}/> Take Quiz</Link>
               </div>
             </div>
 
             {/* Overview / Notes tabs — like Coursera's video + reading material tabs */}
             <div className="mt-5 flex items-center gap-1 border-b border-white/10">
               <button onClick={() => setTab('overview')}
-                className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${tab === 'overview' ? 'border-primary-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                📖 Overview
+                className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-1.5 ${tab === 'overview' ? 'border-primary-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
+                <BookOpen size={16}/> Overview
               </button>
               <button onClick={() => setTab('notes')}
-                className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors ${tab === 'notes' ? 'border-primary-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
-                📝 Notes {hasNotes && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-primary-400 inline-block align-middle" />}
+                className={`px-4 py-2.5 text-sm font-bold border-b-2 transition-colors flex items-center gap-1.5 ${tab === 'notes' ? 'border-primary-400 text-white' : 'border-transparent text-slate-400 hover:text-slate-200'}`}>
+                <FileText size={16}/> Notes {hasNotes && <span className="ml-1 w-1.5 h-1.5 rounded-full bg-primary-400 inline-block align-middle" />}
               </button>
             </div>
 
@@ -146,7 +151,7 @@ export default function CourseWatch() {
         {/* Sidebar */}
         <div className="space-y-4">
           <div className="card">
-            <h3 className="font-bold text-white mb-3">📋 Other Courses</h3>
+            <h3 className="font-bold text-white mb-3 flex items-center gap-2"><ClipboardList size={20}/> Other Courses</h3>
             {courses.length === 0 ? (
               <p className="text-sm text-slate-500">No other courses available.</p>
             ) : (
@@ -160,13 +165,13 @@ export default function CourseWatch() {
                       className="flex items-center gap-3 p-2 rounded-xl hover:bg-white/5 transition-all group">
                       <div className="w-20 h-14 bg-slate-200 rounded-lg overflow-hidden flex-shrink-0">
                         {thumb ? <img src={thumb} alt={c.title} className="w-full h-full object-cover" />
-                          : <div className="w-full h-full flex items-center justify-center text-2xl">🎬</div>}
+                          : <div className="w-full h-full flex items-center justify-center text-slate-400"><Clapperboard size={24} /></div>}
                       </div>
                       <div className="min-w-0">
                         <p className="text-sm font-semibold text-slate-100 line-clamp-2 group-hover:text-primary-400 transition-colors">{c.title}</p>
                         <div className="flex items-center gap-1.5 mt-0.5">
                           {c.category && <p className="text-xs text-slate-500">{c.category}</p>}
-                          <span className="text-xs">{cLevel.icon}</span>
+                          <span className={`w-2 h-2 rounded-full inline-block bg-current ${cLevel.iconColor}`} />
                         </div>
                       </div>
                     </Link>
@@ -178,7 +183,7 @@ export default function CourseWatch() {
 
           <div className="card bg-gradient-to-br from-primary-500/10 to-accent-500/10 border-primary-500/20">
             <div className="text-center">
-              <div className="text-3xl mb-2">🧠</div>
+              <div className="mb-2 flex justify-center text-primary-400"><BrainCircuit size={48} /></div>
               <h3 className="font-bold text-white mb-1">Ready to test yourself?</h3>
               <p className="text-sm text-slate-400 mb-4">Take a quiz with {40} random questions</p>
               <Link to="/quiz" className="btn-primary w-full text-center block">Start Quiz</Link>

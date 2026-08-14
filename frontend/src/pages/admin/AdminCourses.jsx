@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react'
+import { Pencil, Trash2, FileText, ExternalLink, Hourglass, BookOpen, Search, Circle } from 'lucide-react'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { Modal, ConfirmDialog, Alert, PageLoader, EmptyState } from '../../components/UI'
@@ -91,8 +92,8 @@ export default function AdminCourses() {
                 {c.title[0]}
               </div>
               <div className="flex gap-2 flex-shrink-0">
-                <button onClick={() => openEdit(c)} className="w-8 h-8 flex items-center justify-center bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 rounded-lg transition-colors border border-primary-500/20" title="Edit">✏️</button>
-                <button onClick={() => setDelId(c._id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20" title="Delete">🗑️</button>
+                <button onClick={() => openEdit(c)} className="w-8 h-8 flex items-center justify-center bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 rounded-lg transition-colors border border-primary-500/20" title="Edit"><Pencil size={16} /></button>
+                <button onClick={() => setDelId(c._id)} className="w-8 h-8 flex items-center justify-center bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-lg transition-colors border border-red-500/20" title="Delete"><Trash2 size={16} /></button>
               </div>
             </div>
             
@@ -106,15 +107,15 @@ export default function AdminCourses() {
                 </span>
               )}
               <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] uppercase tracking-widest font-black shadow-inner border ${getLevel(c.level).badge}`}>
-                {getLevel(c.level).icon} {getLevel(c.level).label}
+                <span className={`w-2 h-2 rounded-full inline-block bg-current ${getLevel(c.level).iconColor}`} /> {getLevel(c.level).label}
               </span>
-              {c.notes && <span className="text-[10px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full font-bold shadow-inner">📝 Notes</span>}
+              {c.notes && <span className="text-[10px] uppercase tracking-widest bg-amber-500/10 text-amber-400 border border-amber-500/20 px-2.5 py-1 rounded-full font-bold shadow-inner flex items-center gap-1"><FileText size={12} /> Notes</span>}
             </div>
             
             <div className="pt-4 border-t border-white/5 flex items-center justify-between">
               <a href={c.videoUrl} target="_blank" rel="noreferrer"
                 className="inline-flex items-center gap-1.5 text-xs text-primary-400 hover:text-primary-300 font-bold bg-primary-500/10 px-3 py-1.5 rounded-lg hover:bg-primary-500/20 transition-colors border border-primary-500/20">
-                <span>🔗</span> Open Video
+                <span><ExternalLink size={14} /></span> Open Video
               </a>
             </div>
           </div>
@@ -157,7 +158,7 @@ export default function AdminCourses() {
             <div>
               <label className="block text-sm font-semibold text-slate-300 mb-1">Level *</label>
               <select name="level" value={form.level} onChange={handle} className="input-field" required>
-                {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+                {LEVELS.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
               </select>
             </div>
           </div>
@@ -191,7 +192,7 @@ export default function AdminCourses() {
           {error && <Alert type="error" message={error} />}
           <div className="flex gap-3 pt-2">
             <button type="submit" disabled={saving} className="btn-primary flex-1">
-              {saving ? '⏳ Saving...' : editing ? 'Update Course' : 'Add Course'}
+              {saving ? <span className="flex items-center justify-center gap-2"><Hourglass size={16} /> Saving...</span> : editing ? 'Update Course' : 'Add Course'}
             </button>
             <button type="button" onClick={() => setModal(false)} className="btn-secondary">Cancel</button>
           </div>
@@ -200,7 +201,7 @@ export default function AdminCourses() {
 
       <div className="mb-6 flex flex-col xl:flex-row xl:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-black text-white">📚 Manage Courses</h2>
+          <h2 className="text-2xl font-black text-white flex items-center gap-2"><BookOpen size={28} /> Manage Courses</h2>
           <p className="text-slate-400 text-sm">{courses.length} course{courses.length !== 1 ? 's' : ''} total</p>
         </div>
         
@@ -211,9 +212,9 @@ export default function AdminCourses() {
           </select>
           <select value={activeLevel} onChange={e => setActiveLevel(e.target.value)} className="input-field flex-1 sm:max-w-[160px]">
             <option value="All">All Levels</option>
-            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
+            {LEVELS.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
           </select>
-          <input type="text" placeholder="🔍 Search..."
+          <input type="text" placeholder="Search..."
             value={search} onChange={e => setSearch(e.target.value)}
             className="input-field flex-1 sm:max-w-[160px]" />
           <button onClick={openAdd} className="btn-primary flex-shrink-0 whitespace-nowrap">+ Add Course</button>
@@ -223,10 +224,10 @@ export default function AdminCourses() {
       {success && <div className="mb-4"><Alert type="success" message={success} /></div>}
 
       {courses.length === 0 ? (
-        <EmptyState icon="📚" title="No courses yet" description="Add your first course to get started."
+        <EmptyState icon={<BookOpen size={48} />} title="No courses yet" description="Add your first course to get started."
           action={<button onClick={openAdd} className="btn-primary">+ Add Course</button>} />
       ) : filteredCourses.length === 0 ? (
-        <EmptyState icon="🔍" title="No matching courses" description="Try adjusting your search or filters." />
+        <EmptyState icon={<Search size={48} />} title="No matching courses" description="Try adjusting your search or filters." />
       ) : (
         coursesGrid
       )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import { Hand, BrainCircuit, Rocket, BarChart3, Target, CheckCircle2, Trophy, Medal, Leaf, Star, BookOpen, Dumbbell } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import api from '../api/axios'
 import Layout from '../components/Layout'
@@ -62,7 +63,7 @@ export default function Dashboard() {
             </div>
             
             <h2 className="text-4xl md:text-5xl font-black mb-2 tracking-tight drop-shadow-md">
-              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-200">{p.name?.split(' ')[0] || 'Learner'}</span> 👋
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-200">{p.name?.split(' ')[0] || 'Learner'}</span> <Hand size={36} className="inline-block" />
             </h2>
             
             <p className="text-primary-100/80 text-sm md:text-base font-medium max-w-xl">
@@ -73,7 +74,7 @@ export default function Dashboard() {
               <div className="mt-6 flex items-center gap-3 animate-slide-up" style={{ animationDelay: '200ms' }}>
                 <div className="flex -space-x-2">
                   {[1,2,3].slice(0, pending).map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 border-2 border-primary-600 shadow-sm z-10 flex items-center justify-center text-[10px] animate-float" style={{ animationDelay: `${i * 300}ms` }}>🧠</div>
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 border-2 border-primary-600 shadow-sm z-10 flex items-center justify-center text-[10px] animate-float" style={{ animationDelay: `${i * 300}ms` }}><BrainCircuit size={14} /></div>
                   ))}
                   {pending > 3 && <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 z-0 flex items-center justify-center text-[10px] font-bold">+{pending-3}</div>}
                 </div>
@@ -86,11 +87,11 @@ export default function Dashboard() {
           
           <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto">
             <Link to="/quizzes" className="flex-1 md:flex-none text-center bg-white text-primary-700 font-black px-6 py-3.5 rounded-xl hover:bg-primary-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] relative overflow-hidden group/btn">
-              <span className="relative z-10">🚀 Explore Quizzes</span>
+              <span className="relative z-10"><Rocket size={16} className="inline-block mr-1" /> Explore Quizzes</span>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity" style={{ backgroundSize: '200% 100%', animation: 'shimmer 2s linear infinite' }} />
             </Link>
             <Link to="/portfolio" className="flex-1 md:flex-none text-center bg-white/10 border border-white/20 text-white font-bold px-6 py-3.5 rounded-xl hover:bg-white/20 transition-all backdrop-blur-md hover:-translate-y-1">
-              📊 View Portfolio
+              <BarChart3 size={16} className="inline-block mr-1" /> View Portfolio
             </Link>
           </div>
         </div>
@@ -98,10 +99,10 @@ export default function Dashboard() {
 
       {/* ═══ Stats Grid ═══ */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="animate-slide-up stagger-1"><StatCard icon="🎯" label="Quizzes Attempted" value={total}                           color="blue"   /></div>
-        <div className="animate-slide-up stagger-2"><StatCard icon="✅" label="Passed"              value={passed}                          color="green"  /></div>
-        <div className="animate-slide-up stagger-3"><StatCard icon="🏆" label="Best Score"          value={best ? `${best.toFixed(1)}%` : '—'} color="orange" /></div>
-        <div className="animate-slide-up stagger-4"><StatCard icon="🏅" label="Best Rank"           value={bestRank ? `#${bestRank}` : '—'}    color="purple" /></div>
+        <div className="animate-slide-up stagger-1"><StatCard icon={<Target size={24} />} label="Quizzes Attempted" value={total}                           color="blue"   /></div>
+        <div className="animate-slide-up stagger-2"><StatCard icon={<CheckCircle2 size={24} />} label="Passed"              value={passed}                          color="green"  /></div>
+        <div className="animate-slide-up stagger-3"><StatCard icon={<Trophy size={24} />} label="Best Score"          value={best ? `${best.toFixed(1)}%` : '—'} color="orange" /></div>
+        <div className="animate-slide-up stagger-4"><StatCard icon={<Medal size={24} />} label="Best Rank"           value={bestRank ? `#${bestRank}` : '—'}    color="purple" /></div>
       </div>
 
       {/* ═══ Two Column Content ═══ */}
@@ -110,14 +111,14 @@ export default function Dashboard() {
         <div className="glass-panel overflow-hidden flex flex-col h-[400px] animate-slide-up stagger-5">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
             <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
-              <span className="text-xl">🧠</span> Available Quizzes
+              <BrainCircuit size={20} /> Available Quizzes
             </h3>
             <Link to="/quizzes" className="text-xs bg-primary-500/10 text-primary-400 hover:bg-primary-500/20 hover:text-primary-300 font-bold px-3 py-1.5 rounded-lg transition-all border border-primary-500/20 hover:-translate-y-0.5">View all</Link>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {quizzes.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
-                <span className="text-4xl mb-2 animate-float">🍃</span>
+                <span className="mb-2 animate-float"><Leaf size={36} className="opacity-60" /></span>
                 <p className="text-slate-400 text-sm font-medium">No new quizzes available right now.</p>
               </div>
             ) : (
@@ -165,14 +166,14 @@ export default function Dashboard() {
         <div className="glass-panel overflow-hidden flex flex-col h-[400px] animate-slide-up stagger-6">
           <div className="flex items-center justify-between px-6 py-5 border-b border-white/5 bg-white/[0.02]">
             <h3 className="font-black text-white text-base tracking-wide flex items-center gap-2">
-              <span className="text-xl">📊</span> Recent Results
+              <BarChart3 size={20} /> Recent Results
             </h3>
             <Link to="/history" className="text-xs bg-accent-500/10 text-accent-400 hover:bg-accent-500/20 hover:text-accent-300 font-bold px-3 py-1.5 rounded-lg transition-all border border-accent-500/20 hover:-translate-y-0.5">View all</Link>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar p-2">
             {results.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center opacity-60">
-                <span className="text-4xl mb-2 animate-float">🎯</span>
+                <span className="mb-2 animate-float"><Target size={36} className="opacity-60" /></span>
                 <p className="text-slate-400 text-sm font-medium">No quiz attempts yet.</p>
                 <Link to="/quizzes" className="mt-4 inline-block bg-primary-600 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-lg hover:-translate-y-0.5 transition-all">Take a quiz</Link>
               </div>
@@ -235,7 +236,7 @@ export default function Dashboard() {
           
           <div className="relative z-10 flex items-center gap-5">
             <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-3xl shadow-inner backdrop-blur-sm border border-white/20 group-hover:shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-shadow duration-500 animate-float">
-              {best >= 75 ? '🌟' : best >= 50 ? '📚' : '💪'}
+              {best >= 75 ? <Star size={28} /> : best >= 50 ? <BookOpen size={28} /> : <Dumbbell size={28} />}
             </div>
             <div>
               <p className="font-black text-xl tracking-wide">
@@ -248,8 +249,8 @@ export default function Dashboard() {
           </div>
           
           <div className="relative z-10 flex gap-3 w-full sm:w-auto">
-            <Link to="/quizzes"   className="flex-1 sm:flex-none text-center text-sm btn-primary">🧠 New Quiz</Link>
-            <Link to="/portfolio" className="flex-1 sm:flex-none text-center text-sm btn-secondary">📊 Portfolio</Link>
+            <Link to="/quizzes"   className="flex-1 sm:flex-none text-center text-sm btn-primary"><BrainCircuit size={16} className="inline-block mr-1 -mt-0.5" /> New Quiz</Link>
+            <Link to="/portfolio" className="flex-1 sm:flex-none text-center text-sm btn-secondary"><BarChart3 size={16} className="inline-block mr-1 -mt-0.5" /> Portfolio</Link>
           </div>
         </div>
       )}

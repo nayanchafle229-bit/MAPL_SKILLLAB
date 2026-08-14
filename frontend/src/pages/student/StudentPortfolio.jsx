@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext'
 import api from '../../api/axios'
 import Layout from '../../components/Layout'
 import { PageLoader, ScoreRing, PassBadge, StatCard } from '../../components/UI'
+import { Medal, Target, CheckCircle2, TrendingUp, Trophy, BarChart3, FileText } from 'lucide-react'
 
 export default function StudentPortfolio() {
   const { user }  = useAuth()
@@ -61,7 +62,7 @@ export default function StudentPortfolio() {
               {p.branch && <span className="bg-white/10 px-3 py-1 rounded-full border border-white/20">{p.branch}</span>}
               {p.year   && <span className="bg-white/10 px-3 py-1 rounded-full border border-white/20">{p.year}</span>}
               {best     && <span className="bg-emerald-500/20 text-accent-300 px-3 py-1 rounded-full border border-emerald-500/30">Best: {best}%</span>}
-              {bestRank && <span className="bg-yellow-500/20 text-amber-300 px-3 py-1 rounded-full border border-yellow-500/30">🏅 Best Rank: #{bestRank}</span>}
+              {bestRank && <span className="bg-yellow-500/20 text-amber-300 px-3 py-1 rounded-full border border-yellow-500/30"><Medal size={14} className="inline-block mr-1 -mt-0.5" />Best Rank: #{bestRank}</span>}
             </div>
             {p.bio && <p className="text-slate-400 text-xs mt-3 max-w-md leading-relaxed">{p.bio}</p>}
           </div>
@@ -76,10 +77,10 @@ export default function StudentPortfolio() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <StatCard icon="🎯" label="Total Attempts" value={total}          color="blue"   />
-        <StatCard icon="✅" label="Quizzes Passed" value={passed}         color="green"  />
-        <StatCard icon="📈" label="Pass Rate"      value={`${passRate}%`} color="purple" />
-        <StatCard icon="🏆" label="Best Score"     value={best ? `${best}%` : '—'} color="orange" />
+        <StatCard icon={<Target size={24} />} label="Total Attempts" value={total}          color="blue"   />
+        <StatCard icon={<CheckCircle2 size={24} />} label="Quizzes Passed" value={passed}         color="green"  />
+        <StatCard icon={<TrendingUp size={24} />} label="Pass Rate"      value={`${passRate}%`} color="purple" />
+        <StatCard icon={<Trophy size={24} />} label="Best Score"     value={best ? `${best}%` : '—'} color="orange" />
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -88,7 +89,7 @@ export default function StudentPortfolio() {
           <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest mb-4">Score Trend</h3>
           {trend.length === 0 ? (
             <div className="text-center py-12">
-              <span className="text-3xl opacity-50 mb-2 block">📈</span>
+              <span className="text-slate-400 opacity-50 mb-2 flex justify-center"><TrendingUp size={28} /></span>
               <p className="text-slate-400 text-sm font-bold">Take quizzes to see your trend</p>
             </div>
           ) : (
@@ -119,7 +120,7 @@ export default function StudentPortfolio() {
           <h3 className="text-sm font-black text-slate-300 uppercase tracking-widest mb-4">Quiz Performance</h3>
           {total === 0 ? (
             <div className="text-center py-12">
-              <span className="text-3xl opacity-50 mb-2 block">📊</span>
+              <span className="text-slate-400 opacity-50 mb-2 flex justify-center"><BarChart3 size={28} /></span>
               <p className="text-slate-400 text-sm font-bold">No quiz data yet</p>
             </div>
           ) : (
@@ -196,7 +197,7 @@ export default function StudentPortfolio() {
         </div>
         {results.length === 0 ? (
           <div className="text-center py-12">
-            <span className="text-3xl opacity-50 mb-3 block">📝</span>
+            <span className="text-slate-400 opacity-50 mb-3 flex justify-center"><FileText size={28} /></span>
             <p className="text-slate-400 text-sm font-bold mb-4">No quiz attempts yet.</p>
             <Link to="/quizzes" className="btn-primary inline-flex">Take a Quiz</Link>
           </div>

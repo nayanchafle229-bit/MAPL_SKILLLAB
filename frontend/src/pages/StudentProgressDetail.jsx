@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { Medal, Target, CheckCircle2, TrendingUp, Trophy, BookOpen, Award, Inbox } from 'lucide-react'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader, ScoreRing, PassBadge, StatCard, EmptyState, Alert } from '../components/UI'
@@ -82,7 +83,7 @@ export default function StudentProgressDetail() {
               {p.branch && <span className="bg-white/10 px-3 py-1 rounded-full border border-white/20">{p.branch}</span>}
               {p.year   && <span className="bg-white/10 px-3 py-1 rounded-full border border-white/20">{p.year}</span>}
               {best     && <span className="bg-emerald-500/20 text-accent-300 px-3 py-1 rounded-full border border-emerald-500/30">Best: {best}%</span>}
-              {bestRank && <span className="bg-yellow-500/20 text-amber-300 px-3 py-1 rounded-full border border-yellow-500/30">🏅 Best Rank: #{bestRank}</span>}
+              {bestRank && <span className="bg-yellow-500/20 text-amber-300 px-3 py-1 rounded-full border border-yellow-500/30 flex items-center gap-1"><Medal size={14}/> Best Rank: #{bestRank}</span>}
             </div>
           </div>
           {total > 0 && (
@@ -96,14 +97,14 @@ export default function StudentProgressDetail() {
 
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
-        <StatCard icon="🎯" label="Total Attempts" value={total}          color="blue" />
-        <StatCard icon="✅" label="Quizzes Passed" value={passed}         color="green" />
-        <StatCard icon="📈" label="Pass Rate"      value={`${passRate}%`} color="purple" />
-        <StatCard icon="🏆" label="Best Score"     value={best ? `${best}%` : '—'} color="orange" />
+        <StatCard icon={<Target size={24} />} label="Total Attempts" value={total}          color="blue" />
+        <StatCard icon={<CheckCircle2 size={24} />} label="Quizzes Passed" value={passed}         color="green" />
+        <StatCard icon={<TrendingUp size={24} />} label="Pass Rate"      value={`${passRate}%`} color="purple" />
+        <StatCard icon={<Trophy size={24} />} label="Best Score"     value={best ? `${best}%` : '—'} color="orange" />
       </div>
       <div className="grid grid-cols-2 gap-4 mb-6">
-        <StatCard icon="📚" label="Courses Watched"   value={coursesStarted}   color="indigo" />
-        <StatCard icon="🎓" label="Courses Completed" value={coursesCompleted} color="green" />
+        <StatCard icon={<BookOpen size={24} />} label="Courses Watched"   value={coursesStarted}   color="indigo" />
+        <StatCard icon={<Award size={24} />} label="Courses Completed" value={coursesCompleted} color="green" />
       </div>
 
       {/* Course watch history */}
@@ -143,7 +144,7 @@ export default function StudentProgressDetail() {
       </div>
 
       {total === 0 ? (
-        <EmptyState icon="📭" title="No quiz activity yet" description="This student hasn't attempted any quizzes so far." />
+        <EmptyState icon={<Inbox size={48} />} title="No quiz activity yet" description="This student hasn't attempted any quizzes so far." />
       ) : (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">

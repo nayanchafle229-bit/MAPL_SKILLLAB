@@ -6,6 +6,10 @@ export default defineConfig({
 
   plugins: [react()],
 
+  build: {
+    target: 'es2015',
+  },
+
   server: {
     port: 3000,
     host: true        // listen on 0.0.0.0 — accessible from other devices on the network
