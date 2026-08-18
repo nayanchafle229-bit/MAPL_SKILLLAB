@@ -218,46 +218,39 @@ export default function QuizList() {
     <Layout title="Available Quizzes">
 
       {/* Header */}
-      <div className="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h2 className="text-2xl font-black text-white flex items-center gap-2"><BrainCircuit size={28} /> Quizzes</h2>
           <p className="text-slate-400 text-sm mt-1">
             {quizzes.length} published quiz{quizzes.length !== 1 ? 'zes' : ''} available
           </p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <input
-            type="text"
-            placeholder="Search…"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="border border-white/10 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white/5 w-44"
-          />
-          {cats.length > 1 && (
+        <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
+          {cats.length > 0 && (
             <select
               value={catFilter}
               onChange={e => setCatFilter(e.target.value)}
-              className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+              className="input-field flex-1 sm:max-w-[250px]"
             >
-              <option value="">All Topics</option>
+              <option value="">All Categories</option>
               {cats.map(c => <option key={c} value={c}>{c}</option>)}
             </select>
           )}
           <select
             value={diffFilter}
             onChange={e => setDiffFilter(e.target.value)}
-            className="border border-white/10 rounded-xl px-3 py-2.5 text-sm bg-white/5 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="input-field flex-1 sm:max-w-[160px]"
           >
             <option value="">All Levels</option>
             {LEVELS.map(l => <option key={l.value} value={l.value}>{l.icon} {l.label}</option>)}
           </select>
-          <button
-            onClick={load}
-            className="border border-white/10 rounded-xl px-4 py-2.5 text-sm bg-white/5 hover:bg-white/5 text-slate-400 font-semibold transition-colors"
-            title="Refresh"
-          >
-            ↻
-          </button>
+          <input
+            type="text"
+            placeholder="Search quizzes..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="input-field flex-1 sm:max-w-xs"
+          />
         </div>
       </div>
 

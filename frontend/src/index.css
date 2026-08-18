@@ -4,30 +4,36 @@
 @tailwind utilities;
 
 /* ═══════════════════════════════════════════
-   BASE LAYER — Foundations (Professional Dark)
+   BASE LAYER — Control Room Foundations
    ═══════════════════════════════════════════ */
 @layer base {
   * { box-sizing: border-box; }
-  html { background-color: #0f1115; scroll-behavior: smooth; }
+  html { background-color: #0B0D10; scroll-behavior: smooth; }
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    @apply bg-[#0f1115] text-slate-300 antialiased;
+    @apply bg-surface-base text-slate-300 antialiased;
     min-height: 100vh;
   }
 
   h1, h2, h3, h4, h5, h6 {
-    @apply font-semibold tracking-tight text-slate-100;
+    @apply font-display font-semibold tracking-tight text-slate-100;
+  }
+
+  /* Numbers read like instrument readouts, everywhere */
+  .font-tabular, .stat-figure {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
   }
 
   /* ── Text Selection ── */
   ::selection {
-    background: rgba(99, 102, 241, 0.3); /* Indigo selection */
+    background: rgba(239, 151, 18, 0.3);
     color: #fff;
   }
 
   /* ── Focus-visible rings for accessibility ── */
   :focus-visible {
-    outline: 2px solid rgba(99, 102, 241, 0.6);
+    outline: 2px solid rgba(239, 151, 18, 0.65);
     outline-offset: 2px;
     border-radius: 6px;
   }
@@ -37,31 +43,35 @@
    COMPONENT LAYER — Reusable UI Classes
    ═══════════════════════════════════════════ */
 @layer components {
-  /* ── Clean Panels ── */
+  /* ── Panels (subtle glow + lift on hover) ── */
   .glass-panel {
-    @apply bg-[#181a20] border border-slate-800/60 rounded-xl shadow-sm;
+    @apply bg-surface-card border border-line rounded-xl shadow-sm transition-all duration-300;
+  }
+  .glass-panel:hover {
+    @apply border-primary-500/25;
+    box-shadow: 0 12px 40px -12px rgba(0, 0, 0, 0.5), 0 0 30px -12px rgba(239, 151, 18, 0.16);
   }
 
   /* ── Modern Buttons ── */
   .btn-primary {
-    @apply relative overflow-hidden bg-indigo-600 hover:bg-indigo-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
+    @apply relative overflow-hidden bg-primary-500 hover:bg-primary-400 text-[#1a1206] font-bold px-4 py-2.5 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
   }
-  
+
   .btn-secondary {
-    @apply bg-slate-800 hover:bg-slate-700 text-slate-200 font-medium px-4 py-2.5 rounded-lg border border-slate-700 hover:border-slate-600 transition-colors duration-200 shadow-sm;
+    @apply bg-surface-raised hover:bg-[#232833] text-slate-200 font-medium px-4 py-2.5 rounded-lg border border-line hover:border-slate-600 transition-colors duration-200 shadow-sm;
   }
-  
+
   .btn-danger {
-    @apply bg-red-600/90 hover:bg-red-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors duration-200 shadow-sm;
+    @apply bg-accent-600/90 hover:bg-accent-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors duration-200 shadow-sm;
   }
-  
+
   .btn-success {
     @apply bg-emerald-600 hover:bg-emerald-500 text-white font-medium px-4 py-2.5 rounded-lg transition-colors duration-200 shadow-sm;
   }
 
   /* ── Input Fields ── */
   .input-field {
-    @apply w-full bg-[#0a0c10] border border-slate-800 rounded-lg px-3.5 py-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500/60 transition-all;
+    @apply w-full bg-[#0a0c10] border border-line rounded-lg px-3.5 py-2.5 text-sm text-slate-200 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-primary-500/40 focus:border-primary-500/60 transition-all;
   }
 
   /* ── Cards ── */
@@ -74,19 +84,137 @@
 
   /* ── Clean Gradient Text ── */
   .gradient-text {
-    @apply bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-primary-400 to-secondary-400 bg-clip-text text-transparent;
   }
   .gradient-text-alt {
     @apply text-slate-100;
   }
 
   /* ── Badges ── */
-  .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20; }
-  .badge-blue   { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-blue-500/10 text-blue-400 border border-blue-500/20; }
-  .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-red-500/10 text-red-400 border border-red-500/20; }
-  .badge-yellow { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20; }
-  .badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-800 text-slate-300 border border-slate-700; }
-  .badge-purple { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20; }
+  .badge-green  { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20; }
+  .badge-blue   { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-secondary-500/10 text-secondary-300 border border-secondary-500/20; }
+  .badge-red    { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-accent-500/10 text-accent-400 border border-accent-500/20; }
+  .badge-yellow { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-primary-500/10 text-primary-400 border border-primary-500/20; }
+  .badge-gray   { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-slate-800 text-slate-300 border border-slate-700; }
+  .badge-purple { @apply inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-mono font-medium bg-secondary-500/10 text-secondary-300 border border-secondary-500/20; }
+
+  /* ── Staggered entrance delays (used with animate-slide-up etc.) ── */
+  .stagger-1 { animation-delay: 60ms; }
+  .stagger-2 { animation-delay: 120ms; }
+  .stagger-3 { animation-delay: 180ms; }
+  .stagger-4 { animation-delay: 240ms; }
+  .stagger-5 { animation-delay: 300ms; }
+  .stagger-6 { animation-delay: 360ms; }
+  .stagger-7 { animation-delay: 420ms; }
+  .stagger-8 { animation-delay: 480ms; }
+
+  /* ── Gradient-flow animated border ── */
+  .gradient-border { position: relative; }
+  .gradient-border::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(115deg, theme('colors.primary.500'), theme('colors.secondary.400'), theme('colors.primary.600'), theme('colors.primary.500'));
+    background-size: 300% 300%;
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    animation: borderFlow 6s linear infinite;
+    pointer-events: none;
+    opacity: 0.5;
+  }
+
+  /* ── 3D tilt-on-hover card ── */
+  .hover-tilt {
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+  .hover-tilt:hover {
+    transform: perspective(800px) rotateX(2deg) rotateY(-2deg) translateY(-4px) scale(1.01);
+  }
+
+  /* ── Number pop-in ── */
+  .number-pop {
+    display: inline-block;
+    animation: countUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  /* ── Floating ambient particles background ── */
+  .particles-bg { position: relative; }
+  .particles-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(2px 2px at 10% 20%, rgba(239,151,18,0.5), transparent 60%),
+      radial-gradient(2px 2px at 80% 15%, rgba(21,156,222,0.45), transparent 60%),
+      radial-gradient(1.5px 1.5px at 35% 70%, rgba(239,151,18,0.35), transparent 60%),
+      radial-gradient(2px 2px at 60% 55%, rgba(21,156,222,0.3), transparent 60%),
+      radial-gradient(1.5px 1.5px at 90% 80%, rgba(239,151,18,0.3), transparent 60%),
+      radial-gradient(1.5px 1.5px at 20% 90%, rgba(21,156,222,0.3), transparent 60%);
+    animation: float 8s ease-in-out infinite;
+  }
+
+  /* ── Nameplate tag — the signature control-room element ──
+     A small mono status label with a live LED dot, echoing
+     equipment nameplates on real industrial panels. ── */
+  .nameplate {
+    @apply inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-black/30 border border-line font-mono text-[10px] uppercase tracking-[0.14em] text-slate-400;
+  }
+  .led-dot {
+    @apply w-1.5 h-1.5 rounded-full flex-shrink-0;
+    box-shadow: 0 0 6px currentColor;
+  }
+  .led-dot.is-live { @apply bg-emerald-400 text-emerald-400 animate-blink; }
+  .led-dot.is-amber { @apply bg-primary-400 text-primary-400 animate-blink; }
+  .led-dot.is-idle { @apply bg-slate-600 text-slate-600; }
+
+  /* ── Blueprint grid ambient background ── */
+  .blueprint-bg {
+    background-image: theme('backgroundImage.blueprint');
+    background-size: 42px 42px;
+  }
+  .blueprint-bg-fine {
+    background-image: theme('backgroundImage.blueprint-fine');
+    background-size: 24px 24px;
+  }
+
+  /* ── Corner brackets — instrument-panel framing accent ── */
+  .corner-brackets { position: relative; }
+  .corner-brackets::before,
+  .corner-brackets::after {
+    content: '';
+    position: absolute;
+    width: 14px; height: 14px;
+    border-color: theme('colors.primary.500' / 55%);
+    pointer-events: none;
+  }
+  .corner-brackets::before {
+    top: -1px; left: -1px;
+    border-top: 2px solid; border-left: 2px solid;
+    border-top-left-radius: 6px;
+  }
+  .corner-brackets::after {
+    bottom: -1px; right: -1px;
+    border-bottom: 2px solid; border-right: 2px solid;
+    border-bottom-right-radius: 6px;
+  }
+
+  /* ── Hazard-stripe accent edge ── */
+  .hazard-edge { position: relative; }
+  .hazard-edge::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background-image: theme('backgroundImage.hazard');
+    background-size: 20px 20px;
+    border-top-left-radius: inherit;
+    border-top-right-radius: inherit;
+  }
 }
 
 /* ═══════════════════════════════════════════
@@ -94,15 +222,15 @@
    ═══════════════════════════════════════════ */
 
 /* ── Page Transitions ── */
-.page-enter { 
-  animation: pageFadeIn 0.3s ease-out forwards; 
+.page-enter {
+  animation: pageFadeIn 0.3s ease-out forwards;
 }
 
 /* ── Shimmer / Skeleton Loader ── */
 .shimmer-loader {
-  background: linear-gradient(90deg, 
-    #181a20 25%, 
-    #21242c 50%, 
+  background: linear-gradient(90deg,
+    #181a20 25%,
+    #21242c 50%,
     #181a20 75%
   );
   background-size: 200% 100%;
@@ -113,12 +241,12 @@
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { 
-  background: #2a2d36; 
-  border-radius: 4px; 
+::-webkit-scrollbar-thumb {
+  background: #2a2d36;
+  border-radius: 4px;
 }
-::-webkit-scrollbar-thumb:hover { 
-  background: #3f4451; 
+::-webkit-scrollbar-thumb:hover {
+  background: #3f4451;
 }
 .custom-scrollbar {
   scrollbar-width: thin;

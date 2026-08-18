@@ -65,18 +65,10 @@ export function StatCard({ icon, label, value, sub, color='blue', trend }) {
   const grad = {
     blue:'from-primary-500 to-primary-600',
     green:'from-emerald-500 to-emerald-600',
-    purple:'from-accent-500 to-accent-600',
+    purple:'from-secondary-500 to-secondary-600',
     orange:'from-amber-500 to-amber-600',
     red:'from-red-500 to-red-600',
-    indigo:'from-primary-600 to-accent-600',
-  }
-  const glowColor = {
-    blue: 'rgba(139, 92, 246, 0.15)',
-    green: 'rgba(16, 185, 129, 0.15)',
-    purple: 'rgba(236, 72, 153, 0.15)',
-    orange: 'rgba(245, 158, 11, 0.15)',
-    red: 'rgba(239, 68, 68, 0.15)',
-    indigo: 'rgba(139, 92, 246, 0.15)',
+    indigo:'from-primary-600 to-secondary-600',
   }
   return (
     <div className="glass-panel p-6 hover-tilt card-hover flex items-start gap-5 relative overflow-hidden group">
@@ -85,22 +77,17 @@ export function StatCard({ icon, label, value, sub, color='blue', trend }) {
         className={`absolute -right-8 -top-8 w-32 h-32 bg-gradient-to-br ${grad[color]||grad.blue} rounded-full opacity-0 blur-3xl group-hover:opacity-20 transition-all duration-700`} 
       />
       {/* Subtle grid pattern inside card */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)',
-          backgroundSize: '20px 20px'
-        }}
-      />
+      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 blueprint-bg-fine" />
       
       <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${grad[color]||grad.blue} flex items-center justify-center text-white text-2xl flex-shrink-0 shadow-lg relative z-10 group-hover:scale-110 transition-transform duration-500`}>
         {icon}
       </div>
       <div className="min-w-0 relative z-10 flex-1">
-        <p className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 leading-tight drop-shadow-sm number-pop">{value}</p>
+        <p className="text-3xl font-mono font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 leading-tight drop-shadow-sm number-pop">{value}</p>
         <p className="text-sm font-bold text-slate-400 mt-1 uppercase tracking-wider">{label}</p>
         {sub && <p className="text-xs text-slate-500 mt-1 font-medium">{sub}</p>}
         {trend !== undefined && (
-          <p className={`text-xs font-bold mt-1.5 flex items-center gap-1 ${trend>=0?'text-emerald-400':'text-red-400'}`}>
+          <p className={`text-xs font-mono font-bold mt-1.5 flex items-center gap-1 ${trend>=0?'text-emerald-400':'text-red-400'}`}>
             <span className={`flex items-center justify-center w-4 h-4 rounded-full ${trend>=0?'bg-emerald-500/20':'bg-red-500/20'}`}>
               {trend>=0?'↑':'↓'}
             </span>
@@ -210,8 +197,8 @@ export function ScoreRing({ score, total, size=160 }) {
           style={{ transition:'stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1)', filter: `drop-shadow(0 0 6px ${color}40)` }}/>
       </svg>
       <div className="absolute text-center z-10">
-        <p className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400 leading-none drop-shadow-sm number-pop">{pct}%</p>
-        <p className="text-xs text-slate-500 mt-2 font-bold tracking-widest uppercase">{score}/{total} pts</p>
+        <p className="text-4xl font-mono font-black text-transparent bg-clip-text bg-gradient-to-br from-white to-slate-400 leading-none drop-shadow-sm number-pop">{pct}%</p>
+        <p className="text-xs text-slate-500 mt-2 font-mono font-bold tracking-widest uppercase">{score}/{total} pts</p>
       </div>
     </div>
   )

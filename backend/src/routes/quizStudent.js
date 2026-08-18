@@ -326,8 +326,11 @@ router.post('/:id/submit', protect, async (req, res) => {
     // auto-graded half — the module isn't actually 'passed' until a
     // reviewer also passes the case study (see routes/caseReview.js), so we
     // deliberately do NOT call the unlock engine in that branch.
-    if (!quiz.hasCaseStudy && passStatus === 'PASS' && quiz.moduleId) {
-      await unlockEngine.onModulePassed(req.user._id, quiz.moduleId, { scorePercent: percentage });
+    const Module = require('../models/Module');
+    const linkedModule = await Module.findOne({ quizId: quiz._id });
+
+    if (!quiz.hasCaseStudy && passStatus === 'PASS' && linkedModule) {
+      await unlockEngine.onModulePassed(req.user._id, linkedModule._id, { scorePercent: percentage });
     }
 
     // ISSUE 5 FIX: compute rank (100 marks = Rank 1, 99 = Rank 2, ties share rank)

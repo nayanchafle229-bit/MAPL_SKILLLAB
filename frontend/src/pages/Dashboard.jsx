@@ -34,39 +34,34 @@ export default function Dashboard() {
 
   return (
     <Layout title="Dashboard">
-      {/* ═══ Premium Welcome Hero ═══ */}
-      <div className="relative rounded-3xl p-8 mb-8 text-white overflow-hidden shadow-2xl animate-fade-in group">
-        {/* Multi-layer animated background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary-600 via-accent-600 to-indigo-900 z-0"></div>
-        <div className="absolute inset-0 opacity-30 mix-blend-overlay z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white via-transparent to-transparent"></div>
-        
-        {/* Grid pattern overlay */}
-        <div className="absolute inset-0 z-0 opacity-10" style={{
-          backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)',
-          backgroundSize: '30px 30px'
-        }} />
-        
-        {/* Animated glass orbs */}
-        <div className="absolute -top-24 -right-24 w-96 h-96 bg-white/10 rounded-full blur-3xl z-0 group-hover:bg-white/20 transition-all duration-1000"></div>
-        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-primary-400/20 rounded-full blur-3xl z-0 group-hover:bg-primary-400/30 transition-all duration-1000"></div>
-        
+      {/* ═══ System Overview Panel ═══ */}
+      <div className="relative rounded-3xl p-8 mb-8 text-white overflow-hidden shadow-2xl animate-fade-in group border border-line hazard-edge">
+        {/* Control-room base: graphite + blueprint grid + amber/trace-blue glow */}
+        <div className="absolute inset-0 bg-gradient-to-br from-surface-raised via-surface-card to-surface-base z-0"></div>
+        <div className="absolute inset-0 z-0 opacity-70 blueprint-bg"></div>
+        <div className="absolute inset-0 opacity-40 z-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-secondary-500/20 via-transparent to-transparent"></div>
+
+        {/* Ambient glows */}
+        <div className="absolute -top-24 -right-24 w-96 h-96 bg-secondary-500/15 rounded-full blur-3xl z-0 group-hover:bg-secondary-500/20 transition-all duration-1000"></div>
+        <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-primary-500/15 rounded-full blur-3xl z-0 group-hover:bg-primary-500/25 transition-all duration-1000"></div>
+
         {/* Floating decorative particles */}
-        <div className="absolute top-10 right-40 w-2 h-2 bg-white/30 rounded-full animate-float" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-20 right-20 w-1 h-1 bg-white/20 rounded-full animate-float" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-20 left-40 w-1.5 h-1.5 bg-white/25 rounded-full animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-10 right-40 w-2 h-2 bg-primary-300/40 rounded-full animate-float" style={{ animationDelay: '0s' }} />
+        <div className="absolute top-20 right-20 w-1 h-1 bg-secondary-300/40 rounded-full animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-20 left-40 w-1.5 h-1.5 bg-primary-300/30 rounded-full animate-float" style={{ animationDelay: '2s' }} />
 
         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
           <div className="flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 backdrop-blur-md mb-4 shadow-inner">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
-              <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-white/90">Student Portal</span>
+            <div className="nameplate mb-4">
+              <span className="led-dot is-live"></span>
+              Student Portal · Session Active
             </div>
             
-            <h2 className="text-4xl md:text-5xl font-black mb-2 tracking-tight drop-shadow-md">
-              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-primary-200">{p.name?.split(' ')[0] || 'Learner'}</span> <Hand size={36} className="inline-block" />
+            <h2 className="text-4xl md:text-5xl font-display font-black mb-2 tracking-tight drop-shadow-md">
+              Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-300 to-secondary-300">{p.name?.split(' ')[0] || 'Learner'}</span> <Hand size={36} className="inline-block" />
             </h2>
             
-            <p className="text-primary-100/80 text-sm md:text-base font-medium max-w-xl">
+            <p className="text-slate-400 text-sm md:text-base font-medium max-w-xl">
               {p.branch && `${p.branch} · `}{p.year || 'Your journey to mastery continues today. Keep pushing your limits!'}
             </p>
             
@@ -74,7 +69,7 @@ export default function Dashboard() {
               <div className="mt-6 flex items-center gap-3 animate-slide-up" style={{ animationDelay: '200ms' }}>
                 <div className="flex -space-x-2">
                   {[1,2,3].slice(0, pending).map(i => (
-                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-accent-400 border-2 border-primary-600 shadow-sm z-10 flex items-center justify-center text-[10px] animate-float" style={{ animationDelay: `${i * 300}ms` }}><BrainCircuit size={14} /></div>
+                    <div key={i} className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-secondary-500 border-2 border-surface-card shadow-sm z-10 flex items-center justify-center text-[10px] animate-float" style={{ animationDelay: `${i * 300}ms` }}><BrainCircuit size={14} /></div>
                   ))}
                   {pending > 3 && <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 z-0 flex items-center justify-center text-[10px] font-bold">+{pending-3}</div>}
                 </div>
@@ -86,11 +81,11 @@ export default function Dashboard() {
           </div>
           
           <div className="flex flex-row md:flex-col gap-3 w-full md:w-auto">
-            <Link to="/quizzes" className="flex-1 md:flex-none text-center bg-white text-primary-700 font-black px-6 py-3.5 rounded-xl hover:bg-primary-50 transition-all shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:-translate-y-1 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] relative overflow-hidden group/btn">
+            <Link to="/quizzes" className="flex-1 md:flex-none text-center bg-primary-500 text-[#1a1206] font-black px-6 py-3.5 rounded-xl hover:bg-primary-400 transition-all shadow-glow-primary hover:-translate-y-1 relative overflow-hidden group/btn">
               <span className="relative z-10"><Rocket size={16} className="inline-block mr-1" /> Explore Quizzes</span>
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity" style={{ backgroundSize: '200% 100%', animation: 'shimmer 2s linear infinite' }} />
             </Link>
-            <Link to="/portfolio" className="flex-1 md:flex-none text-center bg-white/10 border border-white/20 text-white font-bold px-6 py-3.5 rounded-xl hover:bg-white/20 transition-all backdrop-blur-md hover:-translate-y-1">
+            <Link to="/portfolio" className="flex-1 md:flex-none text-center bg-white/5 border border-line text-white font-bold px-6 py-3.5 rounded-xl hover:bg-white/10 transition-all backdrop-blur-md hover:-translate-y-1">
               <BarChart3 size={16} className="inline-block mr-1" /> View Portfolio
             </Link>
           </div>
@@ -203,7 +198,7 @@ export default function Dashboard() {
                       
                       <div className="flex items-center gap-3 ml-3 flex-shrink-0 z-10">
                         <div className="text-right">
-                          <p className="font-black text-sm text-white">{r.score}<span className="text-[10px] text-slate-500">/{r.totalMarks}</span></p>
+                          <p className="font-mono font-black text-sm text-white">{r.score}<span className="text-[10px] text-slate-500">/{r.totalMarks}</span></p>
                           <PassBadge status={r.passStatus} />
                         </div>
                         <div className="relative w-12 h-12 flex items-center justify-center">
@@ -213,7 +208,7 @@ export default function Dashboard() {
                               strokeDasharray="125.6" strokeDashoffset={125.6 - (pct/100)*125.6} strokeLinecap="round"
                               style={{ transition: 'stroke-dashoffset 1s cubic-bezier(0.16,1,0.3,1)', filter: `drop-shadow(0 0 4px ${pct>=75?'rgba(16,185,129,0.5)':pct>=50?'rgba(245,158,11,0.5)':'rgba(239,68,68,0.5)'})` }}/>
                           </svg>
-                          <span className="absolute text-[10px] font-black text-white">{pct.toFixed(0)}%</span>
+                          <span className="absolute text-[10px] font-mono font-black text-white">{pct.toFixed(0)}%</span>
                         </div>
                       </div>
                     </Link>
@@ -239,7 +234,7 @@ export default function Dashboard() {
               {best >= 75 ? <Star size={28} /> : best >= 50 ? <BookOpen size={28} /> : <Dumbbell size={28} />}
             </div>
             <div>
-              <p className="font-black text-xl tracking-wide">
+              <p className="font-display font-black text-xl tracking-wide">
                 {best >= 75 ? 'Outstanding performance!' : best >= 50 ? 'Keep climbing higher!' : 'Ready for a comeback!'}
               </p>
               <p className="text-slate-400 text-sm mt-1 font-medium">

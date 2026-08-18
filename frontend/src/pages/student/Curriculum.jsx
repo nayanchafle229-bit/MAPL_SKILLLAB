@@ -78,16 +78,12 @@ function CategoryRow({ category, onOpen }) {
 export default function Curriculum() {
   const navigate = useNavigate()
   const [curriculum, setCurriculum] = useState(null)
-  const [pendingQuiz, setPendingQuiz] = useState(null)
-  const [pendingLevel, setPendingLevel] = useState(null)
   const [error, setError] = useState('')
 
   useEffect(() => {
     api.get('/curriculum')
       .then(({ data }) => {
         setCurriculum(data.curriculum)
-        setPendingQuiz(data.pendingLevelQuiz || null)
-        setPendingLevel(data.pendingLevel || null)
       })
       .catch((err) => setError(err.response?.data?.message || 'Failed to load curriculum'))
   }, [])
@@ -98,23 +94,6 @@ export default function Curriculum() {
     <Layout title="Curriculum">
       <div className="max-w-5xl mx-auto space-y-5">
         
-        {pendingQuiz && pendingLevel && (
-          <div className="mb-8 p-6 bg-primary-900/40 border border-primary-500/30 rounded-xl flex items-center justify-between gap-6 shadow-lg">
-            <div>
-              <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2">
-                <Trophy size={28} /> Level {LEVELS.find((l) => l.value === pendingLevel)?.label} Complete!
-              </h3>
-              <p className="text-slate-300">
-                You have completed all courses in the {LEVELS.find((l) => l.value === pendingLevel)?.label} level. 
-                Take the level quiz to unlock the next level.
-              </p>
-            </div>
-            <button onClick={() => navigate(`/quizzes/${pendingQuiz._id}`)} className="btn-primary flex-shrink-0 whitespace-nowrap shadow-primary-600/20 shadow-lg px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform">
-              Take Level Quiz
-            </button>
-          </div>
-        )}
-
         <div>
           <h1 className="text-2xl font-black text-white">Curriculum</h1>
           <p className="text-sm text-slate-400 mt-1">Each row is a category, each column a level. Complete a level and its quiz to unlock the next.</p>

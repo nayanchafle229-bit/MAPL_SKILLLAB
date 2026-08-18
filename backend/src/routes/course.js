@@ -19,23 +19,15 @@ router.get('/', protect, async (req, res) => {
     const courses = await Course.find(filter).sort({ createdAt: -1 }).lean();
     
     if (req.user.role !== 'admin') {
-      const highestUnlockedIndex = await getHighestUnlockedLevelIndex(req.user._id);
-      let pendingLevelQuiz = null;
-      let pendingLevel = null;
+      const { isLevelLocked } = require('../services/levelProgression');
       
-      for (const c of courses) {
-        const levelIndex = LEVELS.indexOf(c.level);
-        c.locked = levelIndex > highestUnlockedIndex;
-      }
+      // We process locks asynchronously, so use Promise.all
+      await Promise.all(courses.map(async (c) => {
+        c.locked = await isLevelLocked(req.user._id, c.level, c.category);
+      }));
 
-      // Check if user is eligible to take the level quiz for their current highest unlocked level
-      const highestUnlockedLevelStr = LEVELS[highestUnlockedIndex];
-      if (highestUnlockedLevelStr) {
-        pendingLevelQuiz = await getPendingLevelQuiz(req.user._id, highestUnlockedLevelStr);
-        if (pendingLevelQuiz) pendingLevel = highestUnlockedLevelStr;
-      }
-
-      res.json({ courses, pendingLevelQuiz, pendingLevel });
+      // No pendingLevelQuiz logic anymore, as it's category-specific now
+      res.json({ courses, pendingLevelQuiz: null, pendingLevel: null });
     } else {
       for (const c of courses) c.locked = false;
       res.json({ courses });
@@ -96,7 +88,7 @@ router.post('/:id/watch', protect, async (req, res) => {
     if (!course) return res.status(404).json({ message: 'Course not found' });
 
     const { isLevelLocked } = require('../services/levelProgression');
-    const globalLocked = await isLevelLocked(req.user._id, course.level);
+    const globalLocked = await isLevelLocked(req.user._id, course.level, course.category);
     if (globalLocked) {
       return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
     }
@@ -120,6 +112,37 @@ router.post('/:id/watch', protect, async (req, res) => {
   }
 });
 
+// POST /api/course/sync-by-url — cross-sync from Curriculum page
+router.post('/sync-by-url', protect, async (req, res) => {
+  try {
+    if (req.user.id === 'admin') return res.status(200).json({ message: 'Admin progress is not tracked' });
+    
+    const { url } = req.body;
+    if (!url) return res.status(400).json({ message: 'URL is required' });
+
+    // Find the course with this exact video URL
+    const course = await Course.findOne({ videoUrl: url });
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found for this URL' });
+    }
+
+    const { isLevelLocked } = require('../services/levelProgression');
+    const globalLocked = await isLevelLocked(req.user._id, course.level, course.category);
+    if (globalLocked) {
+      return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
+    }
+
+    const progress = await CourseProgress.findOneAndUpdate(
+      { userId: req.user._id, courseId: course._id },
+      { status: 'completed', completedAt: new Date(), lastWatchedAt: new Date(), $setOnInsert: { startedAt: new Date() } },
+      { new: true, upsert: true }
+    );
+    res.json({ progress, message: 'Course marked as completed via sync 🎉' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 // POST /api/course/:id/complete — student marks this course as fully watched
 router.post('/:id/complete', protect, async (req, res) => {
   try {
@@ -128,7 +151,7 @@ router.post('/:id/complete', protect, async (req, res) => {
     if (!course) return res.status(404).json({ message: 'Course not found' });
 
     const { isLevelLocked } = require('../services/levelProgression');
-    const globalLocked = await isLevelLocked(req.user._id, course.level);
+    const globalLocked = await isLevelLocked(req.user._id, course.level, course.category);
     if (globalLocked) {
       return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
     }
@@ -152,7 +175,7 @@ router.get('/:id', protect, async (req, res) => {
 
     if (req.user.role !== 'admin') {
       const { isLevelLocked } = require('../services/levelProgression');
-      const globalLocked = await isLevelLocked(req.user._id, course.level);
+      const globalLocked = await isLevelLocked(req.user._id, course.level, course.category);
       if (globalLocked) {
         return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
       }

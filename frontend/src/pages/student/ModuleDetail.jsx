@@ -26,6 +26,20 @@ export default function ModuleDetail() {
   const [mod, setMod] = useState(null)
   const [activeVideo, setActiveVideo] = useState(0)
   const [error, setError] = useState('')
+  const [marking, setMarking] = useState(false)
+  const [markedVideos, setMarkedVideos] = useState({})
+
+  const handleMarkComplete = async (video) => {
+    setMarking(true)
+    try {
+      await api.post('/course/sync-by-url', { url: video.url })
+      setMarkedVideos(prev => ({ ...prev, [video._id || video.url]: true }))
+    } catch (err) {
+      console.error('Failed to sync completion:', err)
+    } finally {
+      setMarking(false)
+    }
+  }
 
   useEffect(() => {
     setMod(null)
@@ -78,10 +92,21 @@ export default function ModuleDetail() {
                 allowFullScreen
               />
             </div>
-            <div className="p-4">
-              <h3 className="font-bold text-white">{video.title}</h3>
-              {video.source && <p className="text-xs text-slate-500 mt-0.5">{video.source}</p>}
-              {video.whySelected && <p className="text-sm text-slate-400 mt-2">{video.whySelected}</p>}
+            <div className="p-4 flex items-start justify-between gap-4">
+              <div>
+                <h3 className="font-bold text-white">{video.title}</h3>
+                {video.source && <p className="text-xs text-slate-500 mt-0.5">{video.source}</p>}
+                {video.whySelected && <p className="text-sm text-slate-400 mt-2">{video.whySelected}</p>}
+              </div>
+              <button 
+                onClick={() => handleMarkComplete(video)} 
+                disabled={marking || markedVideos[video._id || video.url]}
+                className={`flex-shrink-0 text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1.5 transition-colors ${
+                  markedVideos[video._id || video.url] ? 'bg-accent-600/20 text-accent-400 border border-accent-500/30' : 'bg-white/10 text-white hover:bg-white/20'
+                }`}
+              >
+                {markedVideos[video._id || video.url] ? 'Watched' : 'Mark Complete'}
+              </button>
             </div>
             {mod.videos.length > 1 && (
               <div className="flex flex-wrap gap-2 px-4 pb-4">

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { BrainCircuit, BookOpen, FileText, ClipboardList, Clapperboard, Circle } from 'lucide-react'
-import ReactPlayer from 'react-player'
+import { BrainCircuit, BookOpen, FileText, ClipboardList, Clapperboard, Circle, CheckCircle2 } from 'lucide-react'
 import api from '../api/axios'
 import Layout from '../components/Layout'
 import { PageLoader } from '../components/UI'
@@ -11,6 +10,17 @@ import Markdown from '../components/Markdown'
 function getYouTubeId(url) {
   const m = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
   return m ? m[1] : null
+}
+
+function toEmbedUrl(url) {
+  try {
+    const u = new URL(url)
+    if (u.hostname.includes('youtu.be')) return `https://www.youtube.com/embed/${u.pathname.slice(1)}`
+    if (u.searchParams.get('v')) return `https://www.youtube.com/embed/${u.searchParams.get('v')}`
+    return url
+  } catch {
+    return url
+  }
 }
 
 
@@ -71,13 +81,12 @@ export default function CourseWatch() {
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
           </Link>
         </div>
-        <ReactPlayer 
-          url={course.videoUrl} 
-          width="100%" 
-          height="100%" 
-          playing={true} 
-          controls 
-          onEnded={handleVideoEnded} 
+        <iframe 
+          src={toEmbedUrl(course.videoUrl)} 
+          title={course.title}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
         />
       </div>
     )
@@ -89,12 +98,12 @@ export default function CourseWatch() {
         {/* Main video */}
         <div className="xl:col-span-2 space-y-4">
           <div className="bg-black rounded-2xl overflow-hidden aspect-video">
-            <ReactPlayer 
-              url={course.videoUrl} 
-              width="100%" 
-              height="100%" 
-              controls 
-              onEnded={handleVideoEnded} 
+            <iframe 
+              src={toEmbedUrl(course.videoUrl)} 
+              title={course.title}
+              className="w-full h-full"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
             />
           </div>
 
@@ -115,7 +124,12 @@ export default function CourseWatch() {
                 </div>
               </div>
               <div className="flex items-center gap-2 flex-shrink-0">
-                <Link to="/quiz" className="btn-primary text-sm flex items-center justify-center gap-1.5"><BrainCircuit size={16}/> Take Quiz</Link>
+                {progress?.status !== 'completed' && (
+                  <button onClick={markComplete} disabled={marking} className="btn-secondary text-sm flex items-center justify-center gap-1.5 px-3 py-2 bg-white/5 hover:bg-white/10 rounded-xl transition-colors border border-white/10 text-slate-300">
+                    <CheckCircle2 size={16} /> {marking ? 'Marking...' : 'Mark Complete'}
+                  </button>
+                )}
+                <Link to="/quizzes" className="btn-primary text-sm flex items-center justify-center gap-1.5"><BrainCircuit size={16}/> Take Quizzes</Link>
               </div>
             </div>
 
@@ -185,8 +199,8 @@ export default function CourseWatch() {
             <div className="text-center">
               <div className="mb-2 flex justify-center text-primary-400"><BrainCircuit size={48} /></div>
               <h3 className="font-bold text-white mb-1">Ready to test yourself?</h3>
-              <p className="text-sm text-slate-400 mb-4">Take a quiz with {40} random questions</p>
-              <Link to="/quiz" className="btn-primary w-full text-center block">Start Quiz</Link>
+              <p className="text-sm text-slate-400 mb-4">Browse all available quizzes</p>
+              <Link to="/quizzes" className="btn-primary w-full text-center block">View Quizzes</Link>
             </div>
           </div>
         </div>
