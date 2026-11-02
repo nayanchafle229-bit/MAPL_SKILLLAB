@@ -98,8 +98,6 @@ export default function QuizResult() {
             {/* Overview Tab */}
             {tab === 'overview' && (
               <div className="space-y-5">
-
-
                 {/* Performance visual */}
                 <div>
                   <h3 className="text-sm font-black text-slate-300 uppercase tracking-wider mb-3">Performance Breakdown</h3>
@@ -139,13 +137,23 @@ export default function QuizResult() {
               <div className="space-y-3">
                 {(result.answers || []).map((a, i) => {
                   const qData = a.questionId
-                  const opts  = ['A','B','C','D']
+                  // Support options A through E dynamically
+                  const opts = ['A','B','C','D','E'].filter(opt => qData?.options && qData.options[opt])
+                  
+                  const correctList = (a.correct || '').split(',').map(s => s.trim().toUpperCase())
+                  const selectedList = (a.selected || '').split(',').map(s => s.trim().toUpperCase())
+
                   return (
                     <div key={i} className={`p-4 rounded-xl border-2 ${a.isCorrect ? 'border-accent-500/30 bg-accent-500/10' : a.selected ? 'border-red-500/20 bg-red-500/10' : 'border-white/10 bg-white/5'}`}>
                       <div className="flex items-start justify-between gap-2 mb-3">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="bg-white/5 border border-white/10 text-slate-400 text-xs font-black px-2.5 py-1 rounded-full">Q{i+1}</span>
                           <span className="text-xs font-semibold text-slate-400">{a.marks||1} mark{(a.marks||1)>1?'s':''}</span>
+                          {qData?.type && (
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/5 text-slate-400">
+                              {qData.type}
+                            </span>
+                          )}
                         </div>
                         <span className={`flex-shrink-0 w-7 h-7 rounded-full flex items-center justify-center text-sm font-black text-white ${a.isCorrect?'bg-accent-500':a.selected?'bg-red-500':'bg-slate-500'}`}>
                           {a.isCorrect?'✓':a.selected?'✗':'–'}
@@ -154,11 +162,11 @@ export default function QuizResult() {
                       <p className="text-sm font-semibold text-slate-100 mb-3 leading-relaxed">
                         {qData?.question || 'Question data unavailable'}
                       </p>
-                      {qData?.options && (
+                      {opts.length > 0 && (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 mb-2">
                           {opts.map(opt => {
-                            const isCorrect  = opt === a.correct
-                            const isSelected = opt === a.selected
+                            const isCorrect  = correctList.includes(opt)
+                            const isSelected = selectedList.includes(opt)
                             return (
                               <div key={opt} className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium ${
                                 isCorrect  ? 'bg-accent-500 text-white' :
@@ -166,14 +174,14 @@ export default function QuizResult() {
                                 'bg-white/5 border border-white/10 text-slate-400'}`}>
                                 <span className="font-black w-4">{opt}.</span>
                                 <span className="flex-1">{qData.options[opt]}</span>
-                                {isCorrect  && <span className="ml-auto">✓</span>}
-                                {isSelected && !isCorrect && <span className="ml-auto">✗</span>}
+                                {isCorrect  && <span className="ml-auto font-bold">✓</span>}
+                                {isSelected && !isCorrect && <span className="ml-auto font-bold">✗</span>}
                               </div>
                             )
                           })}
                         </div>
                       )}
-                      <div className="flex gap-4 text-xs mt-1">
+                      <div className="flex gap-4 text-xs mt-1 flex-wrap">
                         <span className="text-slate-400">Your: <strong className={a.isCorrect?'text-accent-400':'text-red-400'}>{a.selected||'Not answered'}</strong></span>
                         {!a.isCorrect && <span className="text-slate-400">Correct: <strong className="text-accent-400">{a.correct}</strong></span>}
                         <span className={`ml-auto font-black ${a.marksAwarded>0?'text-accent-400':a.marksAwarded<0?'text-red-400':'text-slate-500'}`}>
@@ -190,9 +198,9 @@ export default function QuizResult() {
 
         {/* Actions */}
         <div className="flex gap-3 flex-wrap">
-          <Link to="/quizzes"               className="flex-1 text-center bg-white/5 border border-white/10 text-slate-300 font-bold py-3.5 rounded-xl hover:bg-white/5 transition-all text-sm">← Back to Quizzes</Link>
+          <Link to="/quizzes" className="flex-1 text-center bg-white/5 border border-white/10 text-slate-300 font-bold py-3.5 rounded-xl hover:bg-white/5 transition-all text-sm">← Back to Quizzes</Link>
           <Link to={`/leaderboard/${quiz?._id||result.quizId}`} className="flex-1 text-center bg-slate-800 text-white font-bold py-3.5 rounded-xl hover:bg-slate-700 transition-all text-sm"><Trophy size={18} className="inline-block mr-2 -mt-1" />Leaderboard</Link>
-          <Link to="/portfolio"             className="flex-1 text-center bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-500 transition-all text-sm"><BarChart3 size={18} className="inline-block mr-2 -mt-1" />Portfolio</Link>
+          <Link to="/portfolio" className="flex-1 text-center bg-primary-600 text-white font-bold py-3.5 rounded-xl hover:bg-primary-500 transition-all text-sm"><BarChart3 size={18} className="inline-block mr-2 -mt-1" />Portfolio</Link>
         </div>
       </div>
     </Layout>

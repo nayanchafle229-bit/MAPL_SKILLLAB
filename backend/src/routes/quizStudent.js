@@ -45,15 +45,18 @@ router.get('/', protect, async (req, res) => {
       );
     }
 
+    const { getQuizLockStatus } = require('../services/levelProgression');
     for (const q of quizzes) {
-      let locked = false;
+      let lockInfo = { locked: false };
       if (userId && userId !== 'admin') {
-        locked = await isQuizLocked(userId, q);
+        lockInfo = await getQuizLockStatus(userId, q);
       }
       
       enriched.push({
         ...q.toObject(),
-        locked,
+        locked: lockInfo.locked,
+        lockReason: lockInfo.reason || null,
+        lockMessage: lockInfo.message || null,
         attempted:    !!attemptMap[q._id.toString()],
         myScore:      attemptMap[q._id.toString()]?.score       ?? null,
         myPct:        attemptMap[q._id.toString()]?.percentage  ?? null,
@@ -85,10 +88,10 @@ router.get('/:id/start', protect, async (req, res) => {
     if (quiz.status !== 'published')   return res.status(400).json({ message: 'This quiz is not published yet' });
     if (!quiz.questions?.length)       return res.status(400).json({ message: 'This quiz has no questions configured' });
 
-    const { isQuizLocked } = require('../services/levelProgression');
-    const locked = await isQuizLocked(req.user._id, quiz);
-    if (locked) {
-      return res.status(403).json({ message: 'This quiz is locked based on your current level progress.' });
+    const { getQuizLockStatus } = require('../services/levelProgression');
+    const lockInfo = await getQuizLockStatus(req.user._id, quiz);
+    if (lockInfo.locked) {
+      return res.status(403).json({ message: lockInfo.message || 'This quiz is locked based on your current level progress.' });
     }
 
     // Check attempt limit
@@ -327,7 +330,14 @@ router.post('/:id/submit', protect, async (req, res) => {
     // reviewer also passes the case study (see routes/caseReview.js), so we
     // deliberately do NOT call the unlock engine in that branch.
     const Module = require('../models/Module');
-    const linkedModule = await Module.findOne({ quizId: quiz._id });
+    let linkedModule = await Module.findOne({ quizId: quiz._id });
+    if (!linkedModule && quiz.category && quiz.level) {
+      const Category = require('../models/Category');
+      const cat = await Category.findOne({ name: quiz.category });
+      if (cat) {
+        linkedModule = await Module.findOne({ categoryId: cat._id, level: quiz.level });
+      }
+    }
 
     if (!quiz.hasCaseStudy && passStatus === 'PASS' && linkedModule) {
       await unlockEngine.onModulePassed(req.user._id, linkedModule._id, { scorePercent: percentage });

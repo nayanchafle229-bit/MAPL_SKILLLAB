@@ -23,6 +23,7 @@ const progressSchema = new mongoose.Schema({
 
   bestScorePercent: { type: Number, default: null },
   attemptsUsed:      { type: Number, default: 0 },
+  completedVideos:   [{ type: String, default: [] }], // stores completed video URLs
 }, { timestamps: true });
 
 // One progress row per user per module — this is the row the unlock engine

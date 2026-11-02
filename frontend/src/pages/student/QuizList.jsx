@@ -29,7 +29,7 @@ function QuizCard({ q }) {
             <Lock size={24} />
           </div>
           <span className="font-black text-white tracking-widest uppercase text-sm drop-shadow-md">Locked</span>
-          <p className="text-xs text-slate-300 mt-2 font-medium">Complete all {lvl.label} content first</p>
+          <p className="text-xs text-slate-300 mt-2 font-medium px-4 text-center">{q.lockMessage || `Complete all ${lvl.label} content first`}</p>
         </div>
         
         <div className="bg-gradient-to-br from-slate-900 to-surface-card p-6 relative z-0">

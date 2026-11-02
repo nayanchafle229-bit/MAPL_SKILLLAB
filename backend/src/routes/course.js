@@ -19,15 +19,42 @@ router.get('/', protect, async (req, res) => {
     const courses = await Course.find(filter).sort({ createdAt: -1 }).lean();
     
     if (req.user.role !== 'admin') {
-      const { isLevelLocked } = require('../services/levelProgression');
+      const { isLevelLocked, isContentCompletedForLevel } = require('../services/levelProgression');
+      const Quiz = require('../models/Quiz');
+      const QuizResult = require('../models/QuizResult');
       
-      // We process locks asynchronously, so use Promise.all
+      // Process locks asynchronously
       await Promise.all(courses.map(async (c) => {
         c.locked = await isLevelLocked(req.user._id, c.level, c.category);
       }));
 
-      // No pendingLevelQuiz logic anymore, as it's category-specific now
-      res.json({ courses, pendingLevelQuiz: null, pendingLevel: null });
+      // Check for an unlocked level whose content is complete but quiz not passed yet
+      let pendingQuiz = null;
+      let pendingLevel = null;
+      const targetCategory = req.query.category || (courses[0]?.category);
+      
+      if (targetCategory) {
+        const levels = ['apprentice', 'adept', 'master', 'legend'];
+        for (const lvl of levels) {
+          const locked = await isLevelLocked(req.user._id, lvl, targetCategory);
+          if (!locked) {
+            const quiz = await Quiz.findOne({ category: targetCategory, level: lvl, status: 'published' }).lean();
+            if (quiz) {
+              const passed = await QuizResult.findOne({ userId: req.user._id, quizId: quiz._id, passStatus: 'PASS' }).lean();
+              if (!passed) {
+                const contentDone = await isContentCompletedForLevel(req.user._id, lvl, targetCategory);
+                if (contentDone) {
+                  pendingQuiz = quiz;
+                  pendingLevel = lvl;
+                  break;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      res.json({ courses, pendingLevelQuiz: pendingQuiz, pendingLevel: pendingLevel });
     } else {
       for (const c of courses) c.locked = false;
       res.json({ courses });
@@ -120,24 +147,10 @@ router.post('/sync-by-url', protect, async (req, res) => {
     const { url } = req.body;
     if (!url) return res.status(400).json({ message: 'URL is required' });
 
-    // Find the course with this exact video URL
-    const course = await Course.findOne({ videoUrl: url });
-    if (!course) {
-      return res.status(404).json({ message: 'Course not found for this URL' });
-    }
+    const { markVideoComplete } = require('../services/videoCompletion');
+    const syncRes = await markVideoComplete(req.user._id, { url });
 
-    const { isLevelLocked } = require('../services/levelProgression');
-    const globalLocked = await isLevelLocked(req.user._id, course.level, course.category);
-    if (globalLocked) {
-      return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
-    }
-
-    const progress = await CourseProgress.findOneAndUpdate(
-      { userId: req.user._id, courseId: course._id },
-      { status: 'completed', completedAt: new Date(), lastWatchedAt: new Date(), $setOnInsert: { startedAt: new Date() } },
-      { new: true, upsert: true }
-    );
-    res.json({ progress, message: 'Course marked as completed via sync 🎉' });
+    res.json({ success: true, message: 'Video marked as completed via sync 🎉', ...syncRes });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
@@ -156,11 +169,10 @@ router.post('/:id/complete', protect, async (req, res) => {
       return res.status(403).json({ message: 'This course is locked. Complete all previous level courses and quizzes first.' });
     }
 
-    const progress = await CourseProgress.findOneAndUpdate(
-      { userId: req.user._id, courseId: req.params.id },
-      { status: 'completed', completedAt: new Date(), lastWatchedAt: new Date(), $setOnInsert: { startedAt: new Date() } },
-      { new: true, upsert: true }
-    );
+    const { markVideoComplete } = require('../services/videoCompletion');
+    await markVideoComplete(req.user._id, { courseId: course._id, url: course.videoUrl });
+
+    const progress = await CourseProgress.findOne({ userId: req.user._id, courseId: course._id });
     res.json({ progress, message: 'Course marked as completed 🎉' });
   } catch (err) {
     res.status(500).json({ message: err.message });

@@ -39,16 +39,25 @@ export default function CourseWatch() {
   const isFullscreen = new URLSearchParams(window.location.search).get('fullscreen') === 'true';
 
   useEffect(() => {
-    Promise.all([api.get(`/course/${id}`), api.get('/course')])
-      .then(([cRes, allRes]) => {
+    Promise.all([
+      api.get(`/course/${id}`),
+      api.get('/course'),
+      api.get(`/course/${id}/my-progress`).catch(() => ({ data: { progress: null } }))
+    ])
+      .then(([cRes, allRes, pRes]) => {
         setCourse(cRes.data.course)
         setCourses((allRes.data.courses || []).filter(c => c._id !== id).slice(0, 5))
+        if (pRes?.data?.progress) {
+          setProgress(pRes.data.progress)
+        }
       })
       .finally(() => setLoading(false))
 
     // Log that this student opened the course (creates/bumps a progress record)
     api.post(`/course/${id}/watch`)
-      .then(({ data }) => setProgress(data.progress))
+      .then(({ data }) => {
+        if (data?.progress) setProgress(data.progress)
+      })
       .catch(() => {}) // non-fatal — e.g. admin account, or a transient error
 
     setTab('overview')

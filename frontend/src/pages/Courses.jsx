@@ -159,7 +159,7 @@ export default function Courses() {
               Take the level quiz to unlock the next level.
             </p>
           </div>
-          <Link to={`/quizzes/${pendingQuiz._id}`} className="btn-primary flex-shrink-0 whitespace-nowrap shadow-primary-600/20 shadow-lg px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform">
+          <Link to={`/quiz/${pendingQuiz._id}`} className="btn-primary flex-shrink-0 whitespace-nowrap shadow-primary-600/20 shadow-lg px-8 py-3 rounded-xl font-bold text-lg hover:scale-105 transition-transform">
             Take Level Quiz
           </Link>
         </div>
